@@ -7,7 +7,8 @@ from rest_framework.authtoken import views
 urlpatterns = [
     # USER URL
     re_path(r'CreateUser', CreateUserView.as_view(), name='CreateUser'),
-    #### AUTHENTICATION TOKEN
+
+    # AUTHENTICATION TOKEN
     # re_path(r'Generate/tokens/', obtain_auth_token, name='auth_token'),
     re_path('api-token-auth/', views.obtain_auth_token),
 
@@ -17,20 +18,20 @@ urlpatterns = [
     re_path(r'action_brand/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),
 
     # ATTRIBUTES URL
-    re_path(r'add_attribute', AddAttributeView, name='AddAttribute'),
-    re_path(r'action_attributes/(?P<id>.+)/', AttributeGetView, name='GetAttribute'),
+    re_path(r'add_attribute', AddAttributeView.as_view(), name='AddAttribute'),
+    re_path(r'action_attributes/(?P<pk>.+)/', AttributeGetView.as_view(), name='GetAttribute'),
 
     # VARAITIONS URL
-    re_path(r'add_variation', AddVariationView, name='AddVariation'),
-    re_path(r'action_variation/(?P<id>.+)/', VariationGetView, name='GetVariation'),
+    re_path(r'add_variation', AddVariationView.as_view(), name='AddVariation'),
+    re_path(r'action_variation/(?P<pk>.+)/', VariationGetView.as_view(), name='GetVariation'),
 
     # PARENT CATEGORY URL
-    re_path(r'add_parent_category', AddParentCategoryView, name='AddParentCategory'),
-    re_path(r'action_parent_category/(?P<id>.+)/', ParentCategoryGetView, name='GetParentCategory'),
+    re_path(r'add_parent_category', AddParentCategoryView.as_view(), name='AddParentCategory'),
+    re_path(r'action_parent_category/(?P<pk>.+)/', ParentCategoryGetView.as_view(), name='GetParentCategory'),
 
     # CATEGORY URL
-    re_path(r'add_category', AddCategoryView, name='AddCategory'),
-    re_path(r'action_category/(?P<id>.+)/', CategoryGetView, name='GetCategory'),
+    re_path(r'add_category', AddCategoryView.as_view(), name='AddCategory'),
+    re_path(r'action_category/(?P<pk>.+)/', CategoryGetView.as_view(), name='GetCategory'),
 
     # SUB CATEGORY URL
     re_path(r'add_subcategory', AddSubCategoryView.as_view(), name='AddSubCategory'),

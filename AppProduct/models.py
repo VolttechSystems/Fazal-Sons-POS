@@ -74,7 +74,7 @@ class ParentCategory(models.Model):
     pc_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.TextField(max_length=100, null=True)
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -93,7 +93,7 @@ class Category(models.Model):
     symbol = models.CharField(max_length=100, null=True)
     subcategory_option = models.TextField(max_length=500, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.TextField(max_length=100, null=True)
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -111,7 +111,7 @@ class SubCategory(models.Model):
     sub_category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.TextField(max_length=100, null=True)
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')
     attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
@@ -138,6 +138,10 @@ class Product(models.Model):
                                    null=True)
     season = models.CharField(max_length=10, choices=SEASONS_CHOICES, default='Spring')
     description = models.TextField(max_length=500, null=True)
+    created_at = models.DateTimeField(null=True)
+    created_by = models.CharField(max_length=200, null=True, blank=True)
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.CharField(max_length=200, null=True, blank=True)
 
     class Meta:
         db_table = 'tbl_product'

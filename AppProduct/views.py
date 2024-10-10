@@ -6,7 +6,7 @@ from django.http import Http404
 from django.http import JsonResponse, HttpResponse
 
 from rest_framework import generics
-from rest_framework.authentication import SessionAuthentication, TokenAuthentication
+from rest_framework.authentication import SessionAuthentication, TokenAuthentication, BaseAuthentication
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 from django.contrib.auth.models import User
@@ -26,14 +26,14 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
 
 class CreateUserView(generics.ListCreateAPIView):
     model = get_user_model()
-    authentication_classes = [TokenAuthentication]
+    authentication_classes = [SessionAuthentication]
     permission_classes = [IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class AddBrandView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    # permission_classes = [IsAuthenticated]
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
@@ -43,155 +43,47 @@ class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = BrandSerializer
 
 
-@api_view(['GET', 'POST'])
-def AddAttributeView(request):
-    if request.method == "GET":
-        attribute = Attribute.objects.all()
-        if len(attribute) > 0:
-            serializer = AttributeSerializer(attribute, many=True)
-            param = {
-                'status': 200,
-                'data': serializer.data,
-            }
-            return Response(param)
-        raise Http404
-    elif request.method == 'POST':
-        serializer = AttributeSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+class AddAttributeView(generics.ListCreateAPIView):
+    queryset = Attribute.objects.all()
+    serializer_class = AttributeSerializer
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def AttributeGetView(request, id):
-    attribute = Attribute.objects.get(id=id)
-
-    if request.method == "GET":
-        attribute_serializer = AttributeSerializer(attribute)
-        return Response(attribute_serializer.data)
-    elif request.method == "DELETE":
-        attribute.delete()
-        return Response("Deleted")
-    elif request.method == "PUT":
-        attribute_serializer = AttributeSerializer(attribute, data=request.data)
-        if attribute_serializer.is_valid():
-            attribute_serializer.save()
-            return Response(attribute_serializer.data, status=200)
-    return Response("Error! Nothing Happened")
+class AttributeGetView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Attribute.objects.all()
+    serializer_class = AttributeSerializer
 
 
-@api_view(['GET', 'POST'])
-def AddVariationView(request):
-    if request.method == "GET":
-        variation = Variation.objects.all()
-        if len(variation) > 0:
-            serializer = VariationSerializer(variation, many=True)
-            param = {
-                'status': 200,
-                'data': serializer.data,
-            }
-            return Response(param)
-        raise Http404
-    elif request.method == 'POST':
-        serializer = VariationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors)
+class AddVariationView(generics.ListCreateAPIView):
+    queryset = Variation.objects.all()
+    serializer_class = VariationSerializer
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def VariationGetView(request, id):
-    variation = Variation.objects.get(id=id)
-    if request.method == "GET":
-        variation_serialzer = VariationSerializer(variation)
-        return Response(variation_serialzer.data)
-    elif request.method == "DELETE":
-        variation.delete()
-        return Response("Deleted")
-    elif request.method == "PUT":
-        variation_serialzer = VariationSerializer(variation, data=request.data)
-        if variation_serialzer.is_valid():
-            variation_serialzer.save()
-            return Response(variation_serialzer.data, status=200)
-    return Response("Error! Nothing Happened")
+class VariationGetView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Variation.objects.all()
+    serializer_class = VariationSerializer
 
 
-@api_view(['GET', 'POST'])
-def AddParentCategoryView(request):
-    if request.method == "GET":
-        parent_category = ParentCategory.objects.all()
-        if len(parent_category) > 0:
-            pc_serializer = ParentCategorySerializer(parent_category, many=True)
-            param = {
-                'status': 200,
-                'data': pc_serializer.data,
-            }
-            return Response(param)
-        raise Http404
-    elif request.method == "POST":
-        pc_serializer = ParentCategorySerializer(data=request.data)
-        if pc_serializer.is_valid():
-            pc_serializer.save()
-            return Response(pc_serializer.data)
-        return Response(pc_serializer.errors)
+class AddParentCategoryView(generics.ListCreateAPIView):
+    queryset = ParentCategory.objects.all()
+    serializer_class = ParentCategorySerializer
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def ParentCategoryGetView(request, id):
-    p_category = ParentCategory.objects.get(id=id)
-
-    if request.method == 'GET':
-        pc_serializer = ParentCategorySerializer(p_category)
-        return Response(pc_serializer.data)
-    elif request.method == 'DELETE':
-        p_category.delete()
-        return Response("Deleted")
-    elif request.method == 'PUT':
-        pc_serializer = ParentCategorySerializer(p_category, data=request.data)
-        if pc_serializer.is_valid():
-            pc_serializer.save()
-            return Response(pc_serializer.data)
-    return Response("Error! Nothing Happened")
+class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ParentCategory.objects.all()
+    serializer_class = ParentCategorySerializer
 
 
-@api_view(['GET', 'POST'])
-def AddCategoryView(request):
-    if request.method == "GET":
-        category = Category.objects.all()
-        if len(category) > 0:
-            category_serializer = CategorySerializer(category, many=True)
-            param = {
-                'status': 200,
-                'data': category_serializer.data,
-            }
-            return Response(param)
-        raise Http404
-    elif request.method == "POST":
-        category_serializer = CategorySerializer(data=request.data)
-        if category_serializer.is_valid():
-            category_serializer.save()
-            return Response(category_serializer.data)
-        return Response(category_serializer.errors)
+
+class AddCategoryView(generics.ListCreateAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
 
-@api_view(['GET', 'PUT', 'DELETE'])
-def CategoryGetView(request, id):
-    category = Category.objects.get(id=id)
+class CategoryGetView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
 
-    if request.method == 'GET':
-        category_serializer = CategorySerializer(category)
-        return Response(category_serializer.data)
-    elif request.method == 'DELETE':
-        category.delete()
-        return Response("Deleted")
-    elif request.method == 'PUT':
-        category_serializer = CategorySerializer(category, data=request.data)
-        if category_serializer.is_valid():
-            category_serializer.save()
-            return Response(category_serializer.data)
-    return Response("Error! Nothing Happened")
+
 
 
 class AddSubCategoryView(generics.ListCreateAPIView):

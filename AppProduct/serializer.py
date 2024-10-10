@@ -4,6 +4,7 @@ import datetime
 from django.contrib.auth import get_user_model
 
 UserModel = get_user_model()
+DateTime = datetime.datetime.now()
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -35,12 +36,13 @@ class BrandSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         brand = super().create(validated_data)
         brand.updated_at = None
+        brand.created_at = DateTime
         brand.save()
         return brand
 
     def update(self, instance, validated_data):
         brand = super().update(instance, validated_data)
-        brand.updated_at = datetime.datetime.now()
+        brand.updated_at = DateTime
         brand.save()
         return brand
 
@@ -53,12 +55,13 @@ class AttributeSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         attribute = super().create(validated_data)
         attribute.updated_at = None
+        attribute.created_at = DateTime
         attribute.save()
         return attribute
 
     def update(self, instance, validated_data):
         attribute = super().update(instance, validated_data)
-        attribute.updated_at = datetime.datetime.now()
+        attribute.updated_at = DateTime
         attribute.save()
         return attribute
 
@@ -68,6 +71,19 @@ class VariationSerializer(serializers.ModelSerializer):
         model = Variation
         fields = '__all__'
 
+    def create(self, validated_data):
+        variation = super().create(validated_data)
+        variation.updated_at = None
+        variation.created_at = DateTime
+        variation.save()
+        return variation
+
+    def update(self, instance, validated_data):
+        variation = super().update(instance, validated_data)
+        variation.updated_at = DateTime
+        variation.save()
+        return variation
+
 
 class ParentCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -76,14 +92,14 @@ class ParentCategorySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         p_category = super().create(validated_data)
-        p_category.created_at = datetime.datetime.now()
+        p_category.created_at = DateTime
         p_category.updated_at = None
         p_category.save()
         return p_category
 
     def update(self, instance, validated_data):
         p_category = super().update(instance, validated_data)
-        p_category.updated_at = datetime.datetime.now()
+        p_category.updated_at = DateTime
         p_category.save()
         return p_category
 
@@ -95,14 +111,14 @@ class CategorySerializer(serializers.ModelSerializer):
 
     def create(self, data):
         category = super().create(data)
-        category.created_at = datetime.datetime.now()
+        category.created_at = DateTime
         category.updated_at = None
         category.save()
         return category
 
     def update(self, instance, data):
         category = super().update(instance, data)
-        category.updated_at = datetime.datetime.now()
+        category.updated_at = DateTime
         category.save()
         return category
 
@@ -114,14 +130,14 @@ class SubCategorySerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         sub_category = super().create(validated_data)
-        sub_category.created_at = datetime.datetime.now()
+        sub_category.created_at = DateTime
         sub_category.updated_at = None
         sub_category.save()
         return sub_category
 
     def update(self, instance, validated_data):
         sub_category = super().update(instance, validated_data)
-        sub_category.updated_at = datetime.datetime.now()
+        sub_category.updated_at = DateTime
         sub_category.save()
         return sub_category
 

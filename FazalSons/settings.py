@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'AppProduct',
+    'AppCustomer'
 
 ]
 
@@ -89,7 +90,17 @@ DATABASES = {
         'PORT': '5432',
         'HOST': 'localhost',
     }
+
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'db_fazal_sons_pos',
+    #     'USER': 'postgres',
+    #     'PASSWORD': 'Naveed*123',
+    #     'PORT': '5432',
+    #     'HOST': 'fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com',
+    # }
 }
+
 
 
 # Password validation
@@ -138,17 +149,22 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 MEDIA_ROOT = os.path.join(PRODUCT_DIR, 'media')
 MEDIA_URL = '/media/'
 
-#
-# REST_FRAMEWORK = {
-#     'DEFAULT_AUTHENTICATION_CLASSES': [
-#         'rest_framework.authentication.BasicAuthentication',
-#         'rest_framework.authentication.SessionAuthentication',
-#     ]
-# }
-#
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
-        'rest_framework.authentication.TokenAuthentication',
-    ],
+        # 'rest_framework.authentication.BasicAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+    ]
 }
+
+
+# REST_FRAMEWORK = {
+#     'DEFAULT_AUTHENTICATION_CLASSES': [
+#         'rest_framework.authentication.Se',
+#     ],
+# }
+
+#
+
+
+
