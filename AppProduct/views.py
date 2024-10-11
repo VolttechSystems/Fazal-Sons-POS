@@ -3,13 +3,10 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import *
 from django.http import Http404
-from django.http import JsonResponse, HttpResponse
-
 from rest_framework import generics
 from rest_framework.authentication import SessionAuthentication, TokenAuthentication, BaseAuthentication
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from django.contrib.auth.models import User
+
 
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -24,12 +21,6 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
-class CreateUserView(generics.ListCreateAPIView):
-    model = get_user_model()
-    authentication_classes = [SessionAuthentication]
-    permission_classes = [IsAdminUser]
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
 
 
 class AddBrandView(generics.ListCreateAPIView):

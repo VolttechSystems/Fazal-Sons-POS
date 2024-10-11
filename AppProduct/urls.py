@@ -6,7 +6,7 @@ from rest_framework.authtoken import views
 
 urlpatterns = [
     # USER URL
-    re_path(r'CreateUser', CreateUserView.as_view(), name='CreateUser'),
+
 
     # AUTHENTICATION TOKEN
     # re_path(r'Generate/tokens/', obtain_auth_token, name='auth_token'),

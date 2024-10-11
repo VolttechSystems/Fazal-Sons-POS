@@ -1,6 +1,7 @@
 from django.shortcuts import render
 from .serializer import *
 from rest_framework.generics import *
+from rest_framework.permissions import IsAuthenticated
 
 
 # Create your views here.

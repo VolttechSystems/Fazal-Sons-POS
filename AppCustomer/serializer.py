@@ -10,7 +10,7 @@ class CustomerChannelSerializer(ModelSerializer):
     class Meta:
         model = CustomerChannel
 
-        fields = ('id', 'channel_name',)
+        fields = ('id', 'customer_channel',)
 
     def create(self, validated_data):
         cust_channel = super().create(validated_data)
@@ -31,7 +31,7 @@ class CustomerTypeSerializer(ModelSerializer):
     class Meta:
         model = CustomerType
 
-        fields = ('id', 'type',)
+        fields = ('id', 'customer_type',)
 
     def create(self, validated_data):
         cust_type = super().create(validated_data)
@@ -62,6 +62,7 @@ class CustomerSerializer(ModelSerializer):
         customer = super().create(validated_data)
         customer.updated_at = None
         customer.created_at = DateTime
+        customer.date = DateTime
         customer.cust_code = AutoGenerateCodeForModel(Customer, 'cust_code', 'CUST-')
         customer.save()
         return customer
