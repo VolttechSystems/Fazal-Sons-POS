@@ -18,12 +18,13 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
+from AppAccount.views import *
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('pos/products', include('AppProduct.urls')),
-    path('pos/customer', include('AppCustomer.urls')),
-    path('pos/stock', include('AppStock.urls')),
-    path('pos/login', include('AppAccount.urls')),
-] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
-
+                  path('', LoginAPIView.as_view(), name='LoginView'),
+                  path('admin/', admin.site.urls),
+                  path('pos/products', include('AppProduct.urls')),
+                  path('pos/customer', include('AppCustomer.urls')),
+                  path('pos/stock', include('AppStock.urls')),
+                  path('pos/login', include('AppAccount.urls')),
+              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
