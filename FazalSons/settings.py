@@ -28,6 +28,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
+CORS_ORIGIN_WHITELIST = [
+    'http://localhost:3000'
+]
+
 # Application definition
 
 INSTALLED_APPS = [
@@ -39,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'rest_framework.authtoken',
+    'corsheaders',
     'AppProduct',
     'AppCustomer',
     'AppStock',
@@ -51,6 +56,7 @@ MIDDLEWARE = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -81,23 +87,23 @@ WSGI_APPLICATION = 'FazalSons.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'db_fazal_sons_pos',
-        'USER': 'postgres',
-        'PASSWORD': '123',
-        'PORT': '5432',
-        'HOST': 'localhost',
-    }
-
     # 'default': {
     #     'ENGINE': 'django.db.backends.postgresql',
     #     'NAME': 'db_fazal_sons_pos',
     #     'USER': 'postgres',
-    #     'PASSWORD': 'Naveed*123',
+    #     'PASSWORD': '123',
     #     'PORT': '5432',
-    #     'HOST': 'fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com',
+    #     'HOST': 'localhost',
     # }
+
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'db_fazal_sons_pos',
+        'USER': 'postgres',
+        'PASSWORD': 'Naveed*123',
+        'PORT': '5432',
+        'HOST': 'fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com',
+    }
 }
 
 # Password validation
