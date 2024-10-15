@@ -52,7 +52,7 @@ class Attribute(models.Model):
 
 
 class Variation(models.Model):
-    vairation_name = models.CharField(max_length=100, null=True)
+    variation_name = models.CharField(max_length=100, null=True)
     attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
@@ -66,7 +66,7 @@ class Variation(models.Model):
         db_table = 'tbl_variation'
 
     def __str__(self):
-        return self.vairation_name
+        return self.variation_name
 
 
 class ParentCategory(models.Model):
