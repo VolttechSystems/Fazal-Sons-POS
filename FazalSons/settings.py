@@ -139,18 +139,18 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/5.1/howto/static-files/
 
 
-# STATIC_ROOT = os.path.join(PRODUCT_DIR, "static/")
-# STATIC_URL = 'static/'
-# # STATICFILES_DIRS = [
-# #     os.path.join(PRODUCT_DIR, "static"), '/var/www/static/',
-# # ]
+# STATIC_ROOT = '/home/ubuntu/project/Fazal-Sons-POS/static/'
+STATIC_URL = 'static/'
+STATICFILES_DIRS = [
+    os.path.join(PRODUCT_DIR, "static"), '/home/ubuntu/project/Fazal-Sons-POS/static/',
+]
 
 
-STATIC_URL = '/static/'
-STATIC_ROOT = ''
-STATICFILES_DIRS = (
-    '/home/ubuntu/project/Fazal-Sons-POS/static',
-)
+# STATIC_URL = '/static/'
+# STATIC_ROOT = ''
+# STATICFILES_DIRS = (
+#     '/home/ubuntu/project/Fazal-Sons-POS/static',
+# )
 
 # STATICFILES_DIRS = [
 #     os.path.join(PRODUCT_DIR, 'static')
