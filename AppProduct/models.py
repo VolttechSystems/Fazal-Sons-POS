@@ -15,6 +15,20 @@ STATUS = (
 
 
 # Create your models here.
+class Outlet(models.Model):
+    outlet_code = models.CharField(max_length=100, null=True, unique=True)
+    outlet_name = models.CharField(max_length=100, null=True, unique=True)
+    created_at = models.DateTimeField(null=True)
+    created_by = models.CharField(max_length=200, null=True)
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.CharField(max_length=200, null=True)
+
+    class Meta:
+        db_table = 'tbl_outlet'
+
+    def __str__(self):
+        return self.outlet_name
+
 
 class Brand(models.Model):
     brand_name = models.CharField(max_length=100, null=True, unique=True)
@@ -33,9 +47,24 @@ class Brand(models.Model):
         return self.brand_name
 
 
+class AttributeType(models.Model):
+    att_type = models.CharField(max_length=100, null=True, unique=True)
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(null=True)
+    created_by = models.CharField(max_length=200, null=True)
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.CharField(max_length=200, null=True)
+
+    class Meta:
+        db_table = 'tbl_attribute_type'
+
+    def __str__(self):
+        return self.att_type
+
+
 class Attribute(models.Model):
     attribute_name = models.CharField(max_length=100, null=True, unique=True)
-    type = models.CharField(max_length=100, null=True)
+    att_type = models.ForeignKey(AttributeType, to_field='att_type', on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')
@@ -69,8 +98,25 @@ class Variation(models.Model):
         return self.variation_name
 
 
+class HeadCategory(models.Model):
+    hc_name = models.CharField(max_length=100, null=True, unique=True)
+    symbol = models.CharField(max_length=100, null=True)
+    description = models.TextField(max_length=500, null=True)
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    created_at = models.DateTimeField(null=True)
+    created_by = models.CharField(max_length=200, null=True, blank=True)
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.CharField(max_length=200, null=True, blank=True)
+
+    class Meta:
+        db_table = 'tbl_head_category'
+
+    def __str__(self):
+        return self.hc_name
+
+
 class ParentCategory(models.Model):
-    category_head = models.CharField(max_length=100, null=True)
+    hc_name = models.ForeignKey(HeadCategory, to_field='hc_name', on_delete=models.CASCADE, null=True)
     pc_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
@@ -127,17 +173,24 @@ class SubCategory(models.Model):
 
 class Product(models.Model):
     product_name = models.CharField(max_length=100, null=True)
-    product_outlet = models.CharField(max_length=100, null=True)
     sku = models.CharField(max_length=100, null=True)
     head_category = models.CharField(max_length=100, null=True)
-    pc_name = models.ForeignKey(ParentCategory, to_field='pc_name', on_delete=models.CASCADE, null=True)
-    category_name = models.ForeignKey(Category, to_field='category_name', on_delete=models.CASCADE, null=True)
+    outlet_name = models.ForeignKey(Outlet, to_field='outlet_name', on_delete=models.CASCADE, null=True)
     sub_category_name = models.ForeignKey(SubCategory, to_field='sub_category_name', on_delete=models.CASCADE,
                                           null=True)
     brand_name = models.ForeignKey(Brand, to_field='brand_name', on_delete=models.CASCADE,
                                    null=True)
     season = models.CharField(max_length=10, choices=SEASONS_CHOICES, default='Spring')
     description = models.TextField(max_length=500, null=True)
+    color = models.CharField(max_length=100, null=True)
+    size = models.CharField(max_length=100, null=True)
+    used_for_inventory = models.CharField(max_length=100, null=True)
+    cost_price = models.CharField(max_length=100, null=True)
+    selling_price = models.CharField(max_length=100, null=True)
+    discount_price = models.CharField(max_length=100, null=True)
+    wholesale_price = models.CharField(max_length=100, null=True)
+    retail_price = models.CharField(max_length=100, null=True)
+    token_price = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)

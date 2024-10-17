@@ -5,7 +5,7 @@ import datetime
 DateTime = datetime.datetime.now()
 
 
-
+# BRAND
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
@@ -25,6 +25,27 @@ class BrandSerializer(serializers.ModelSerializer):
         return brand
 
 
+# ATTRIBUTE TYPE
+class AttributeTypeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AttributeType
+        fields = '__all__'
+
+    def create(self, validated_data):
+        attr_type = super().create(validated_data)
+        attr_type.updated_at = None
+        attr_type.created_at = DateTime
+        attr_type.save()
+        return attr_type
+
+    def update(self, instance, validated_data):
+        attr_type = super().update(instance, validated_data)
+        attr_type.updated_at = DateTime
+        attr_type.save()
+        return attr_type
+
+
+# ATTRIBUTE
 class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
@@ -44,6 +65,7 @@ class AttributeSerializer(serializers.ModelSerializer):
         return attribute
 
 
+# VARIATION
 class VariationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Variation
@@ -63,6 +85,27 @@ class VariationSerializer(serializers.ModelSerializer):
         return variation
 
 
+# HEAD CATEGORY
+class HeadCategorySerializer(serializers.ModelSerializer):
+    class Meta:
+        model = HeadCategory
+        fields = "__all__"
+
+    def create(self, validated_data):
+        h_category = super().create(validated_data)
+        h_category.created_at = DateTime
+        h_category.updated_at = None
+        h_category.save()
+        return h_category
+
+    def update(self, instance, validated_data):
+        h_category = super().update(instance, validated_data)
+        h_category.updated_at = DateTime
+        h_category.save()
+        return h_category
+
+
+# PARENT CATEGORY
 class ParentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentCategory
@@ -82,6 +125,7 @@ class ParentCategorySerializer(serializers.ModelSerializer):
         return p_category
 
 
+# CATEGORY
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -101,6 +145,7 @@ class CategorySerializer(serializers.ModelSerializer):
         return category
 
 
+# SUB CATEGORY
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
@@ -120,7 +165,67 @@ class SubCategorySerializer(serializers.ModelSerializer):
         return sub_category
 
 
+# PRODUCT
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+    def create(self, validated_data):
+
+        # parent = ''
+        # used_for_inventory = validated_data.get('used_for_inventory')
+        # colors = validated_data.get('color')
+        # sizes = validated_data.get('size')
+        # split_color = colors.split("^")
+        # len_color = len(split_color)
+        #
+        # split_size = sizes.split("^")
+        # len_size = len(split_size)
+        #
+        # if used_for_inventory == 'true':
+        #     if len_color > 0:
+        #         for size in range(len_size):
+        #             for color in range(len_color):
+        #                 validated_data['size'] = split_size[size]
+        #                 validated_data['color'] = split_color[color]
+        #                 parent = super().create(validated_data)
+        # else:
+        #     if len_size > 0:
+        #         for size in range(len_size):
+        #             validated_data['size'] = split_size[size]
+        #             parent = super().create(validated_data)
+        # return parent
+
+        parent = ''
+        used_for_inventory = validated_data.get('used_for_inventory')
+        colors = validated_data.get('color')
+        colors = colors.replace("'", "")
+        colors = colors.replace("[", "")
+        colors = colors.replace("]", "")
+
+        sizes = validated_data.get('size')
+        sizes = sizes.replace("'", "")
+        sizes = sizes.replace("[", "")
+        sizes = sizes.replace("]", "")
+
+        split_color = colors.split(",")
+        len_color = len(split_color)
+
+        split_size = sizes.split(",")
+        len_size = len(split_size)
+
+        if used_for_inventory == 'true':
+            if len_color > 0:
+                for size in range(len_size):
+                    for color in range(len_color):
+                        validated_data['size'] = split_size[size].strip()
+                        validated_data['color'] = split_color[color].strip()
+                        parent = super().create(validated_data)
+        else:
+            if len_size > 0:
+                for size in range(len_size):
+                    validated_data['size'] = split_size[size].strip()
+                    validated_data['color'] = 'None'
+                    parent = super().create(validated_data)
+        return parent

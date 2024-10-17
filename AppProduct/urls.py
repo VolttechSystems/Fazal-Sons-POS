@@ -17,6 +17,10 @@ urlpatterns = [
     re_path(r'add_brand', AddBrandView.as_view(), name='AddBrand'),
     re_path(r'action_brand/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),
 
+    # ATTRIBUTES TYPE URL
+    re_path(r'add_attribute_type', AddAttributeTypeView.as_view(), name='AddAttributeType'),
+    re_path(r'action_attribute_type/(?P<pk>.+)/', AttributeTypeGetView.as_view(), name='GetAttributeType'),
+
     # ATTRIBUTES URL
     re_path(r'add_attribute', AddAttributeView.as_view(), name='AddAttribute'),
     re_path(r'action_attributes/(?P<pk>.+)/', AttributeGetView.as_view(), name='GetAttribute'),
@@ -24,6 +28,10 @@ urlpatterns = [
     # VARAITIONS URL
     re_path(r'add_variation', AddVariationView.as_view(), name='AddVariation'),
     re_path(r'action_variation/(?P<pk>.+)/', VariationGetView.as_view(), name='GetVariation'),
+
+    # HEAD CATEGORY URL
+    re_path(r'add_head_category', AddHeadCategoryView.as_view(), name='AddHeadCategory'),
+    re_path(r'action_head_category/(?P<pk>.+)/', HeadCategoryGetView.as_view(), name='HeadCategoryGet'),
 
     # PARENT CATEGORY URL
     re_path(r'add_parent_category', AddParentCategoryView.as_view(), name='AddParentCategory'),
