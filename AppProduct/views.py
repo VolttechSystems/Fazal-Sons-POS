@@ -11,6 +11,13 @@ from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
+from django.db import connections
+
+
+def DictinctFetchAll(cursor):
+    "Returns all rows from a cursor as a dict"
+    desc = cursor.description
+    return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
 
 
 # FUNCTION THAT CREATE TOKEN WHEN USER IS CREATED
@@ -140,3 +147,30 @@ class AddProduct(generics.ListCreateAPIView):
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+
+
+@api_view(['GET'])
+def FetchAllAttributeTypeView(request):
+    cursor = connections['default'].cursor()
+    query = "SELECT att_type from tbl_attribute_type"
+    cursor.execute(query)
+    all_attribute_type = DictinctFetchAll(cursor)
+    return Response(all_attribute_type)
+
+@api_view(['GET'])
+def FetchAttributeView(request, code):
+    cursor = connections['default'].cursor()
+    query = "select attribute_name from tbl_attribute where att_type_id = '" + code + "'"
+    cursor.execute(query)
+    fetch_attribute = DictinctFetchAll(cursor)
+    return Response(fetch_attribute)
+
+
+
+@api_view(['GET'])
+def FetchlVariationView(request, code):
+    cursor = connections['default'].cursor()
+    query_employee = "SELECT variation_name, symbol FROM tbl_variation where attribute_name_id = '" + code + "'"
+    cursor.execute(query_employee)
+    employee_location = DictinctFetchAll(cursor)
+    return Response(employee_location)

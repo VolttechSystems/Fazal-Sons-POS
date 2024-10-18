@@ -131,17 +131,22 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
         fields = "__all__"
 
-    def create(self, data):
-        category = super().create(data)
-        category.created_at = DateTime
-        category.updated_at = None
-        category.save()
+    def create(self, validated_data):
+        get_subcategory_option = validated_data.get('subcategory_option')
+        if get_subcategory_option == 'True':
+            validated_data['attribute_name'] = None
+        validated_data['created_at'] = DateTime
+        validated_data['updated_at'] = None
+        category = super().create(validated_data)
         return category
 
-    def update(self, instance, data):
-        category = super().update(instance, data)
-        category.updated_at = DateTime
-        category.save()
+    def update(self, instance, validated_data):
+
+        get_subcategory_option = validated_data.get('subcategory_option')
+        if get_subcategory_option == 'True':
+            validated_data['attribute_name'] = None
+        validated_data['updated_at'] = DateTime
+        category = super().update(instance, validated_data)
         return category
 
 
@@ -172,31 +177,6 @@ class ProductSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-
-        # parent = ''
-        # used_for_inventory = validated_data.get('used_for_inventory')
-        # colors = validated_data.get('color')
-        # sizes = validated_data.get('size')
-        # split_color = colors.split("^")
-        # len_color = len(split_color)
-        #
-        # split_size = sizes.split("^")
-        # len_size = len(split_size)
-        #
-        # if used_for_inventory == 'true':
-        #     if len_color > 0:
-        #         for size in range(len_size):
-        #             for color in range(len_color):
-        #                 validated_data['size'] = split_size[size]
-        #                 validated_data['color'] = split_color[color]
-        #                 parent = super().create(validated_data)
-        # else:
-        #     if len_size > 0:
-        #         for size in range(len_size):
-        #             validated_data['size'] = split_size[size]
-        #             parent = super().create(validated_data)
-        # return parent
-
         parent = ''
         used_for_inventory = validated_data.get('used_for_inventory')
         colors = validated_data.get('color')
@@ -229,3 +209,31 @@ class ProductSerializer(serializers.ModelSerializer):
                     validated_data['color'] = 'None'
                     parent = super().create(validated_data)
         return parent
+
+    # parent = ''
+    # used_for_inventory = validated_data.get('used_for_inventory')
+    # colors = validated_data.get('color')
+    # sizes = validated_data.get('size')
+    # split_color = colors.split("^")
+    # len_color = len(split_color)
+    #
+    # split_size = sizes.split("^")
+    # len_size = len(split_size)
+    #
+    # if used_for_inventory == 'true':
+    #     if len_color > 0:
+    #         for size in range(len_size):
+    #             for color in range(len_color):
+    #                 validated_data['size'] = split_size[size]
+    #                 validated_data['color'] = split_color[color]
+    #                 parent = super().create(validated_data)
+    # else:
+    #     if len_size > 0:
+    #         for size in range(len_size):
+    #             validated_data['size'] = split_size[size]
+    #             parent = super().create(validated_data)
+    # return parent
+
+
+
+

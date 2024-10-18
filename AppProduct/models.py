@@ -34,7 +34,7 @@ class Brand(models.Model):
     brand_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True, auto_now_add=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)
@@ -49,7 +49,7 @@ class Brand(models.Model):
 
 class AttributeType(models.Model):
     att_type = models.CharField(max_length=100, null=True, unique=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)
@@ -67,7 +67,7 @@ class Attribute(models.Model):
     att_type = models.ForeignKey(AttributeType, to_field='att_type', on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)
@@ -85,7 +85,7 @@ class Variation(models.Model):
     attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)
@@ -102,7 +102,7 @@ class HeadCategory(models.Model):
     hc_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -120,7 +120,7 @@ class ParentCategory(models.Model):
     pc_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -135,11 +135,12 @@ class ParentCategory(models.Model):
 
 class Category(models.Model):
     pc_name = models.ForeignKey(ParentCategory, to_field='pc_name', on_delete=models.CASCADE, null=True)
+    attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
     category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True)
-    subcategory_option = models.TextField(max_length=500, null=True)
+    subcategory_option = models.TextField(max_length=500, null=True)  # True, False
     description = models.TextField(max_length=500, null=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -157,7 +158,7 @@ class SubCategory(models.Model):
     sub_category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True)
     description = models.TextField(max_length=500, null=True)
-    status = models.CharField(max_length=20, choices=STATUS, default='Active')
+    status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)

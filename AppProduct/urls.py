@@ -7,11 +7,9 @@ from rest_framework.authtoken import views
 urlpatterns = [
     # USER URL
 
-
     # AUTHENTICATION TOKEN
     # re_path(r'Generate/tokens/', obtain_auth_token, name='auth_token'),
     re_path('api-token-auth/', views.obtain_auth_token),
-
 
     # BRAND URL
     re_path(r'add_brand', AddBrandView.as_view(), name='AddBrand'),
@@ -48,5 +46,10 @@ urlpatterns = [
     # PRODUCT
     re_path(r'add_product', AddProduct.as_view(), name='AddProduct'),
     re_path(r'action_product/(?P<pk>.+)/', ProductGetView.as_view(), name='GetProduct'),
+
+    # FETCH ALL VARIATION ACCORDING TO ATTRIBUTE
+    re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
+    re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
+    re_path(r'fetch_variation/(?P<code>.+)/', FetchlVariationView, name='FetchAttributeName'),
 
 ]
