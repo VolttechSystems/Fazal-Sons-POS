@@ -6,6 +6,26 @@ DateTime = datetime.datetime.now()
 
 
 # BRAND
+class OutletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Outlet
+        fields = '__all__'
+
+    def create(self, validated_data):
+        outlet = super().create(validated_data)
+        outlet.updated_at = None
+        outlet.created_at = DateTime
+        outlet.save()
+        return outlet
+
+    def update(self, instance, validated_data):
+        outlet = super().update(instance, validated_data)
+        outlet.updated_at = DateTime
+        outlet.save()
+        return outlet
+
+
+# BRAND
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
@@ -210,6 +230,11 @@ class ProductSerializer(serializers.ModelSerializer):
                     parent = super().create(validated_data)
         return parent
 
+    def update(self, instance, validated_data):
+        validated_data['updated_at'] = DateTime
+        parent = super().update(instance, validated_data)
+        return parent
+
     # parent = ''
     # used_for_inventory = validated_data.get('used_for_inventory')
     # colors = validated_data.get('color')
@@ -233,7 +258,3 @@ class ProductSerializer(serializers.ModelSerializer):
     #             validated_data['size'] = split_size[size]
     #             parent = super().create(validated_data)
     # return parent
-
-
-
-

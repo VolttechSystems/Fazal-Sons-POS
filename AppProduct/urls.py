@@ -11,6 +11,10 @@ urlpatterns = [
     # re_path(r'Generate/tokens/', obtain_auth_token, name='auth_token'),
     re_path('api-token-auth/', views.obtain_auth_token),
 
+    # OUTLET URL
+    re_path(r'add_outlet', AddOutletView.as_view(), name='AddOutlet'),
+    re_path(r'action_outlet/(?P<pk>.+)/', OutletGetView.as_view(), name='GetOutlet'),
+
     # BRAND URL
     re_path(r'add_brand', AddBrandView.as_view(), name='AddBrand'),
     re_path(r'action_brand/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),
@@ -47,7 +51,7 @@ urlpatterns = [
     re_path(r'add_product', AddProduct.as_view(), name='AddProduct'),
     re_path(r'action_product/(?P<pk>.+)/', ProductGetView.as_view(), name='GetProduct'),
 
-    # FETCH ALL VARIATION ACCORDING TO ATTRIBUTE
+    # FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
     re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
     re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
     re_path(r'fetch_variation/(?P<code>.+)/', FetchlVariationView, name='FetchAttributeName'),

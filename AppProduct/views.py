@@ -12,6 +12,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.db import connections
+from rest_framework.pagination import PageNumberPagination
 
 
 def DictinctFetchAll(cursor):
@@ -27,11 +28,32 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
+class StandardResultsSetPagination(PageNumberPagination):
+    page_size = 1
+    page_size_query_param = 'page_size'
+    max_page_size = 1000
+
+
+# OUTLET
+class AddOutletView(generics.ListCreateAPIView):
+    # permission_classes = [IsAuthenticated]
+    queryset = Outlet.objects.all()
+    serializer_class = OutletSerializer
+
+
+class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = Outlet.objects.all()
+    serializer_class = OutletSerializer
+
+
+#
+
 # BRAND
 class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
+    pagination_class = StandardResultsSetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
@@ -122,33 +144,12 @@ class AddProduct(generics.ListCreateAPIView):
     serializer_class = ProductSerializer
 
 
-# @api_view(['GET', 'POST'])
-# def AddProduct(request):
-#     if request.method == "GET":
-#         product = Product.objects.all()
-#         if len(product) > 0:
-#             serializer = ProductSerializer(product, many=True)
-#
-#             param = {
-#                 'status': 200,
-#                 'data': serializer.data,
-#             }
-#
-#             return Response(param)
-#         raise Http404
-#     elif request.method == "POST":
-#         serializer = ProductSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data)
-#         return Response(serializer.errors)
-
-
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
 
+# FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
 @api_view(['GET'])
 def FetchAllAttributeTypeView(request):
     cursor = connections['default'].cursor()
@@ -157,6 +158,7 @@ def FetchAllAttributeTypeView(request):
     all_attribute_type = DictinctFetchAll(cursor)
     return Response(all_attribute_type)
 
+
 @api_view(['GET'])
 def FetchAttributeView(request, code):
     cursor = connections['default'].cursor()
@@ -164,7 +166,6 @@ def FetchAttributeView(request, code):
     cursor.execute(query)
     fetch_attribute = DictinctFetchAll(cursor)
     return Response(fetch_attribute)
-
 
 
 @api_view(['GET'])

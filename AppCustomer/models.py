@@ -19,6 +19,22 @@ ONLINE_ACCESS = (
 )
 
 
+class SystemRole(models.Model):
+    sys_role_code = models.CharField(max_length=200, null=True, unique=True)  # SYSR-1
+    sys_role_name = models.TextField(max_length=200, null=True)
+    status = models.TextField(max_length=200, null=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=200, null=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=200, null=True)
+
+    class Meta:
+        db_table = 'tbl_system_role'
+
+    def __str__(self):
+        return self.sys_role_name
+
+
 class CustomerChannel(models.Model):
     cus_ch_code = models.CharField(max_length=200, null=True, unique=True)  # CCH-1
     customer_channel = models.CharField(max_length=100, null=True, unique=True)
@@ -49,26 +65,11 @@ class CustomerType(models.Model):
         return self.customer_type
 
 
-class SystemRole(models.Model):
-    sys_role_code = models.CharField(max_length=200, null=True, unique=True)  # SYSR-1
-    sys_role_name = models.TextField(max_length=200, null=True)
-    status = models.TextField(max_length=200, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.CharField(max_length=200, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    updated_by = models.CharField(max_length=200, null=True)
-
-    class Meta:
-        db_table = 'tbl_system_role'
-
-    def __str__(self):
-        return self.sys_role_name
-
-
 class Customer(models.Model):
     date = models.DateTimeField(max_length=100, null=True)
     cust_code = models.CharField(max_length=200, null=True, unique=True)  # CUST-1
-    customer_channel = models.ForeignKey(CustomerChannel, to_field='customer_channel', on_delete=models.CASCADE, null=True)
+    customer_channel = models.ForeignKey(CustomerChannel, to_field='customer_channel', on_delete=models.CASCADE,
+                                         null=True)
     customer_type = models.ForeignKey(CustomerType, to_field='customer_type', on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
@@ -100,7 +101,3 @@ class Customer(models.Model):
 
     def __str__(self):
         return self.first_name
-
-
-
-
