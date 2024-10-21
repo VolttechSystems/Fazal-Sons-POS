@@ -28,10 +28,10 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 1
-    page_size_query_param = 'page_size'
-    max_page_size = 1000
+# class StandardResultsSetPagination(PageNumberPagination):
+#     page_size = 1
+#     page_size_query_param = 'page_size'
+#     max_page_size = 1000
 
 
 # OUTLET
@@ -53,7 +53,7 @@ class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    pagination_class = StandardResultsSetPagination
+    # pagination_class = StandardResultsSetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
