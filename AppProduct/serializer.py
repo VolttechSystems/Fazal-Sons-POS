@@ -31,6 +31,12 @@ class BrandSerializer(serializers.ModelSerializer):
         model = Brand
         fields = '__all__'
 
+    def validate(self, data):
+        name = data.get('brand_name')
+        if Brand.objects.filter(brand_name=name).exists():
+            raise serializers.ValidationError("A Brand with this name already exists.")
+        return data
+
     def create(self, validated_data):
         brand = super().create(validated_data)
         brand.updated_at = None
