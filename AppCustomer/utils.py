@@ -12,14 +12,14 @@ def AutoGenerateCodeForModel(model, column, code_key):
     cursor = connections['default'].cursor()
     obj = model.objects.all()
     obj_count = len(obj)
-    if obj_count == 1:
+    if obj_count == 0:
         code = code_key + '1'
     else:
         tbl = model._meta.db_table
         query = "SELECT SPLIT_PART(" + column + ", '-', 2)::INTEGER AS unique_code FROM " + tbl + " ORDER BY SPLIT_PART(" + column + ", '-', 2)::INTEGER DESC LIMIT 2"
         cursor.execute(query)
         query_list = DictinctFetchAll(cursor)
-        get_code = query_list[1]["unique_code"]
+        get_code = query_list[0]["unique_code"]
         code_count = int(get_code) + 1
         auto_code = code_key + str(code_count)
         code = auto_code

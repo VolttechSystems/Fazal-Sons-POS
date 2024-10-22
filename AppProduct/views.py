@@ -15,9 +15,6 @@ from django.db import connections
 from rest_framework.pagination import PageNumberPagination
 
 
-
-
-
 def DictinctFetchAll(cursor):
     "Returns all rows from a cursor as a dict"
     desc = cursor.description
@@ -54,7 +51,7 @@ class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    pagination_class = StandardResultsSetPagination
+    # pagination_class = StandardResultsSetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
@@ -138,6 +135,11 @@ class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
 
+
+# TEMPORARY PRODUCT
+class AddTemporaryProductView(generics.ListCreateAPIView):
+    queryset = TemporaryProduct.objects.all()
+    serializer_class = TempProductSerializer
 
 # PRODUCT
 class AddProduct(generics.ListCreateAPIView):

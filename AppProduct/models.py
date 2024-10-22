@@ -17,7 +17,7 @@ STATUS = (
 # Create your models here.
 class Outlet(models.Model):
     outlet_code = models.CharField(max_length=100, null=True, unique=True)
-    outlet_name = models.CharField(max_length=100, null=True, unique=True)
+    outlet_name = models.CharField(max_length=100, null=True, unique=True, blank=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)
@@ -172,6 +172,38 @@ class SubCategory(models.Model):
         return self.sub_category_name
 
 
+class TemporaryProduct(models.Model):
+    product_name = models.CharField(max_length=100, null=True)
+    sku = models.CharField(max_length=100, null=True, blank=True)
+    outlet_name = models.ForeignKey(Outlet, to_field='outlet_name', on_delete=models.CASCADE, null=True)
+    sub_category_name = models.ForeignKey(SubCategory, to_field='sub_category_name', on_delete=models.CASCADE,
+                                          null=True)
+    brand_name = models.ForeignKey(Brand, to_field='brand_name', on_delete=models.CASCADE,
+                                   null=True)
+    season = models.CharField(max_length=10, choices=SEASONS_CHOICES, default='Spring')
+    description = models.TextField(max_length=500, null=True, blank=True)
+    color = models.CharField(max_length=100, null=True, blank=True)
+    size = models.CharField(max_length=100, null=True)
+    image = models.ImageField(upload_to='Product', default='', null=True, blank=True)
+    used_for_inventory = models.CharField(max_length=100, null=True, blank=True)
+    cost_price = models.CharField(max_length=100, null=True, blank=True)
+    selling_price = models.CharField(max_length=100, null=True, blank=True)
+    discount_price = models.CharField(max_length=100, null=True, blank=True)
+    wholesale_price = models.CharField(max_length=100, null=True, blank=True)
+    retail_price = models.CharField(max_length=100, null=True, blank=True)
+    token_price = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(null=True)
+    created_by = models.CharField(max_length=200, null=True, blank=True)
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.CharField(max_length=200, null=True, blank=True)
+
+    class Meta:
+        db_table = 'tbl_product_temp'
+
+    def __str__(self):
+        return self.product_name
+
+
 class Product(models.Model):
     product_name = models.CharField(max_length=100, null=True)
     sku = models.CharField(max_length=100, null=True, blank=True)
@@ -186,7 +218,7 @@ class Product(models.Model):
     color = models.CharField(max_length=100, null=True, blank=True)
     size = models.CharField(max_length=100, null=True)
     image = models.ImageField(upload_to='Product', default='', null=True, blank=True)
-    used_for_inventory = models.CharField(max_length=100, null=True)
+    used_for_inventory = models.CharField(max_length=100, null=True, blank=True)
     cost_price = models.CharField(max_length=100, null=True, blank=True)
     selling_price = models.CharField(max_length=100, null=True, blank=True)
     discount_price = models.CharField(max_length=100, null=True, blank=True)

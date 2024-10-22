@@ -3,4 +3,5 @@ from AppStock.views import *
 
 
 urlpatterns = [
+    re_path(r'add_stock/(?P<code>.+)/', AddStockView, name='AddStock'),
 ]
