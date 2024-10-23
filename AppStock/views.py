@@ -29,4 +29,4 @@ def AddStockView(request, code):
             if serializer.is_valid():
                 serializer.save()
                 list_serializer.append(serializer)
-        return JsonResponse(list_serializer,  safe=False)
+        return Response('Stock Updated')

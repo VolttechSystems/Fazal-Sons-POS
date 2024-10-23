@@ -205,7 +205,6 @@ class TempProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         parent = ''
-        parent2 = 'ddd'
         used_for_inventory = validated_data.get('used_for_inventory')
         colors = validated_data.get('color')
         colors = colors.replace("'", "")
@@ -223,7 +222,7 @@ class TempProductSerializer(serializers.ModelSerializer):
         split_size = sizes.split(",")
         len_size = len(split_size)
 
-        if used_for_inventory == 'True':
+        if used_for_inventory == 'true':
             if len_color > 0:
                 for size in range(len_size):
                     for color in range(len_color):
@@ -241,7 +240,7 @@ class TempProductSerializer(serializers.ModelSerializer):
                     validated_data['size'] = split_size[size].strip()
                     validated_data['color'] = 'None'
                     parent = super().create(validated_data)
-        return parent, parent2
+        return parent
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
@@ -255,14 +254,14 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
-
     def create(self, validated_data):
         parent = ''
         tem_product = TemporaryProduct.objects.all()
         len_tem_product = len(tem_product)
         for x in range(len_tem_product):
+            auto_code = AutoGenerateCodeForModel(Product, 'sku', 'PR-')
             validated_data['product_name'] = tem_product[x].product_name
-            validated_data['sku'] = AutoGenerateCodeForModel(Product, 'sku', 'PR-')
+            validated_data['sku'] = auto_code
             validated_data['outlet_name'] = tem_product[x].outlet_name
             validated_data['sub_category_name'] = tem_product[x].sub_category_name
             validated_data['brand_name'] = tem_product[x].brand_name
@@ -279,8 +278,17 @@ class ProductSerializer(serializers.ModelSerializer):
             validated_data['retail_price'] = tem_product[x].retail_price
             validated_data['token_price'] = tem_product[x].token_price
             validated_data['created_at'] = DateTime
-
+            # Add Stock
+            add_stock = Stock(
+                product_name=tem_product[x].product_name,
+                sku=auto_code,
+                color=tem_product[x].color,
+                size=tem_product[x].size,
+                avail_quantity=0,
+                created_at=DateTime
+            )
             parent = super().create(validated_data)
+            add_stock.save()
             tem_product[x].delete()
 
         return parent

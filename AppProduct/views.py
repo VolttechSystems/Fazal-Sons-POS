@@ -157,6 +157,14 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
 
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        # product = Product.objects.
+        delete_stock = Stock.objects.filter(product_name=instance.product_name, sku=instance.sku)
+        delete_stock.delete()
+        self.perform_destroy(instance)
+        return Response(status='200')
+
 
 # FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
 @api_view(['GET'])
