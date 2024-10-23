@@ -137,23 +137,13 @@ class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
 
 
 # TEMPORARY PRODUCT
-
-@api_view(['GET'])
-def GetTemporaryProductView(request):
-    cursor = connections['default'].cursor()
-    query = "SELECT   size , ARRAY_AGG(color) as color, used_for_inventory, cost_price, selling_price, discount_price, wholesale_price, retail_price, token_price FROM tbl_product_temp GROUP BY size,used_for_inventory, cost_price, selling_price, discount_price, wholesale_price, retail_price, token_price"
-    cursor.execute(query)
-    all_temp_product = DictinctFetchAll(cursor)
-    return Response(all_temp_product)
-
-
 class AddTemporaryProductView(generics.ListCreateAPIView):
-    queryset = TemporaryProduct.objects.all()
+    queryset = TemporaryProduct.objects.all().order_by('-size')
     serializer_class = TempProductSerializer
 
 
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TemporaryProduct.objects.all()
+    queryset = TemporaryProduct.objects.all().order_by('-size')
     serializer_class = TempProductSerializer
 
 
