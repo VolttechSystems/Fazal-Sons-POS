@@ -198,8 +198,14 @@ class TempProductSerializer(serializers.ModelSerializer):
         model = TemporaryProduct
         fields = '__all__'
 
+    def validate_size(self, value):
+        if value == None:
+            raise serializers.ValidationError("Please Select Sizes")
+        return value
+
     def create(self, validated_data):
         parent = ''
+        parent2 = 'ddd'
         used_for_inventory = validated_data.get('used_for_inventory')
         colors = validated_data.get('color')
         colors = colors.replace("'", "")
@@ -235,13 +241,12 @@ class TempProductSerializer(serializers.ModelSerializer):
                     validated_data['size'] = split_size[size].strip()
                     validated_data['color'] = 'None'
                     parent = super().create(validated_data)
-        return parent
+        return parent, parent2
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
         parent = super().update(instance, validated_data)
         return parent
-
 
 
 # PRODUCT
@@ -250,61 +255,34 @@ class ProductSerializer(serializers.ModelSerializer):
         model = Product
         fields = '__all__'
 
+
     def create(self, validated_data):
         parent = ''
-        used_for_inventory = validated_data.get('used_for_inventory')
-        colors = validated_data.get('color')
-        colors = colors.replace("'", "")
-        colors = colors.replace("[", "")
-        colors = colors.replace("]", "")
+        tem_product = TemporaryProduct.objects.all()
+        len_tem_product = len(tem_product)
+        for x in range(len_tem_product):
+            validated_data['product_name'] = tem_product[x].product_name
+            validated_data['sku'] = AutoGenerateCodeForModel(Product, 'sku', 'PR-')
+            validated_data['outlet_name'] = tem_product[x].outlet_name
+            validated_data['sub_category_name'] = tem_product[x].sub_category_name
+            validated_data['brand_name'] = tem_product[x].brand_name
+            validated_data['season'] = tem_product[x].season
+            validated_data['description'] = tem_product[x].description
+            validated_data['color'] = tem_product[x].color
+            validated_data['size'] = tem_product[x].size
+            validated_data['image'] = tem_product[x].image
+            validated_data['used_for_inventory'] = tem_product[x].used_for_inventory
+            validated_data['cost_price'] = tem_product[x].cost_price
+            validated_data['selling_price'] = tem_product[x].selling_price
+            validated_data['discount_price'] = tem_product[x].discount_price
+            validated_data['wholesale_price'] = tem_product[x].wholesale_price
+            validated_data['retail_price'] = tem_product[x].retail_price
+            validated_data['token_price'] = tem_product[x].token_price
+            validated_data['created_at'] = DateTime
 
-        sizes = validated_data.get('size')
-        sizes = sizes.replace("'", "")
-        sizes = sizes.replace("[", "")
-        sizes = sizes.replace("]", "")
+            parent = super().create(validated_data)
+            tem_product[x].delete()
 
-        split_color = colors.split(",")
-        len_color = len(split_color)
-
-        split_size = sizes.split(",")
-        len_size = len(split_size)
-
-        if used_for_inventory == 'true':
-            if len_color > 0:
-                for size in range(len_size):
-                    for color in range(len_color):
-                        auto_sku_code = AutoGenerateCodeForModel(Product, 'sku', 'PR-')
-                        validated_data['sku'] = auto_sku_code
-                        validated_data['size'] = split_size[size].strip()
-                        validated_data['color'] = split_color[color].strip()
-
-                        add_stock = Stock(
-                            product_name=validated_data.get('product_name'),
-                            sku=auto_sku_code,
-                            color=validated_data['color'],
-                            size=validated_data['size'],
-                            avail_quantity=0,
-                            created_at=DateTime
-                        )
-                        parent = super().create(validated_data)
-                        add_stock.save()
-        else:
-            if len_size > 0:
-                for size in range(len_size):
-                    auto_sku_code = AutoGenerateCodeForModel(Product, 'sku', 'PR-')
-                    validated_data['sku'] = auto_sku_code
-                    validated_data['size'] = split_size[size].strip()
-                    validated_data['color'] = 'None'
-                    add_stock = Stock(
-                        product_name=validated_data.get('product_name'),
-                        sku=auto_sku_code,
-                        color=None,
-                        size=validated_data['size'],
-                        avail_quantity=0,
-                        created_at=DateTime
-                    )
-                    parent = super().create(validated_data)
-                    add_stock.save()
         return parent
 
     def update(self, instance, validated_data):

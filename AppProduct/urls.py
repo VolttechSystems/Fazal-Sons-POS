@@ -47,9 +47,10 @@ urlpatterns = [
     re_path(r'add_subcategory', AddSubCategoryView.as_view(), name='AddSubCategory'),
     re_path(r'action_subcategory/(?P<pk>.+)/', SubCategoryGetView.as_view(), name='GetSubCategory'),
 
-    # PRODUCT
+    # TEMPORARY PRODUCT
+    re_path(r'get_temp_product', GetTemporaryProductView, name='FetchTemporaryProduct'),
     re_path(r'add_temp_product', AddTemporaryProductView.as_view(), name='AddTemporaryProduct'),
-    # re_path(r'action_temp_product/(?P<pk>.+)/', ProductGetView.as_view(), name='GetProduct'),
+    re_path(r'action_temp_product/(?P<pk>.+)/', TemporaryProductGetView.as_view(), name='GetTemporaryProduct'),
 
     # PRODUCT
     re_path(r'add_product', AddProduct.as_view(), name='AddProduct'),
