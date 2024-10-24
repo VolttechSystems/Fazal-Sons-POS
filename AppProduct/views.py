@@ -37,11 +37,13 @@ class AddOutletView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
     queryset = Outlet.objects.all()
     serializer_class = OutletSerializer
+    pagination_class = None
 
 
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Outlet.objects.all()
     serializer_class = OutletSerializer
+    pagination_class = None
 
 
 # BRAND
@@ -56,104 +58,131 @@ class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
+    def get_queryset(self):
+        """
+        This view should return a list of all the purchases
+        for the currently authenticated user.
+        """
+        # username = self.kwargs['username']
+        brand_name = self.kwargs['brand_name']
+        return None
+
 
 # ATTRIBUTES TYPE
 class AddAttributeTypeView(generics.ListCreateAPIView):
     queryset = AttributeType.objects.all()
     serializer_class = AttributeTypeSerializer
+    pagination_class = None
 
 
 class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = AttributeType.objects.all()
     serializer_class = AttributeTypeSerializer
+    pagination_class = None
 
 
 # ATTRIBUTES
 class AddAttributeView(generics.ListCreateAPIView):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
+    pagination_class = None
 
 
 class AttributeGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Attribute.objects.all()
     serializer_class = AttributeSerializer
+    pagination_class = None
 
 
 # VARIATION
 class AddVariationView(generics.ListCreateAPIView):
     queryset = Variation.objects.all()
     serializer_class = VariationSerializer
+    pagination_class = None
 
 
 class VariationGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Variation.objects.all()
     serializer_class = VariationSerializer
+    pagination_class = None
 
 
 # HEAD CATEGORY
 class AddHeadCategoryView(generics.ListCreateAPIView):
     queryset = HeadCategory.objects.all()
     serializer_class = HeadCategorySerializer
+    pagination_class = None
 
 
 class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = HeadCategory.objects.all()
     serializer_class = HeadCategorySerializer
+    pagination_class = None
 
 
 # PARENT CATEGORY
 class AddParentCategoryView(generics.ListCreateAPIView):
     queryset = ParentCategory.objects.all()
     serializer_class = ParentCategorySerializer
+    pagination_class = None
 
 
 class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ParentCategory.objects.all()
     serializer_class = ParentCategorySerializer
+    pagination_class = None
 
 
 # CATEGORY
 class AddCategoryView(generics.ListCreateAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = None
 
 
 class CategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    pagination_class = None
 
 
 # SUB CATEGORY
 class AddSubCategoryView(generics.ListCreateAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
+    pagination_class = None
 
 
 class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = SubCategory.objects.all()
     serializer_class = SubCategorySerializer
+    pagination_class = None
 
 
 # TEMPORARY PRODUCT
 class AddTemporaryProductView(generics.ListCreateAPIView):
     queryset = TemporaryProduct.objects.all().order_by('-size')
     serializer_class = TempProductSerializer
+    pagination_class = None
 
 
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TemporaryProduct.objects.all().order_by('-size')
     serializer_class = TempProductSerializer
+    pagination_class = None
 
 
 # PRODUCT
 class AddProduct(generics.ListCreateAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    pagination_class = None
 
 
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
+    pagination_class = None
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
