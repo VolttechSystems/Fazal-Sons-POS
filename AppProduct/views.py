@@ -14,6 +14,7 @@ from rest_framework.authtoken.models import Token
 from django.db import connections
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
+
 def DictinctFetchAll(cursor):
     "Returns all rows from a cursor as a dict"
     desc = cursor.description
@@ -58,14 +59,19 @@ class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
 
-    def get_queryset(self):
-        """
-        This view should return a list of all the purchases
-        for the currently authenticated user.
-        """
-        # username = self.kwargs['username']
-        brand_name = self.kwargs['brand_name']
-        return None
+
+@api_view(['GET'])
+def SearchBrandView(request, code):
+    brand_name = code
+    brand = Brand.objects.filter(brand_name__icontains=brand_name)
+    if len(brand) > 0:
+        serializer = BrandSerializer(brand, many=True)
+        param = {
+            'status': 200,
+            'results': serializer.data,
+        }
+        return Response(param)
+    return Response("Not Found")
 
 
 # ATTRIBUTES TYPE
