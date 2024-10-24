@@ -12,8 +12,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.db import connections
-from rest_framework.pagination import PageNumberPagination
-
+from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 
 def DictinctFetchAll(cursor):
     "Returns all rows from a cursor as a dict"
@@ -28,10 +27,9 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
         Token.objects.create(user=instance)
 
 
-class StandardResultsSetPagination(PageNumberPagination):
-    page_size = 5
-    page_size_query_param = 'page_size'
-    max_page_size = 100
+class MyLimitOffsetPagination(LimitOffsetPagination):
+    limit_query_param = 'limit'
+    offset_query_param = 'Starting'
 
 
 # OUTLET
@@ -51,7 +49,7 @@ class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
     queryset = Brand.objects.all()
     serializer_class = BrandSerializer
-    # pagination_class = StandardResultsSetPagination
+    pagination_class = MyLimitOffsetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
@@ -159,7 +157,6 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
-        # product = Product.objects.
         delete_stock = Stock.objects.filter(product_name=instance.product_name, sku=instance.sku)
         delete_stock.delete()
         self.perform_destroy(instance)
