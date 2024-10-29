@@ -48,7 +48,7 @@ INSTALLED_APPS = [
     'AppCustomer',
     'AppStock',
     'AppAccount',
-
+    'AppPOS',
 ]
 
 MIDDLEWARE = [

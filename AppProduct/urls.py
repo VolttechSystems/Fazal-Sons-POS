@@ -1,15 +1,15 @@
 from django.urls import re_path
 from AppProduct.views import *
-from rest_framework.authtoken.views import obtain_auth_token
-from rest_framework.routers import DefaultRouter
-from rest_framework.authtoken import views
+# from rest_framework.authtoken.views import obtain_auth_token
+# from rest_framework.routers import DefaultRouter
+# from rest_framework.authtoken import views
 
 urlpatterns = [
     # USER URL
 
     # AUTHENTICATION TOKEN
     # re_path(r'Generate/tokens/', obtain_auth_token, name='auth_token'),
-    re_path('api-token-auth/', views.obtain_auth_token),
+    # re_path('api-token-auth/', views.obtain_auth_token),
 
     # OUTLET URL
     re_path(r'add_outlet', AddOutletView.as_view(), name='AddOutlet'),
@@ -18,7 +18,7 @@ urlpatterns = [
     # BRAND URL
     re_path(r'add_brand', AddBrandView.as_view(), name='AddBrand'),
     re_path(r'action_brand/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),
-        re_path(r'search_brand/(?P<code>.+)/', SearchBrandView, name='SearchBrand'),
+    re_path(r'search_brand/(?P<code>.+)/', SearchBrandView, name='SearchBrand'),
 
     # ATTRIBUTES TYPE URL
     re_path(r'add_attribute_type', AddAttributeTypeView.as_view(), name='AddAttributeType'),

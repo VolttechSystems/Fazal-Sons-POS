@@ -27,8 +27,9 @@ urlpatterns = [
                   path('pos/customer', include('AppCustomer.urls')),
                   path('pos/stock', include('AppStock.urls')),
                   path('pos/login', include('AppAccount.urls')),
+                  path('pos/', include('AppPOS.urls')),
 
-              ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 
 # if settings.DEBUG:

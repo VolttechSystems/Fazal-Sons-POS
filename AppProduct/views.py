@@ -201,6 +201,7 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
 # FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
 @api_view(['GET'])
 def FetchAllAttributeTypeView(request):
+
     cursor = connections['default'].cursor()
     query = "SELECT att_type from tbl_attribute_type"
     cursor.execute(query)

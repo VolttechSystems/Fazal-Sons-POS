@@ -13,11 +13,10 @@ class CustomerChannelSerializer(ModelSerializer):
         fields = ('id', 'customer_channel',)
 
     def create(self, validated_data):
+        validated_data['cus_ch_code'] = AutoGenerateCodeForModel(CustomerChannel, 'cus_ch_code', 'CCH-')
+        validated_data['updated_at'] = None
+        validated_data['created_at'] = DateTime
         cust_channel = super().create(validated_data)
-        cust_channel.updated_at = None
-        cust_channel.created_at = DateTime
-        cust_channel.cus_ch_code = AutoGenerateCodeForModel(CustomerChannel, 'cus_ch_code', 'CCH-')
-        cust_channel.save()
         return cust_channel
 
     def update(self, instance, validated_data):
@@ -34,11 +33,10 @@ class CustomerTypeSerializer(ModelSerializer):
         fields = ('id', 'customer_type',)
 
     def create(self, validated_data):
+        validated_data['cus_type_code'] = AutoGenerateCodeForModel(CustomerType, 'cus_type_code', 'CTP-')
+        validated_data['updated_at'] = None
+        validated_data['created_at'] = DateTime
         cust_type = super().create(validated_data)
-        cust_type.updated_at = None
-        cust_type.created_at = DateTime
-        cust_type.cus_type_code = AutoGenerateCodeForModel(CustomerType, 'cus_type_code', 'CTP-')
-        cust_type.save()
         return cust_type
 
     def update(self, instance, validated_data):
@@ -59,12 +57,11 @@ class CustomerSerializer(ModelSerializer):
             'status')
 
     def create(self, validated_data):
+        validated_data['cust_code'] = AutoGenerateCodeForModel(Customer, 'cust_code', 'CUST-')
+        validated_data['updated_at'] = None
+        validated_data['created_at'] = DateTime
         customer = super().create(validated_data)
         customer.updated_at = None
-        customer.created_at = DateTime
-        customer.date = DateTime
-        customer.cust_code = AutoGenerateCodeForModel(Customer, 'cust_code', 'CUST-')
-        customer.save()
         return customer
 
     def update(self, instance, validated_data):
