@@ -233,4 +233,4 @@ class Product(models.Model):
         db_table = 'tbl_product'
 
     def __str__(self):
-        return self.product_name
+        return self.sku

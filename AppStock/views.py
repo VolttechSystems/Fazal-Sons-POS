@@ -9,12 +9,6 @@ from rest_framework.response import Response
 from django.http import HttpResponse, JsonResponse
 
 
-# class AddStockView(RetrieveUpdateAPIView):
-#     queryset = Stock.objects.all()
-#     # serializer_class = StockSerializer(queryset, many=True)
-#     serializer_class = StockSerializer
-
-
 @api_view(['GET', 'PUT'])
 def AddStockView(request, code):
     stock = Stock.objects.filter(product_name=code).order_by('id')
@@ -29,4 +23,4 @@ def AddStockView(request, code):
             if serializer.is_valid():
                 serializer.save()
                 list_serializer.append(serializer)
-        return Response('Stock Updated')
+        return Response('Stock Updated Successfully')
