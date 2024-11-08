@@ -225,3 +225,14 @@ def FetchlVariationView(request, code):
     cursor.execute(query_employee)
     employee_location = DictinctFetchAll(cursor)
     return Response(employee_location)
+
+
+
+
+@api_view(['GET'])
+def GetAllProductView(request):
+    cursor = connections['default'].cursor()
+    query_employee = "select distinct outlet_code ||'--' ||product_name as product, product_name  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_name_id = ot.outlet_name"
+    cursor.execute(query_employee)
+    product_name = DictinctFetchAll(cursor)
+    return Response(product_name)

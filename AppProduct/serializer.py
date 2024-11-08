@@ -230,8 +230,8 @@ class TempProductSerializer(serializers.ModelSerializer):
                         validated_data['sku'] = auto_sku_code
                         validated_data['size'] = split_size[size].strip()
                         validated_data['color'] = split_color[color].strip()
+                        validated_data['created_at'] = DateTime
                         parent = super().create(validated_data)
-
         else:
             if len_size > 0:
                 for size in range(len_size):
@@ -239,6 +239,7 @@ class TempProductSerializer(serializers.ModelSerializer):
                     validated_data['sku'] = auto_sku_code
                     validated_data['size'] = split_size[size].strip()
                     validated_data['color'] = 'None'
+                    validated_data['created_at'] = DateTime
                     parent = super().create(validated_data)
         return parent
 

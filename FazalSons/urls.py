@@ -28,6 +28,7 @@ urlpatterns = [
                   path('pos/stock', include('AppStock.urls')),
                   path('pos/login', include('AppAccount.urls')),
                   path('pos/transaction', include('AppPOS.urls')),
+                  path('pos/report', include('AppReport.urls')),
 
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 

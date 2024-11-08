@@ -60,5 +60,9 @@ urlpatterns = [
     re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
     re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
     re_path(r'fetch_variation/(?P<code>.+)/', FetchlVariationView, name='FetchAttributeName'),
+    
+    
+    # FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK 
+    re_path(r'get_all_product/', GetAllProductView, name='GetAllProduct'),
 
 ]
