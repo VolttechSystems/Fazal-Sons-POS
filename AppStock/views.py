@@ -1,26 +1,54 @@
-from django.shortcuts import render
-
-# Create your views here.
-from rest_framework.generics import *
 from .models import *
 from .serializer import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from django.http import HttpResponse, JsonResponse
+from rest_framework import generics
+from rest_framework import status
 
 
-@api_view(['GET', 'PUT'])
-def AddStockView(request, code):
-    stock = Stock.objects.filter(product_name=code).order_by('id')
-    if request.method == 'GET':
 
-        serializer = StockSerializer(stock, many=True)
-        return Response(serializer.data)
-    elif request.method == 'PUT':
-        list_serializer = []
-        for x in range(len(stock)):
-            serializer = StockSerializer(stock[x], data=request.data[x])
+
+
+@api_view(['PUT'])
+def AddStockView(request):
+    if not isinstance(request.data, list):  # Ensure the request data is a list
+        return Response({'detail': 'Expected a list of items.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    updated_stock= []
+    errors = []
+
+    for item in request.data:
+        try:
+            stock = Stock.objects.get(sku=item['sku'])
+            serializer = StockSerializer(stock, data=item, partial=True)  # partial=True allows partial updates
+
             if serializer.is_valid():
                 serializer.save()
-                list_serializer.append(serializer)
-        return Response('Stock Updated Successfully')
+                updated_stock.append(serializer.data)
+            else:
+                errors.append({item['sku']: serializer.errors})
+        except Stock.DoesNotExist:
+            errors.append({item['sku']: 'Stock with this sku not found.'})
+
+    if errors:
+        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+    return Response({'updated_stock': updated_stock}, status=status.HTTP_200_OK)
+
+
+# class AddStockView(generics.RetrieveUpdateAPIView):
+#     queryset = Stock.objects.all()
+#     serializer_class = StockSerializer
+#     pagination_class = None
+
+
+# [
+#     {
+#         "avail_quantity": "12",
+#         "sku": "PR-13"
+#     },
+#     {
+#         "avail_quantity": "0",
+#         "sku": "PR-14"
+#     }
+# ]

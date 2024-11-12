@@ -8,7 +8,7 @@ from AppCustomer.utils import *
 
 DateTime = datetime.datetime.now()
 
-
+### TRANSACTION SERIALIZER
 class AdditionalFeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalFee
@@ -26,7 +26,7 @@ class AdditionalFeeSerializer(serializers.ModelSerializer):
         fee = super().update(instance, validated_data)
         return fee
 
-
+### ADDITIONAL FEE SERIALIZER
 class TransactionItemSerializer(serializers.ModelSerializer):
     cust_code = serializers.CharField(required=False)
     overall_discount = serializers.CharField(required=False)
@@ -175,3 +175,22 @@ class TransactionItemSerializer(serializers.ModelSerializer):
             transaction.save()
 
         return validated_data
+
+
+### SALESMAN SERIALIZER
+class AddSalesmanSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Salesman
+        fields = ['id','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission']
+
+    def create(self, validated_data):
+        validated_data['salesman_code'] = AutoGenerateCodeForModel(Salesman, 'salesman_code', 'SL-')
+        validated_data['updated_at'] = None
+        validated_data['created_at'] = DateTime
+        salesman = super().create(validated_data)
+        return salesman
+
+    def update(self, instance, validated_data):
+        validated_data['updated_at'] = DateTime
+        salesman = super().update(instance, validated_data)
+        return salesman

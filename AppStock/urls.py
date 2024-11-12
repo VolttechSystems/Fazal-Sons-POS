@@ -1,7 +1,7 @@
 from django.urls import re_path
 from AppStock.views import *
 
-
 urlpatterns = [
-    re_path(r'add_stock/(?P<code>.+)/', AddStockView, name='AddStock'),
+    ### UPDATE STOCK URL 
+    re_path(r'add_stock/', AddStockView, name='AddStock'),
 ]

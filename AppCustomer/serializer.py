@@ -5,7 +5,7 @@ from .utils import *
 
 DateTime = datetime.datetime.now()
 
-
+### CUSTOMER CHANNEL SERIALIZER
 class CustomerChannelSerializer(ModelSerializer):
     class Meta:
         model = CustomerChannel
@@ -25,7 +25,7 @@ class CustomerChannelSerializer(ModelSerializer):
         cust_channel.save()
         return cust_channel
 
-
+### CUSTOMER TYPE SERIALIZER
 class CustomerTypeSerializer(ModelSerializer):
     class Meta:
         model = CustomerType
@@ -45,7 +45,7 @@ class CustomerTypeSerializer(ModelSerializer):
         cust_type.save()
         return cust_type
 
-
+### CUSTOMER SERIALIZER
 class CustomerSerializer(ModelSerializer):
     class Meta:
         model = Customer

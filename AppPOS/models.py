@@ -5,6 +5,26 @@ from AppProduct.models import *
 
 # Create your models here.
 
+class Salesman(models.Model):
+    salesman_code = models.CharField(max_length=100, null=True, unique=True) # SL-1
+    salesman_name = models.CharField(max_length=100, null=True, blank=True)
+    wholesale_commission = models.CharField(max_length=100, null=True, blank=True)
+    retail_commission = models.CharField(max_length=100, null=True, blank=True)
+    token_commission = models.CharField(max_length=100, null=True, blank=True)
+    created_at = models.DateTimeField(null=True)
+    created_by = models.CharField(max_length=200, null=True)
+    updated_at = models.DateTimeField(null=True)
+    updated_by = models.CharField(max_length=200, null=True)
+
+    class Meta:
+        db_table = 'tbl_salesman'
+
+    def __str__(self):
+        return self.salesman_code
+
+
+
+
 class AdditionalFee(models.Model):
     fee_code = models.CharField(max_length=100, null=True, unique=True)
     fee_name = models.CharField(max_length=100, null=True, unique=True, blank=True)
@@ -86,3 +106,22 @@ class FeeRecord(models.Model):
 
     def __str__(self):
         return self.transaction_id
+    
+    
+    
+class TransactionReturn(models.Model):
+    invoice_code = models.ForeignKey(Transaction, to_field='invoice_code', on_delete=models.CASCADE, null=True,
+                                     blank=True)
+    product = models.CharField(null=True, blank=True)
+    rate = models.CharField(null=True, blank=True)
+    quantity = models.CharField(null=True, blank=True)
+    total_amount = models.CharField(null=True, blank=True)
+    created_at = models.DateTimeField(null=True)
+    created_by = models.CharField(max_length=200, null=True)
+    updated_at = models.DateTimeField(null=True)
+
+    class Meta:
+        db_table = 'tbl_transaction_return'
+
+    def __str__(self):
+        return self.invoice_code

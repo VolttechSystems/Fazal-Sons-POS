@@ -7,7 +7,7 @@ from AppStock.models import *
 DateTime = datetime.datetime.now()
 
 
-# BRAND
+### OUTLET SERIALIZER
 class OutletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Outlet
@@ -27,7 +27,7 @@ class OutletSerializer(serializers.ModelSerializer):
         return outlet
 
 
-# BRAND
+### BRAND SERIALIZER
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
@@ -47,7 +47,7 @@ class BrandSerializer(serializers.ModelSerializer):
         return brand
 
 
-# ATTRIBUTE TYPE
+### ATTRIBUTE TYPE SERIALIZER
 class AttributeTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeType
@@ -67,7 +67,7 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
         return attr_type
 
 
-# ATTRIBUTE
+### ATTRIBUTE SERIALIZER
 class AttributeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Attribute
@@ -87,7 +87,7 @@ class AttributeSerializer(serializers.ModelSerializer):
         return attribute
 
 
-# VARIATION
+### VARIATION SERIALIZER
 class VariationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Variation
@@ -107,7 +107,7 @@ class VariationSerializer(serializers.ModelSerializer):
         return variation
 
 
-# HEAD CATEGORY
+### HEAD CATEGORY SERIALIZER
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HeadCategory
@@ -127,7 +127,7 @@ class HeadCategorySerializer(serializers.ModelSerializer):
         return h_category
 
 
-# PARENT CATEGORY
+### PARENT CATEGORY SERIALIZER
 class ParentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentCategory
@@ -147,7 +147,7 @@ class ParentCategorySerializer(serializers.ModelSerializer):
         return p_category
 
 
-# CATEGORY
+### CATEGORY SERIALIZER
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
@@ -172,7 +172,7 @@ class CategorySerializer(serializers.ModelSerializer):
         return category
 
 
-# SUB CATEGORY
+### SUB CATEGORY SERIALIZER
 class SubCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = SubCategory
@@ -192,7 +192,7 @@ class SubCategorySerializer(serializers.ModelSerializer):
         return sub_category
 
 
-# TEMPORARY PRODUCT
+### TEMPORARY PRODUCT SERIALIZER
 class TempProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = TemporaryProduct
@@ -249,7 +249,7 @@ class TempProductSerializer(serializers.ModelSerializer):
         return parent
 
 
-# PRODUCT
+### PRODUCT SERIALIZER
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
