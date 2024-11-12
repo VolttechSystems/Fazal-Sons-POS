@@ -6,9 +6,6 @@ from rest_framework import generics
 from rest_framework import status
 
 
-
-
-
 @api_view(['PUT'])
 def AddStockView(request):
     if not isinstance(request.data, list):  # Ensure the request data is a list
