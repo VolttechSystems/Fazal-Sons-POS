@@ -5,7 +5,6 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 
-
 @api_view(['PUT'])
 def AddStockView(request):
     if not isinstance(request.data, list):  # Ensure the request data is a list
@@ -31,21 +30,3 @@ def AddStockView(request):
         return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
     return Response({'updated_stock': updated_stock}, status=status.HTTP_200_OK)
-
-
-# class AddStockView(generics.RetrieveUpdateAPIView):
-#     queryset = Stock.objects.all()
-#     serializer_class = StockSerializer
-#     pagination_class = None
-
-
-# [
-#     {
-#         "avail_quantity": "12",
-#         "sku": "PR-13"
-#     },
-#     {
-#         "avail_quantity": "0",
-#         "sku": "PR-14"
-#     }
-# ]
