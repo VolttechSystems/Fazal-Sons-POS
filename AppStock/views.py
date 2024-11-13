@@ -5,28 +5,33 @@ from rest_framework.response import Response
 from rest_framework import generics
 from rest_framework import status
 
-@api_view(['PUT'])
-def AddStockView(request):
-    if not isinstance(request.data, list):  # Ensure the request data is a list
-        return Response({'detail': 'Expected a list of items.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    updated_stock= []
-    errors = []
+@api_view(['PUT', 'GET'])
+def AddStockView(request, code):
+    if request.method == 'GET':
+        stock = Stock.objects.filter(product_name=code)
+        serializer = StockSerializer(stock, many=True)
+        return Response(serializer.data)
+    elif request.method == 'PUT':
+        if not isinstance(request.data, list):  # Ensure the request data is a list
+            return Response({'detail': 'Expected a list of items.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    for item in request.data:
-        try:
-            stock = Stock.objects.get(sku=item['sku'])
-            serializer = StockSerializer(stock, data=item, partial=True)  # partial=True allows partial updates
+        updated_stock = []
+        errors = []
 
-            if serializer.is_valid():
-                serializer.save()
-                updated_stock.append(serializer.data)
-            else:
-                errors.append({item['sku']: serializer.errors})
-        except Stock.DoesNotExist:
-            errors.append({item['sku']: 'Stock with this sku not found.'})
+        for item in request.data:
+            try:
+                stock = Stock.objects.get(sku=item['sku'])
+                serializer = StockSerializer(stock, data=item, partial=True)  # partial=True allows partial updates
 
-    if errors:
-        return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+                if serializer.is_valid():
+                    serializer.save()
+                    updated_stock.append(serializer.data)
+                else:
+                    errors.append({item['sku']: serializer.errors})
+            except Stock.DoesNotExist:
+                errors.append({item['sku']: 'Stock with this sku not found.'})
 
-    return Response({'updated_stock': updated_stock}, status=status.HTTP_200_OK)
+        if errors:
+            return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response({'updated_stock': updated_stock}, status=status.HTTP_200_OK)

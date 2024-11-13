@@ -23,8 +23,6 @@ class Salesman(models.Model):
         return self.salesman_code
 
 
-
-
 class AdditionalFee(models.Model):
     fee_code = models.CharField(max_length=100, null=True, unique=True)
     fee_name = models.CharField(max_length=100, null=True, unique=True, blank=True)
@@ -47,7 +45,8 @@ class Transaction(models.Model):
     cust_code = models.ForeignKey(Customer, to_field='cust_code', on_delete=models.CASCADE, null=True,
                                   blank=True)
     additional_fee = models.ManyToManyField(AdditionalFee, through='FeeRecord')
-    # salesman  = models.CharField(null=True, blank=True)
+    salesman_code = models.ForeignKey(Salesman, to_field='salesman_code', on_delete=models.CASCADE, null=True,
+                                    blank=True)
     quantity = models.CharField(null=True, blank=True)
     gross_total = models.CharField(null=True, blank=True)  # Sum of all product prices without any discounts
     per_discount = models.CharField(null=True, blank=True)  # Discount in %
@@ -84,7 +83,7 @@ class TransactionItem(models.Model):
     per_discount = models.CharField(null=True, blank=True)
     discounted_value = models.CharField(null=True, blank=True)
     item_total = models.CharField(null=True, blank=True)
-    status = models.CharField(null=True, blank=True)
+    status = models.CharField(null=True, blank=True) # sale, return
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)
@@ -98,7 +97,7 @@ class TransactionItem(models.Model):
 
 class FeeRecord(models.Model):
     fee_type = models.ForeignKey(AdditionalFee, on_delete=models.CASCADE)
-    transaction_id = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    transaction_id = models.ForeignKey(Transaction, to_field='invoice_code', on_delete=models.CASCADE)
     fee = models.CharField(null=True, blank=True)
 
     class Meta:
@@ -112,7 +111,7 @@ class FeeRecord(models.Model):
 class TransactionReturn(models.Model):
     invoice_code = models.ForeignKey(Transaction, to_field='invoice_code', on_delete=models.CASCADE, null=True,
                                      blank=True)
-    product = models.CharField(null=True, blank=True)
+    sku = models.CharField(null=True, blank=True)
     rate = models.CharField(null=True, blank=True)
     quantity = models.CharField(null=True, blank=True)
     total_amount = models.CharField(null=True, blank=True)
@@ -125,3 +124,22 @@ class TransactionReturn(models.Model):
 
     def __str__(self):
         return self.invoice_code
+
+
+
+# {
+#     "sku": "['PR-4', 'PR-5']",
+#     "quantity": "[1,2]",
+#     "rate": "[2200, 1800]", 
+#     "item_discount": "[5,10]", 
+#     "cust_code": "CUST-1"   ,
+#     "overall_discount": "0",
+#     "outlet_code": "FS-01", 
+#     "saleman_code": "SL-1", 
+#     "advanced_payment": "0",
+#     // "additional_fee_code": "",
+#     // "additional_fee": ""
+ 
+#     "additional_fee_code": "['FEE-1', 'FEE-2']",
+#     "additional_fee": "[500,300]"   
+# }
