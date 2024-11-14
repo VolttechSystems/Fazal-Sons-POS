@@ -219,3 +219,32 @@ def GetAllProductView(request):
     cursor.execute(query_employee)
     product_name = DictinctFetchAll(cursor)
     return Response(product_name)
+
+
+### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK VIEW
+@api_view(['GET'])
+def FetchParentCategoryView(request, code):
+    p_category = ParentCategory.objects.filter(hc_name_id=code)
+    if len(p_category) > 0:
+        serializer = ParentCategorySerializer(p_category, many=True)
+        return Response(serializer.data)
+    return Response('NO RECORD FOUND')
+    
+  
+@api_view(['GET'])
+def FetchCategoryView(request, code):
+    category = Category.objects.filter(pc_name_id=code)
+    if len(category) > 0:
+        serializer = CategorySerializer(category, many=True)
+        return Response(serializer.data)
+    return Response('NO RECORD FOUND')
+    
+@api_view(['GET'])
+def FetchSubCategoryView(request, code):
+    sub_category = SubCategory.objects.filter(category_name_id=code)
+    if len(sub_category) > 0:
+        serializer = SubCategorySerializer(sub_category, many=True)
+        return Response(serializer.data)
+    return Response('NO RECORD FOUND')
+    
+  

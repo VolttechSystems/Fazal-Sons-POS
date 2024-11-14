@@ -97,7 +97,7 @@ class TransactionItem(models.Model):
 
 class FeeRecord(models.Model):
     fee_type = models.ForeignKey(AdditionalFee, on_delete=models.CASCADE)
-    transaction_id = models.ForeignKey(Transaction, to_field='invoice_code', on_delete=models.CASCADE)
+    transaction_id = models.ForeignKey(Transaction, on_delete=models.CASCADE)
     fee = models.CharField(null=True, blank=True)
 
     class Meta:

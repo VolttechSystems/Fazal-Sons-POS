@@ -158,7 +158,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 
                     transcation_additional_fee = FeeRecord(
                         fee_type_id=additional_fee.id,
-                        transaction_id_id=transaction.invoice_code,
+                        transaction_id_id=transaction.id,
                         fee=get_additional_fee[x],
                     )
                     transcation_additional_fee.save()
