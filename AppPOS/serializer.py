@@ -187,7 +187,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 class AddSalesmanSerializer(serializers.ModelSerializer):
     class Meta:
         model = Salesman
-        fields = ['id', 'salesman_code','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission']
+        fields = ['id', 'salesman_code','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission', 'outlet_code']
 
     def create(self, validated_data):
         get_checkBox_value = self.context['request'].data['CheckBoxValue']
