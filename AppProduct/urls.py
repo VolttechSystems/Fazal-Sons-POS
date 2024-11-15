@@ -14,6 +14,7 @@ urlpatterns = [
     ### OUTLET URL
     re_path(r'add_outlet', AddOutletView.as_view(), name='AddOutlet'),
     re_path(r'action_outlet/(?P<pk>.+)/', OutletGetView.as_view(), name='GetOutlet'),
+    re_path(r'fetch_all_outlet/', FetchOutletView, name='FetchOutlet'),
 
     ### BRAND URL
     re_path(r'add_brand', AddBrandView.as_view(), name='AddBrand'),

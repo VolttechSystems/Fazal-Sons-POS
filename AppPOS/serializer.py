@@ -209,7 +209,6 @@ class AddSalesmanSerializer(serializers.ModelSerializer):
         return validated_data
 
 
-
 ### TRANSACTION RETURN SERIALIZER
 class TransactionrReturnSerializer(serializers.ModelSerializer):
     sku = serializers.ListField(child=serializers.CharField())

@@ -46,6 +46,22 @@ class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
     pagination_class = None
 
 
+@api_view(['GET'])
+def FetchOutletView(request):
+    outlet = Outlet.objects.all().values('outlet_name', 'outlet_code')
+    if len(outlet) > 0:
+        serializer = OutletSerializer(outlet, many=True)
+        param = {
+            'status': 200,
+            'results': serializer.data,
+        }
+        return Response(param)
+    return Response("NO RECORD FOUND")
+
+
+
+
+
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]

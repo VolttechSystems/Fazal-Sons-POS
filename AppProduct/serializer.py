@@ -11,7 +11,7 @@ DateTime = datetime.datetime.now()
 class OutletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Outlet
-        fields = '__all__'
+        fields = ['outlet_code', 'outlet_name']
 
     def create(self, validated_data):
         outlet = super().create(validated_data)
