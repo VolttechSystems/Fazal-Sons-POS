@@ -391,3 +391,19 @@ class VariationGroupSerializer(serializers.Serializer):
     #     attribute.updated_at = DateTime
     #     attribute.save()
     #     return validated_data
+
+    # [
+    #
+    #     {
+    #         "att_type_id": 5,
+    #         "attribute_name": "oil",
+    #         "variation": ["Banaspati oil", "cooking oil"],
+    #         "status": "active"
+    #     },
+    #     {
+    #         "att_type_id": 5,
+    #         "attribute_name": "size",
+    #         "variation": ["size", "medium", "Small"],
+    #         "status": "active"
+    #     }
+    # ]
