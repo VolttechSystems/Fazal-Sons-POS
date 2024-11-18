@@ -16,3 +16,9 @@ urlpatterns = [
 # Salesman Commission Report
 # transaction - return transaction report
 # Get ALL Customer API
+
+
+# select tr_item.created_at::date, invoice_code, tr_item.sku, pr.product_name, tr_item.quantity, pr.selling_price  , pr.selling_price::INTEGER * tr_item.quantity::INTEGER as total   from tbl_transaction tr 
+# INNER JOIN tbl_transaction_item tr_item on tr.invoice_code = tr_item.invoice_code_id
+# INNER JOIN tbl_product pr on tr_item.sku = pr.sku
+# INNER JOIN tbl_salesman sl on tr.salesman_code_id = sl.salesman_code

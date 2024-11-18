@@ -27,7 +27,7 @@ def create_auth_token(sender, instance=None, created=False, **kwargs):
     if created:
         Token.objects.create(user=instance)
 
-### PAGINATION CLASS 
+### PAGINATION CLASS
 class MyLimitOffsetPagination(LimitOffsetPagination):
     limit_query_param = 'limit'
     offset_query_param = 'Starting'
@@ -110,11 +110,33 @@ class AttributeGetView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AttributeSerializer
     pagination_class = None
 
-### VARIATION VIEW
-class AddVariationView(generics.ListCreateAPIView):
-    queryset = Variation.objects.all()
-    serializer_class = VariationSerializer
-    pagination_class = None
+## VARIATION VIEW
+# class AddVariationView(generics.ListCreateAPIView):
+#     queryset = Variation.objects.all()
+#     serializer_class = VariationSerializer
+#     pagination_class = None
+
+
+@api_view(['GET', 'POST'])
+def AddVariationView(request):
+  if request.method == 'GET':
+        cursor = connections['default'].cursor()
+        query_variation = "SELECT vr.id ,variation_name, vr.symbol, vr.description, attribute_name, vr.status FROM tbl_variation vr INNER JOIN tbl_attribute at on vr.attribute_name_id = at.id"
+        cursor.execute(query_variation)
+        variation = DictinctFetchAll(cursor)
+        serializer = VariationSerializer(variation, many=True)
+        return Response(serializer.data)
+
+  elif request.method == 'POST':
+        serializer = VariationSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status='status.HTTP_201_CREATED')
+        return Response(serializer.errors, status='status.HTTP_400_BAD_REQUEST')
+
+
+
+
 
 class VariationGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Variation.objects.all()
@@ -241,26 +263,45 @@ def GetAllProductView(request):
 @api_view(['GET'])
 def FetchParentCategoryView(request, code):
     p_category = ParentCategory.objects.filter(hc_name_id=code)
-    if len(p_category) > 0:
-        serializer = ParentCategorySerializer(p_category, many=True)
-        return Response(serializer.data)
-    return Response('NO RECORD FOUND')
-    
-  
+    serializer = ParentCategorySerializer(p_category, many=True)
+    return Response(serializer.data)
+
 @api_view(['GET'])
 def FetchCategoryView(request, code):
     category = Category.objects.filter(pc_name_id=code)
-    if len(category) > 0:
-        serializer = CategorySerializer(category, many=True)
-        return Response(serializer.data)
-    return Response('NO RECORD FOUND')
-    
+    serializer = CategorySerializer(category, many=True)
+    return Response(serializer.data)
+
 @api_view(['GET'])
 def FetchSubCategoryView(request, code):
     sub_category = SubCategory.objects.filter(category_name_id=code)
-    if len(sub_category) > 0:
-        serializer = SubCategorySerializer(sub_category, many=True)
-        return Response(serializer.data)
-    return Response('NO RECORD FOUND')
-    
-  
+    serializer = SubCategorySerializer(sub_category, many=True)
+    return Response(serializer.data)
+
+
+@api_view(['GET','POST'])
+def VariationGroupView(request):
+    if request.method == 'GET':
+    #     variation = Variation.objects.all()
+    #     serializer = VariationGroupSerializer(variation, many=True)
+        return Response(None)
+
+    if request.method == 'POST':
+        data = request.data
+        for i in range(len(data)):
+
+            serializer = VariationGroupSerializer(data=request.data[i])
+
+            if serializer.is_valid():
+                serializer.save()
+        return Response(data, status='200')
+        # return Response(serializer.errors, status='404')
+
+
+    # sub_category = SubCategory.objects.filter(category_name_id=code)
+    # serializer = SubCategorySerializer(sub_category, many=True)
+    # return Response("hello")
+
+
+
+

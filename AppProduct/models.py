@@ -64,7 +64,7 @@ class AttributeType(models.Model):
 
 class Attribute(models.Model):
     attribute_name = models.CharField(max_length=100, null=True, unique=True)
-    att_type = models.ForeignKey(AttributeType, to_field='att_type', on_delete=models.CASCADE, null=True)
+    att_type = models.ForeignKey(AttributeType, on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
@@ -82,7 +82,7 @@ class Attribute(models.Model):
 
 class Variation(models.Model):
     variation_name = models.CharField(max_length=100, null=True)
-    attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
+    attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
@@ -116,7 +116,7 @@ class HeadCategory(models.Model):
 
 
 class ParentCategory(models.Model):
-    hc_name = models.ForeignKey(HeadCategory, to_field='hc_name', on_delete=models.CASCADE, null=True)
+    hc_name = models.ForeignKey(HeadCategory, on_delete=models.CASCADE, null=True)
     pc_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -134,8 +134,8 @@ class ParentCategory(models.Model):
 
 
 class Category(models.Model):
-    pc_name = models.ForeignKey(ParentCategory, to_field='pc_name', on_delete=models.CASCADE, null=True)
-    attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
+    pc_name = models.ForeignKey(ParentCategory, on_delete=models.CASCADE, null=True)
+    attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     subcategory_option = models.TextField(max_length=500, null=True)  # True, False
@@ -154,12 +154,12 @@ class Category(models.Model):
 
 
 class SubCategory(models.Model):
-    category_name = models.ForeignKey(Category, to_field='category_name', on_delete=models.CASCADE, null=True)
+    category_name = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     sub_category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
-    attribute_name = models.ForeignKey(Attribute, to_field='attribute_name', on_delete=models.CASCADE, null=True)
+    attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)

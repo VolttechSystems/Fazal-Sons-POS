@@ -30,7 +30,8 @@ urlpatterns = [
     re_path(r'action_attributes/(?P<pk>.+)/', AttributeGetView.as_view(), name='GetAttribute'),
 
     ### VARAITIONS URL
-    re_path(r'add_variation', AddVariationView.as_view(), name='AddVariation'),
+    # re_path(r'add_variation', AddVariationView.as_view(), name='AddVariation'),
+    re_path(r'add_variation', AddVariationView, name='AddVariation'),
     re_path(r'action_variation/(?P<pk>.+)/', VariationGetView.as_view(), name='GetVariation'),
 
     ### HEAD CATEGORY URL
@@ -69,5 +70,8 @@ urlpatterns = [
     re_path(r'fetch_head_to_parent_category/(?P<code>.+)/', FetchParentCategoryView, name='FetchParentCategory'),
     re_path(r'fetch_parent_to_category/(?P<code>.+)/', FetchCategoryView, name='FetchCategory'),
     re_path(r'fetch_category_to_sub_category/(?P<code>.+)/', FetchSubCategoryView, name='FetchSubCategory'),
+    
+    #VARIATION GROUP
+    re_path(r'variation_group/', VariationGroupView, name='VariationView'),
 
 ]

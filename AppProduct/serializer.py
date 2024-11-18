@@ -51,7 +51,7 @@ class BrandSerializer(serializers.ModelSerializer):
 class AttributeTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeType
-        fields = '__all__'
+        fields = ['id', 'att_type', 'status']
 
     def create(self, validated_data):
         attr_type = super().create(validated_data)
@@ -69,11 +69,14 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
 
 ### ATTRIBUTE SERIALIZER
 class AttributeSerializer(serializers.ModelSerializer):
+    attribute_name = serializers.ListField(child=serializers.CharField())
     class Meta:
         model = Attribute
-        fields = '__all__'
+        fields = ['id', 'attribute_name', 'symbol', 'description', 'status', 'att_type']
 
     def create(self, validated_data):
+        attribute_names = validated_data.get('attribute_name')
+        # print(attribute_name)
         attribute = super().create(validated_data)
         attribute.updated_at = None
         attribute.created_at = DateTime
@@ -89,8 +92,10 @@ class AttributeSerializer(serializers.ModelSerializer):
 
 ### VARIATION SERIALIZER
 class VariationSerializer(serializers.ModelSerializer):
+    # attribute_name = AttributeSerializer('id')
     class Meta:
         model = Variation
+        # fields = ['id','variation_name','symbol', 'description', 'status', 'attribute_name']
         fields = '__all__'
 
     def create(self, validated_data):
@@ -111,7 +116,7 @@ class VariationSerializer(serializers.ModelSerializer):
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HeadCategory
-        fields = "__all__"
+        fields = ['hc_name', 'symbol','description','status' ]
 
     def create(self, validated_data):
         h_category = super().create(validated_data)
@@ -131,7 +136,7 @@ class HeadCategorySerializer(serializers.ModelSerializer):
 class ParentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentCategory
-        fields = "__all__"
+        fields = ['pc_name', 'symbol','description','status' ,'hc_name']
 
     def create(self, validated_data):
         p_category = super().create(validated_data)
@@ -322,3 +327,67 @@ class ProductSerializer(serializers.ModelSerializer):
     #             validated_data['size'] = split_size[size]
     #             parent = super().create(validated_data)
     # return parent
+
+
+
+
+
+### ATTRIBUTE SERIALIZER
+class VariationGroupSerializer(serializers.Serializer):
+    att_type = serializers.CharField(required=False)
+    attribute_name = serializers.CharField(required=False)
+    variation = serializers.ListField(child=serializers.CharField())
+
+    # class Meta:
+    #     model = AttributeType
+    #     fields ='__all__'
+
+    def create(self, validated_data):
+        array = []
+        get_attribute_name = validated_data.get('attribute_name')
+        get_variations = validated_data.get('variation')
+        get_att_type = validated_data.get('att_type')
+        try:
+            get_all_att_type = AttributeType.objects.get(att_type=get_att_type)
+            if get_att_type in get_all_att_type.att_type:
+                get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
+        except:
+
+            attribute_type = AttributeType(
+                att_type=get_att_type,
+                status="active",
+                created_at=DateTime,
+            )
+            attribute_type.save()
+
+        get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
+        try:
+            get_all_attribute = Attribute.objects.get(attribute_name=get_attribute_name)
+            if get_attribute_name in get_all_attribute.attribute_name:
+                get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
+        except:
+            attribute = Attribute(
+                attribute_name=get_attribute_name,
+                att_type_id=get_attribute_type_id,
+                status="active",
+                created_at=DateTime,
+            )
+            attribute.save()
+        get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
+        if len(get_variations) > 0:
+            for variations in range(len(get_variations)):
+                variation = Variation(
+                    variation_name=get_variations[variations],
+                    attribute_name_id=get_attribute_id,
+                    status="active",
+                    created_at=DateTime,
+                )
+                variation.save()
+        # array.append(validated_data)
+        return validated_data
+
+    # def update(self, instance, validated_data):
+    #     attribute = super().update(instance, validated_data)
+    #     attribute.updated_at = DateTime
+    #     attribute.save()
+    #     return validated_data

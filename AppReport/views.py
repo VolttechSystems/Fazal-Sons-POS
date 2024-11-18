@@ -21,9 +21,8 @@ def GetAllOutletDateView(request, outlet_code):
     query = "select distinct created_at::date from tbl_transaction where outlet_code_id = '" + outlet_code + "'"
     cursor.execute(query)
     daily_report = DictinctFetchAll(cursor)
-    if len(daily_report)>0:
-        return Response(daily_report)
-    return Response("NO RECORD FOUND")
+    return Response(daily_report)
+   
 
 
 @api_view(['GET'])
@@ -33,9 +32,7 @@ def DailySaleView(request, outlet_code, date):
     query = "select invoice_code , trans.created_at , ol.outlet_name , cus.customer_type_id as customer_type, sum(grand_total::INTEGER) as total from tbl_transaction as trans INNER JOIN tbl_customer as cus on cus.cust_code = trans.cust_code_id INNER JOIN tbl_outlet as ol on ol.outlet_code = trans.outlet_code_id where trans.created_at::date = '" + date + "' and ol.outlet_code = '" + outlet_code + "' GROUP BY  invoice_code , trans.created_at ,  ol.outlet_name,  cus.customer_type_id"
     cursor.execute(query)
     daily_report = DictinctFetchAll(cursor)
-    if len(daily_report)>0:
-        return Response(daily_report)
-    return Response("NO RECORD FOUND")
+    return Response(daily_report)
 
 
 @api_view(['GET'])
@@ -62,8 +59,8 @@ def DailySaleDetailView(request, invoice_code):
 
         for x in range(len(transaction_item)):
             data_dict["items"].append(transaction_item[x])
-        return Response(data_dict)
-    return Response("NO RECORD FOUND")
+    return Response(data_dict)
+ 
 
 
 @api_view(['GET'])
@@ -86,8 +83,8 @@ def SalesReportView(request, start_date, end_date):
         data_dict["total"] = total
         sales_report.append(data_dict)
 
-        return Response(sales_report)
-    return Response("NO RECORD FOUND")
+    return Response(sales_report)
+
 
 
 @api_view(['GET'])
@@ -129,5 +126,5 @@ def ProfitReportView(request, outlet_code, date):
         data_dict["Profit"] = Profit
         profit_report.append(data_dict)
 
-        return Response(profit_report)
-    return Response("NO RECORD FOUND")
+    return Response(profit_report)
+  
