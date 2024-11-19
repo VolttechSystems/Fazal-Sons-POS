@@ -292,12 +292,12 @@ def FetchSubCategoryView(request, code):
 
 @api_view(['GET', 'POST'])
 def AddVariationGroupView(request):
+    # cursor = connections['default'].cursor()
+    # query = "select  att_type ,attribute_name, variation_name from tbl_attribute_type atp INNER JOIN tbl_attribute att on atp.id = att.att_type_id INNER JOIN tbl_variation var on att.id = var.attribute_name_id"
+    # cursor.execute(query)
+    # variation_group = DictinctFetchAll(cursor)
+    # return Response(variation_group)
     if request.method == 'GET':
-        # cursor = connections['default'].cursor()
-        # query = "select  att_type ,attribute_name, variation_name from tbl_attribute_type atp INNER JOIN tbl_attribute att on atp.id = att.att_type_id INNER JOIN tbl_variation var on att.id = var.attribute_name_id"
-        # cursor.execute(query)
-        # variation_group = DictinctFetchAll(cursor)
-        # return Response(variation_group)
         array = []
         attribute_type = AttributeType.objects.all()
         for i in range(len(attribute_type)):
@@ -329,26 +329,16 @@ def AddVariationGroupView(request):
                         Dict['attribute_name'] = att_name
                         Dict['variation_name'] = None
                         array.append(Dict)
-
         return Response(array)
-
     if request.method == 'POST':
         data = request.data
         for i in range(len(data)):
-
             serializer = VariationGroupSerializer(data=request.data[i])
-
             if serializer.is_valid():
                 serializer.save()
         return Response(data, status='200')
-        # return Response(serializer.errors, status='404')
 
-    # sub_category = SubCategory.objects.filter(category_name_id=code)
-    # serializer = SubCategorySerializer(sub_category, many=True)
-    # return Response("hello")
-
-
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def GetVariationGroupView(request, att_id):
     if request.method == 'GET':
         array = []
@@ -417,5 +407,19 @@ def GetVariationGroupView(request, att_id):
                     variation.status = 'active'
                     variation.created_at = datetime.datetime.now()
                     variation.save()
-
         return Response(data)
+    elif request.method == 'DELETE':
+       attribute = Attribute.objects.get(id=att_id)
+       variation = Variation.objects.filter(attribute_name_id=att_id)
+       for i in range(len(variation)):
+           variation[i].delete()
+       attribute.delete()
+       attribute_type = Attribute.objects.filter(att_type_id=attribute.att_type_id)
+       if len(attribute_type) == 0:
+            attribute_type = AttributeType.objects.get(id=attribute.att_type_id)
+            attribute_type.delete()
+       return Response('Deleted')
+        
+       
+       
+        # print(data)

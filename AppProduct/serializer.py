@@ -70,6 +70,7 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
 ### ATTRIBUTE SERIALIZER
 class AttributeSerializer(serializers.ModelSerializer):
     attribute_name = serializers.ListField(child=serializers.CharField())
+
     class Meta:
         model = Attribute
         fields = ['id', 'attribute_name', 'symbol', 'description', 'status', 'att_type']
@@ -116,7 +117,7 @@ class VariationSerializer(serializers.ModelSerializer):
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HeadCategory
-        fields = ['hc_name', 'symbol','description','status' ]
+        fields = ['hc_name', 'symbol', 'description', 'status']
 
     def create(self, validated_data):
         h_category = super().create(validated_data)
@@ -136,7 +137,7 @@ class HeadCategorySerializer(serializers.ModelSerializer):
 class ParentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentCategory
-        fields = ['pc_name', 'symbol','description','status' ,'hc_name']
+        fields = ['pc_name', 'symbol', 'description', 'status', 'hc_name']
 
     def create(self, validated_data):
         p_category = super().create(validated_data)
@@ -329,21 +330,13 @@ class ProductSerializer(serializers.ModelSerializer):
     # return parent
 
 
-
-
-
 ### ATTRIBUTE SERIALIZER
 class VariationGroupSerializer(serializers.Serializer):
     att_type = serializers.CharField(required=False)
     attribute_name = serializers.CharField(required=False)
     variation = serializers.ListField(child=serializers.CharField())
 
-    # class Meta:
-    #     model = AttributeType
-    #     fields ='__all__'
-
     def create(self, validated_data):
-        array = []
         get_attribute_name = validated_data.get('attribute_name')
         get_variations = validated_data.get('variation')
         get_att_type = validated_data.get('att_type')
@@ -383,27 +376,4 @@ class VariationGroupSerializer(serializers.Serializer):
                     created_at=DateTime,
                 )
                 variation.save()
-        # array.append(validated_data)
         return validated_data
-
-    # def update(self, instance, validated_data):
-    #     attribute = super().update(instance, validated_data)
-    #     attribute.updated_at = DateTime
-    #     attribute.save()
-    #     return validated_data
-
-    # [
-    #
-    #     {
-    #         "att_type_id": 5,
-    #         "attribute_name": "oil",
-    #         "variation": ["Banaspati oil", "cooking oil"],
-    #         "status": "active"
-    #     },
-    #     {
-    #         "att_type_id": 5,
-    #         "attribute_name": "size",
-    #         "variation": ["size", "medium", "Small"],
-    #         "status": "active"
-    #     }
-    # ]
