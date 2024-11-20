@@ -13,6 +13,7 @@ from django.dispatch import receiver
 from rest_framework.authtoken.models import Token
 from django.db import connections
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
+from rest_framework import status
 
 
 def DictinctFetchAll(cursor):
@@ -333,6 +334,7 @@ def AddVariationGroupView(request):
                 serializer.save()
         return Response(data, status='200')
 
+
 @api_view(['GET', 'PUT', 'DELETE'])
 def GetVariationGroupView(request, att_id):
     if request.method == 'GET':
@@ -404,19 +406,17 @@ def GetVariationGroupView(request, att_id):
                     variation.save()
         return Response(data)
     elif request.method == 'DELETE':
-       attribute = Attribute.objects.get(id=att_id)
-       variation = Variation.objects.filter(attribute_name_id=att_id)
-       for i in range(len(variation)):
-           variation[i].delete()
-       attribute.delete()
-       attribute_type = Attribute.objects.filter(att_type_id=attribute.att_type_id)
-       if len(attribute_type) == 0:
+        attribute = Attribute.objects.get(id=att_id)
+        variation = Variation.objects.filter(attribute_name_id=att_id)
+        for i in range(len(variation)):
+            variation[i].delete()
+        attribute.delete()
+        attribute_type = Attribute.objects.filter(att_type_id=attribute.att_type_id)
+        if len(attribute_type) == 0:
             attribute_type = AttributeType.objects.get(id=attribute.att_type_id)
             attribute_type.delete()
-       return Response('Deleted')
-        
-       
-       
+        return Response('Deleted')
+
 
 @api_view(['GET', 'POST'])
 def AddCategoriesView(request):
@@ -426,7 +426,7 @@ def AddCategoriesView(request):
         query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, attribute_type_id from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id"
         cursor.execute(query)
         variation_group = DictinctFetchAll(cursor)
-        
+
         if len(variation_group) > 0:
             variation_arry = []
             for i in range(len(variation_group)):
@@ -439,16 +439,15 @@ def AddCategoriesView(request):
                 variation_dict['status'] = variation_group[i]['status']
                 variation_dict['pc_name'] = variation_group[i]['pc_name']
                 if variation_group[i]['attribute_type_id'] == None:
-                      variation_dict['att_type'] = None
+                    variation_dict['att_type'] = None
                 else:
-                    attribute_type = AttributeType.objects.get(id= variation_group[i]['attribute_type_id'])
+                    attribute_type = AttributeType.objects.get(id=variation_group[i]['attribute_type_id'])
                     variation_dict['att_type'] = attribute_type.att_type
-                    
+
                 variation_arry.append(variation_dict)
-                
-                
+
         return Response(variation_arry)
-   
+
 
     elif request.method == 'POST':
         serializer = CategorySerializer(data=request.data)
@@ -456,31 +455,54 @@ def AddCategoriesView(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
- 
- 
-@api_view(['GET', 'PUT'])
-def GetCategoriesView(request):
-    if request.method == 'GET':
-        cursor = connections['default'].cursor()
-        query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, att_type from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id inner join tbl_attribute_type atp on ca.attribute_type_id = atp.id"
-        cursor.execute(query)
-        variation_group = DictinctFetchAll(cursor)
-        return Response(variation_group)
-   
 
+
+@api_view(['GET', 'PUT'])
+def GetCategoriesView(request, id):
+    try:
+        category = Category.objects.get(id=id)
+    except Category.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        serializer = CategorySerializer(category)
+        return Response(serializer.data)
+
+        # cursor = connections['default'].cursor()
+        # query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, attribute_type_id from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id where ca.id = '" + id + "'"
+        # cursor.execute(query)
+        # variation_group = DictinctFetchAll(cursor)
+        #
+        # if len(variation_group) > 0:
+        #     variation_arry = []
+        #     for i in range(len(variation_group)):
+        #         variation_dict = dict()
+        #         variation_dict['id'] = variation_group[i]['id']
+        #         variation_dict['category_name'] = variation_group[i]['category_name']
+        #         variation_dict['symbol'] = variation_group[i]['symbol']
+        #         variation_dict['subcategory_option'] = variation_group[i]['subcategory_option']
+        #         variation_dict['description'] = variation_group[i]['description']
+        #         variation_dict['status'] = variation_group[i]['status']
+        #         variation_dict['pc_name'] = variation_group[i]['pc_name']
+        #         if variation_group[i]['attribute_type_id'] == None:
+        #             variation_dict['att_type'] = None
+        #         else:
+        #             attribute_type = AttributeType.objects.get(id=variation_group[i]['attribute_type_id'])
+        #             variation_dict['att_type'] = attribute_type.att_type
+        #
+        #         variation_arry.append(variation_dict)
+        #
+        # return Response(variation_arry)
     elif request.method == 'PUT':
-        serializer = CategorySerializer(data=request.data)
+        serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-     
- 
-    
-    
+
+
 @api_view(['GET'])
 def FetchVariationGroupView(request, att_typ_id):
-     if request.method == 'GET':
+    if request.method == 'GET':
         att_id = att_typ_id
         array = []
         try:
