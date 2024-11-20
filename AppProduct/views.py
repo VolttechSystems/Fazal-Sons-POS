@@ -457,7 +457,7 @@ def AddCategoriesView(request):
         return Response(serializer.errors)
 
 
-@api_view(['GET', 'PUT'])
+@api_view(['GET', 'PUT', 'DELETE'])
 def GetCategoriesView(request, id):
     try:
         category = Category.objects.get(id=id)
@@ -498,7 +498,9 @@ def GetCategoriesView(request, id):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-
+    elif request.method == 'DELETE':
+        category.delete()
+        return Response('Deleted')
 
 @api_view(['GET'])
 def FetchVariationGroupView(request, att_typ_id):
