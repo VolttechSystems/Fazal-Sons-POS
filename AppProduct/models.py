@@ -135,7 +135,8 @@ class ParentCategory(models.Model):
 
 class Category(models.Model):
     pc_name = models.ForeignKey(ParentCategory, on_delete=models.CASCADE, null=True)
-    attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
+    # attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
+    attribute_type = models.ForeignKey(AttributeType, on_delete=models.CASCADE, null=True)
     category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     subcategory_option = models.TextField(max_length=500, null=True)  # True, False

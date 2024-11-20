@@ -157,7 +157,8 @@ class ParentCategorySerializer(serializers.ModelSerializer):
 class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
-        fields = "__all__"
+        # fields = "__all__"
+        fields = ['id','category_name', 'symbol', 'subcategory_option', 'description', 'status','pc_name',  'attribute_type']
 
     def create(self, validated_data):
         get_subcategory_option = validated_data.get('subcategory_option')

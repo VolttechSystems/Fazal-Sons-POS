@@ -75,5 +75,11 @@ urlpatterns = [
     re_path(r'variation_group/', AddVariationGroupView, name='VariationView'),
     re_path(r'action_variations_group/(?P<att_id>.+)/', GetVariationGroupView, name='GetVariation'),
     # re_path(r'action_variation_group/(?P<att_type_id>.+)/(?P<type_id>.+)/', GetVariationGroupView, name='GetVariationView'),
+    
+       ### CATEGORY URL
+    re_path(r'add_categories', AddCategoriesView, name='AddCategories'),
+    re_path(r'fetch_variations_group/(?P<att_id>.+)/', FetchVariationGroupView, name='FetxhVariationGroup'),
+    # re_path(r'add_categories', AddCategoriesView.as_view(), name='AddCategories'),
+    # re_path(r'action_category/(?P<pk>.+)/', CategoryGetView.as_view(), name='GetCategory'),
 
 ]
