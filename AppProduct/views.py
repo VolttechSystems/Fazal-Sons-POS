@@ -292,11 +292,6 @@ def FetchSubCategoryView(request, code):
 
 @api_view(['GET', 'POST'])
 def AddVariationGroupView(request):
-    # cursor = connections['default'].cursor()
-    # query = "select  att_type ,attribute_name, variation_name from tbl_attribute_type atp INNER JOIN tbl_attribute att on atp.id = att.att_type_id INNER JOIN tbl_variation var on att.id = var.attribute_name_id"
-    # cursor.execute(query)
-    # variation_group = DictinctFetchAll(cursor)
-    # return Response(variation_group)
     if request.method == 'GET':
         array = []
         attribute_type = AttributeType.objects.all()
@@ -427,10 +422,32 @@ def GetVariationGroupView(request, att_id):
 def AddCategoriesView(request):
     if request.method == 'GET':
         cursor = connections['default'].cursor()
-        query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, att_type from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id inner join tbl_attribute_type atp on ca.attribute_type_id = atp.id"
+        # query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, att_type from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id inner join tbl_attribute_type atp on ca.attribute_type_id = atp.id"
+        query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, attribute_type_id from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id"
         cursor.execute(query)
         variation_group = DictinctFetchAll(cursor)
-        return Response(variation_group)
+        
+        if len(variation_group) > 0:
+            variation_arry = []
+            for i in range(len(variation_group)):
+                variation_dict = dict()
+                variation_dict['id'] = variation_group[i]['id']
+                variation_dict['category_name'] = variation_group[i]['category_name']
+                variation_dict['symbol'] = variation_group[i]['symbol']
+                variation_dict['subcategory_option'] = variation_group[i]['subcategory_option']
+                variation_dict['description'] = variation_group[i]['description']
+                variation_dict['status'] = variation_group[i]['status']
+                variation_dict['pc_name'] = variation_group[i]['pc_name']
+                if variation_group[i]['attribute_type_id'] == None:
+                      variation_dict['att_type'] = None
+                else:
+                    attribute_type = AttributeType.objects.get(id= variation_group[i]['attribute_type_id'])
+                    variation_dict['att_type'] = attribute_type.att_type
+                    
+                variation_arry.append(variation_dict)
+                
+                
+        return Response(variation_arry)
    
 
     elif request.method == 'POST':
@@ -439,6 +456,26 @@ def AddCategoriesView(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
+ 
+ 
+@api_view(['GET', 'PUT'])
+def GetCategoriesView(request):
+    if request.method == 'GET':
+        cursor = connections['default'].cursor()
+        query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, att_type from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id inner join tbl_attribute_type atp on ca.attribute_type_id = atp.id"
+        cursor.execute(query)
+        variation_group = DictinctFetchAll(cursor)
+        return Response(variation_group)
+   
+
+    elif request.method == 'PUT':
+        serializer = CategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data)
+        return Response(serializer.errors)
+     
+ 
     
     
 @api_view(['GET'])
