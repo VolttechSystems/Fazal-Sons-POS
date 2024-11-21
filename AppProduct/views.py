@@ -445,13 +445,6 @@ def AddCategoriesView(request):
                         attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
                         attribute_group_array.append(attribute)
                 variation_dict['attribute_group'] = attribute_group_array
-
-                # if variation_group[i]['attribute_type_id'] == None:
-                #     variation_dict['att_type'] = None
-                # else:
-                #     attribute_type = AttributeType.objects.get(id=variation_group[i]['attribute_type_id'])
-                #     variation_dict['att_type'] = attribute_type.att_type
-
                 variation_arry.append(variation_dict)
 
         return Response(variation_arry)
@@ -471,34 +464,42 @@ def GetCategoriesView(request, id):
     except Category.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
-        serializer = CategorySerializer(category)
-        return Response(serializer.data)
+    #     serializer = CategorySerializer(category)
+    #     return Response(category)
 
-        # cursor = connections['default'].cursor()
-        # query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, attribute_type_id from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id where ca.id = '" + id + "'"
-        # cursor.execute(query)
-        # variation_group = DictinctFetchAll(cursor)
-        #
-        # if len(variation_group) > 0:
-        #     variation_arry = []
-        #     for i in range(len(variation_group)):
-        #         variation_dict = dict()
-        #         variation_dict['id'] = variation_group[i]['id']
-        #         variation_dict['category_name'] = variation_group[i]['category_name']
-        #         variation_dict['symbol'] = variation_group[i]['symbol']
-        #         variation_dict['subcategory_option'] = variation_group[i]['subcategory_option']
-        #         variation_dict['description'] = variation_group[i]['description']
-        #         variation_dict['status'] = variation_group[i]['status']
-        #         variation_dict['pc_name'] = variation_group[i]['pc_name']
-        #         if variation_group[i]['attribute_type_id'] == None:
-        #             variation_dict['att_type'] = None
-        #         else:
-        #             attribute_type = AttributeType.objects.get(id=variation_group[i]['attribute_type_id'])
-        #             variation_dict['att_type'] = attribute_type.att_type
-        #
-        #         variation_arry.append(variation_dict)
-        #
-        # return Response(variation_arry)
+        cursor = connections['default'].cursor()
+        query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id where ca.id = '" + id + "'"
+        cursor.execute(query)
+        variation_group = DictinctFetchAll(cursor)
+
+        if len(variation_group) > 0:
+            variation_arry = []
+            for i in range(len(variation_group)):
+                variation_dict = dict()
+                variation_dict['id'] = variation_group[i]['id']
+                variation_dict['category_name'] = variation_group[i]['category_name']
+                variation_dict['symbol'] = variation_group[i]['symbol']
+                variation_dict['subcategory_option'] = variation_group[i]['subcategory_option']
+                variation_dict['description'] = variation_group[i]['description']
+                variation_dict['status'] = variation_group[i]['status']
+                variation_dict['pc_name'] = variation_group[i]['pc_name']
+                category_attribute = CatrgoryAttribute.objects.filter(category_id=id)
+                attribute_group_array = []
+                if len(category_attribute) > 0:
+                    for i in range(len(category_attribute)):
+                        attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
+                        attribute_group_array.append(attribute)
+                variation_dict['attribute_group'] = attribute_group_array
+
+                # if variation_group[i]['attribute_type_id'] == None:
+                #     variation_dict['att_type'] = None
+                # else:
+                #     attribute_type = AttributeType.objects.get(id=variation_group[i]['attribute_type_id'])
+                #     variation_dict['att_type'] = attribute_type.att_type
+
+                variation_arry.append(variation_dict)
+
+        return Response(variation_arry)
     elif request.method == 'PUT':
         serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():

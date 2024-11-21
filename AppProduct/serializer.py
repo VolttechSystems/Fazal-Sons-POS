@@ -162,8 +162,9 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         # fields = "__all__"
-        fields = ['id', 'category_name', 'symbol', 'subcategory_option', 'description', 'status', 'pc_name',
-                  'attribute_group']
+        # fields = ['id', 'category_name', 'symbol', 'subcategory_option', 'description', 'status', 'pc_name',
+        #           'attribute_group']
+        fields = '__all__'
 
     def create(self, validated_data):
         # get_cat_id = validated_data.get('id')
