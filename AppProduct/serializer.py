@@ -6,7 +6,6 @@ from AppStock.models import *
 from rest_framework import status
 from rest_framework.response import Response
 
-
 DateTime = datetime.datetime.now()
 
 
@@ -158,15 +157,21 @@ class ParentCategorySerializer(serializers.ModelSerializer):
 
 ### CATEGORY SERIALIZER
 class CategorySerializer(serializers.ModelSerializer):
+    attribute_group = serializers.ListField(child=serializers.CharField())
+
     class Meta:
         model = Category
         # fields = "__all__"
-        fields = ['id','category_name', 'symbol', 'subcategory_option', 'description', 'status','pc_name',  'attribute_type']
+        fields = ['id', 'category_name', 'symbol', 'subcategory_option', 'description', 'status', 'pc_name',
+                  'attribute_group']
 
     def create(self, validated_data):
+        # get_cat_id = validated_data.get('id')
         get_subcategory_option = validated_data.get('subcategory_option')
+        # get_attribute_groups = validated_data.get('attribute_group')
         if get_subcategory_option == 'True':
-            validated_data['attribute_type'] = None
+            validated_data['attribute_group'] = []
+
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
         category = super().create(validated_data)
@@ -350,7 +355,7 @@ class VariationGroupSerializer(serializers.Serializer):
             get_attribute_type_id = attt_type.id
         # except AttributeType.DoesNotExist:
         except:
-             return Response("Incorrect Attribute Type ID")
+            return Response("Incorrect Attribute Type ID")
         try:
             get_all_attribute = Attribute.objects.get(attribute_name=get_attribute_name)
             if get_attribute_name in get_all_attribute.attribute_name:
@@ -374,9 +379,6 @@ class VariationGroupSerializer(serializers.Serializer):
                 )
                 variation.save()
         return validated_data
-
-
-
 
 # class VariationGroupSerializer(serializers.Serializer):
 #     att_type = serializers.CharField(required=False)

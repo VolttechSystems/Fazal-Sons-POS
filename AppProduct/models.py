@@ -135,8 +135,9 @@ class ParentCategory(models.Model):
 
 class Category(models.Model):
     pc_name = models.ForeignKey(ParentCategory, on_delete=models.CASCADE, null=True)
+    attribute_group = models.ManyToManyField(Attribute, through='CatrgoryAttribute')
     # attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
-    attribute_type = models.ForeignKey(AttributeType, on_delete=models.CASCADE, null=True)
+    # attribute_type = models.ForeignKey(AttributeType, on_delete=models.CASCADE, null=True)
     category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     subcategory_option = models.TextField(max_length=500, null=True)  # True, False
@@ -152,6 +153,13 @@ class Category(models.Model):
 
     def __str__(self):
         return self.category_name
+
+
+class CatrgoryAttribute(models.Model):
+    category = models.ForeignKey(Category, on_delete=models.CASCADE)
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+    class Meta:
+        db_table = 'tbl_category_attribute'
 
 
 class SubCategory(models.Model):

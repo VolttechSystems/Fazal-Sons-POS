@@ -1,5 +1,6 @@
 from django.urls import re_path
 from AppProduct.views import *
+
 # from rest_framework.authtoken.views import obtain_auth_token
 # from rest_framework.routers import DefaultRouter
 # from rest_framework.authtoken import views
@@ -62,21 +63,21 @@ urlpatterns = [
     re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
     re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
     re_path(r'fetch_variation/(?P<code>.+)/', FetchlVariationView, name='FetchAttributeName'),
-    
+
     ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK 
     re_path(r'get_all_product/', GetAllProductView, name='GetAllProduct'),
-    
+
     ### FETCH ALL CATEGORIES ACCORDING TO THEIR SUB_CATEGORIES
     re_path(r'fetch_head_to_parent_category/(?P<code>.+)/', FetchParentCategoryView, name='FetchParentCategory'),
     re_path(r'fetch_parent_to_category/(?P<code>.+)/', FetchCategoryView, name='FetchCategory'),
     re_path(r'fetch_category_to_sub_category/(?P<code>.+)/', FetchSubCategoryView, name='FetchSubCategory'),
-    
-    #VARIATION GROUP
+
+    # VARIATION GROUP
     re_path(r'variation_group/', AddVariationGroupView, name='VariationView'),
     re_path(r'action_variations_group/(?P<att_id>.+)/', GetVariationGroupView, name='GetVariation'),
     # re_path(r'action_variation_group/(?P<att_type_id>.+)/(?P<type_id>.+)/', GetVariationGroupView, name='GetVariationView'),
-    
-       ### CATEGORY URL
+
+    ### CATEGORY URL
     re_path(r'add_categories', AddCategoriesView, name='AddCategories'),
     re_path(r'fetch_variations_group/(?P<att_typ_id>.+)', FetchVariationGroupView, name='FetxhAttributeGroup'),
     re_path(r'action_categories/(?P<id>.+)/', GetCategoriesView, name='GetCategories'),
