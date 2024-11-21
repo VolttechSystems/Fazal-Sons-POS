@@ -3,6 +3,9 @@ from AppProduct.models import *
 import datetime
 from AppCustomer.utils import *
 from AppStock.models import *
+from rest_framework import status
+from rest_framework.response import Response
+
 
 DateTime = datetime.datetime.now()
 
@@ -338,23 +341,16 @@ class VariationGroupSerializer(serializers.Serializer):
     variation = serializers.ListField(child=serializers.CharField())
 
     def create(self, validated_data):
+
         get_attribute_name = validated_data.get('attribute_name')
         get_variations = validated_data.get('variation')
         get_att_type = validated_data.get('att_type')
         try:
-            get_all_att_type = AttributeType.objects.get(att_type=get_att_type)
-            if get_att_type in get_all_att_type.att_type:
-                get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
+            attt_type = AttributeType.objects.get(id=get_att_type)
+            get_attribute_type_id = attt_type.id
+        # except AttributeType.DoesNotExist:
         except:
-
-            attribute_type = AttributeType(
-                att_type=get_att_type,
-                status="active",
-                created_at=DateTime,
-            )
-            attribute_type.save()
-
-        get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
+             return Response("Incorrect Attribute Type ID")
         try:
             get_all_attribute = Attribute.objects.get(attribute_name=get_attribute_name)
             if get_attribute_name in get_all_attribute.attribute_name:
@@ -378,3 +374,54 @@ class VariationGroupSerializer(serializers.Serializer):
                 )
                 variation.save()
         return validated_data
+
+
+
+
+# class VariationGroupSerializer(serializers.Serializer):
+#     att_type = serializers.CharField(required=False)
+#     attribute_name = serializers.CharField(required=False)
+#     variation = serializers.ListField(child=serializers.CharField())
+
+#     def create(self, validated_data):
+
+#         get_attribute_name = validated_data.get('attribute_name')
+#         get_variations = validated_data.get('variation')
+#         get_att_type = validated_data.get('att_type')
+#         try:
+#             get_all_att_type = AttributeType.objects.get(att_type=get_att_type)
+#             if get_att_type in get_all_att_type.att_type:
+#                 get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
+#         except:
+
+#             attribute_type = AttributeType(
+#                 att_type=get_att_type,
+#                 status="active",
+#                 created_at=DateTime,
+#             )
+#             attribute_type.save()
+
+#         get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
+#         try:
+#             get_all_attribute = Attribute.objects.get(attribute_name=get_attribute_name)
+#             if get_attribute_name in get_all_attribute.attribute_name:
+#                 get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
+#         except:
+#             attribute = Attribute(
+#                 attribute_name=get_attribute_name,
+#                 att_type_id=get_attribute_type_id,
+#                 status="active",
+#                 created_at=DateTime,
+#             )
+#             attribute.save()
+#         get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
+#         if len(get_variations) > 0:
+#             for variations in range(len(get_variations)):
+#                 variation = Variation(
+#                     variation_name=get_variations[variations],
+#                     attribute_name_id=get_attribute_id,
+#                     status="active",
+#                     created_at=DateTime,
+#                 )
+#                 variation.save()
+#         return validated_data

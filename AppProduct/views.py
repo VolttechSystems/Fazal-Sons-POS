@@ -333,6 +333,7 @@ def AddVariationGroupView(request):
             if serializer.is_valid():
                 serializer.save()
         return Response(data, status='200')
+    return Response('Worng')
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
