@@ -450,7 +450,7 @@ def AddCategoriesView(request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.initial_data)
         return Response(serializer.errors)
 
 @api_view(['GET', 'PUT', 'DELETE'])
