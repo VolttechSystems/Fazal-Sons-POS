@@ -64,7 +64,7 @@ urlpatterns = [
     re_path(r'fetch_variations_group/(?P<att_typ_id>.+)', FetchVariationGroupView, name='FetxhAttributeGroup'),
     ### CATEGORY URL
     re_path(r'add_categories', AddCategoriesView, name='AddCategories'),
-    re_path(r'action_categories/(?P<id>.+)/', GetCategoriesView, name='GetCategories'),
+    re_path(r'action_categories/(?P<id>.+)', GetCategoriesView, name='GetCategories'),
 
 ]
 
