@@ -449,11 +449,12 @@ def AddCategoriesView(request):
 
         return Response(variation_arry)
 
+
     elif request.method == 'POST':
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.initial_data)
+            return Response(serializer.data)
         return Response(serializer.errors)
 
 
@@ -464,9 +465,6 @@ def GetCategoriesView(request, id):
     except Category.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == 'GET':
-    #     serializer = CategorySerializer(category)
-    #     return Response(category)
-
         cursor = connections['default'].cursor()
         query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id where ca.id = '" + id + "'"
         cursor.execute(query)
@@ -490,13 +488,6 @@ def GetCategoriesView(request, id):
                         attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
                         attribute_group_array.append(attribute)
                 variation_dict['attribute_group'] = attribute_group_array
-
-                # if variation_group[i]['attribute_type_id'] == None:
-                #     variation_dict['att_type'] = None
-                # else:
-                #     attribute_type = AttributeType.objects.get(id=variation_group[i]['attribute_type_id'])
-                #     variation_dict['att_type'] = attribute_type.att_type
-
                 variation_arry.append(variation_dict)
 
         return Response(variation_arry)
@@ -504,12 +495,11 @@ def GetCategoriesView(request, id):
         serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.initial_data)
         return Response(serializer.errors)
     elif request.method == 'DELETE':
         category.delete()
         return Response('Deleted')
-
 
 @api_view(['GET'])
 def FetchVariationGroupView(request, att_typ_id):
@@ -547,13 +537,18 @@ def FetchVariationGroupView(request, att_typ_id):
                 array.append(Dict)
         return Response(array)
 
+
+
+
+
+
+
+
 # {
 #     "category_name": "Shalwar Kameez",
 #     "symbol": "a",
-#     "subcategory_option": "True",
+#     "subcategory_option": "a",
 #     "description": "a",
 #     "status": "active",
-#     "pc_name": "15",
-#     "attribute_groups":[]
-#
+#     "pc_name": "15"
 # }

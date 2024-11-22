@@ -167,22 +167,18 @@ class CategorySerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def create(self, validated_data):
-        # get_cat_id = validated_data.get('id')
         get_subcategory_option = validated_data.get('subcategory_option')
-        # get_attribute_groups = validated_data.get('attribute_group')
         if get_subcategory_option == 'True':
             validated_data['attribute_group'] = []
-
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
         category = super().create(validated_data)
         return category
 
     def update(self, instance, validated_data):
-
         get_subcategory_option = validated_data.get('subcategory_option')
         if get_subcategory_option == 'True':
-            validated_data['attribute_type'] = None
+            validated_data['attribute_group'] = []
         validated_data['updated_at'] = DateTime
         category = super().update(instance, validated_data)
         return category
