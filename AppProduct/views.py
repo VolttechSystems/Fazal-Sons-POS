@@ -422,13 +422,11 @@ def GetVariationGroupView(request, att_id):
 def AddCategoriesView(request):
     if request.method == 'GET':
         cursor = connections['default'].cursor()
-        # query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, att_type from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id inner join tbl_attribute_type atp on ca.attribute_type_id = atp.id"
         query = "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id"
         cursor.execute(query)
         variation_group = DictinctFetchAll(cursor)
         variation_arry = []
         if len(variation_group) > 0:
-
             for i in range(len(variation_group)):
                 variation_dict = dict()
                 variation_dict['id'] = variation_group[i]['id']
@@ -446,9 +444,7 @@ def AddCategoriesView(request):
                         attribute_group_array.append(attribute)
                 variation_dict['attribute_group'] = attribute_group_array
                 variation_arry.append(variation_dict)
-
         return Response(variation_arry)
-
 
     elif request.method == 'POST':
         serializer = CategorySerializer(data=request.data)
@@ -456,7 +452,6 @@ def AddCategoriesView(request):
             serializer.save()
             return Response(serializer.data)
         return Response(serializer.errors)
-
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def GetCategoriesView(request, id):
@@ -489,8 +484,8 @@ def GetCategoriesView(request, id):
                         attribute_group_array.append(attribute)
                 variation_dict['attribute_group'] = attribute_group_array
                 variation_arry.append(variation_dict)
-
         return Response(variation_arry)
+
     elif request.method == 'PUT':
         serializer = CategorySerializer(category, data=request.data)
         if serializer.is_valid():
@@ -536,19 +531,3 @@ def FetchVariationGroupView(request, att_typ_id):
                 Dict['variation'] = None
                 array.append(Dict)
         return Response(array)
-
-
-
-
-
-
-
-
-# {
-#     "category_name": "Shalwar Kameez",
-#     "symbol": "a",
-#     "subcategory_option": "a",
-#     "description": "a",
-#     "status": "active",
-#     "pc_name": "15"
-# }

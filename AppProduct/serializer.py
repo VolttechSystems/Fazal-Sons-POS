@@ -139,7 +139,7 @@ class HeadCategorySerializer(serializers.ModelSerializer):
 class ParentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentCategory
-        fields = ['pc_name', 'symbol', 'description', 'status', 'hc_name']
+        fields = ['id','pc_name', 'symbol', 'description', 'status', 'hc_name']
 
     def create(self, validated_data):
         p_category = super().create(validated_data)
@@ -161,9 +161,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Category
-        # fields = "__all__"
-        # fields = ['id', 'category_name', 'symbol', 'subcategory_option', 'description', 'status', 'pc_name',
-        #           'attribute_group']
         fields = '__all__'
 
     def create(self, validated_data):
@@ -204,8 +201,20 @@ class SubCategorySerializer(serializers.ModelSerializer):
         return sub_category
 
 
+class VariationSerializers(serializers.Serializer):
+    color = serializers.CharField(max_length=100)
+    size = serializers.CharField(max_length=100)
+
+
 ### TEMPORARY PRODUCT SERIALIZER
 class TempProductSerializer(serializers.ModelSerializer):
+    color = serializers.ListField(child=serializers.CharField())
+    attribute = serializers.ListField(child=serializers.CharField())
+    variations = serializers.ListField(child=serializers.ListField())
+
+    # variations = serializers.CharField(max_length=255)
+    # variations = VariationSerializers(many=True)
+
     class Meta:
         model = TemporaryProduct
         fields = '__all__'
@@ -217,48 +226,80 @@ class TempProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         parent = ''
-        used_for_inventory = validated_data.get('used_for_inventory')
-        colors = validated_data.get('color')
-        colors = colors.replace("'", "")
-        colors = colors.replace("[", "")
-        colors = colors.replace("]", "")
+        get_color = validated_data.get('color')
+        get_attribute = validated_data.get('attribute')
+        get_variations = validated_data.get('variations')
+        len_variation = len(get_variations)
+        if len(get_variations) > 0:
+            Dict = dict()
 
-        sizes = validated_data.get('size')
-        sizes = sizes.replace("'", "")
-        sizes = sizes.replace("[", "")
-        sizes = sizes.replace("]", "")
+            vriation_array = []
+            for i in range(0, 1):
+                var = get_variations[0]
+                for y in range(len(var)):
+                    bb = var[y]
+                    for x in range(1, len_variation):
+                        vars = get_variations[x]
+                        for z in range(len(vars)):
+                            aa = vars[z]
 
-        split_color = colors.split(",")
-        len_color = len(split_color)
+                            final = str(bb) + "-" + str(aa)
+                            vriation_array.append(final)
 
-        split_size = sizes.split(",")
-        len_size = len(split_size)
 
-        if used_for_inventory == 'true':
-            if len_color > 0:
-                for size in range(len_size):
-                    for color in range(len_color):
-                        auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
-                        validated_data['sku'] = auto_sku_code
-                        validated_data['size'] = split_size[size].strip()
-                        validated_data['color'] = split_color[color].strip()
-                        validated_data['created_at'] = DateTime
-                        parent = super().create(validated_data)
-        else:
-            if len_size > 0:
-                for size in range(len_size):
-                    auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
-                    validated_data['sku'] = auto_sku_code
-                    validated_data['size'] = split_size[size].strip()
-                    validated_data['color'] = 'None'
-                    validated_data['created_at'] = DateTime
-                    parent = super().create(validated_data)
+            # len_var = len(var)
+            # if len_var > 0:
+            #     for x in range(len_variation):
+            #         g = var[x]
+
+        # for color in range(len(get_color)):
+        #     # for attribute in range(len(get_attribute)):
+        #     for variation in range(len(get_variations)):
+        #         auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
+        #         validated_data['sku'] = auto_sku_code
+        #         validated_data['color'] = get_color[color]
+        #         validated_data['size'] = get_variations[variation]
+        #         validated_data['created_at'] = DateTime
+        # parent = super().create(validated_data)
         return parent
 
-    def update(self, instance, validated_data):
-        validated_data['updated_at'] = DateTime
-        parent = super().update(instance, validated_data)
-        return parent
+
+# sizes = validated_data.get('size')
+# sizes = sizes.replace("'", "")
+# sizes = sizes.replace("[", "")
+# sizes = sizes.replace("]", "")
+#
+# split_color = colors.split(",")
+# len_color = len(split_color)
+#
+# split_size = sizes.split(",")
+# len_size = len(split_size)
+#
+# if used_for_inventory == 'true':
+#     if len_color > 0:
+#         for size in range(len_size):
+#             for color in range(len_color):
+#                 auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
+#                 validated_data['sku'] = auto_sku_code
+#                 validated_data['size'] = split_size[size].strip()
+#                 validated_data['color'] = split_color[color].strip()
+#                 validated_data['created_at'] = DateTime
+#                 parent = super().create(validated_data)
+# else:
+#     if len_size > 0:
+#         for size in range(len_size):
+#             auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
+#             validated_data['sku'] = auto_sku_code
+#             validated_data['size'] = split_size[size].strip()
+#             validated_data['color'] = 'None'
+#             validated_data['created_at'] = DateTime
+#             parent = super().create(validated_data)
+
+
+def update(self, instance, validated_data):
+    validated_data['updated_at'] = DateTime
+    parent = super().update(instance, validated_data)
+    return parent
 
 
 ### PRODUCT SERIALIZER
@@ -311,30 +352,6 @@ class ProductSerializer(serializers.ModelSerializer):
         parent = super().update(instance, validated_data)
         return parent
 
-    # parent = ''
-    # used_for_inventory = validated_data.get('used_for_inventory')
-    # colors = validated_data.get('color')
-    # sizes = validated_data.get('size')
-    # split_color = colors.split("^")
-    # len_color = len(split_color)
-    #
-    # split_size = sizes.split("^")
-    # len_size = len(split_size)
-    #
-    # if used_for_inventory == 'true':
-    #     if len_color > 0:
-    #         for size in range(len_size):
-    #             for color in range(len_color):
-    #                 validated_data['size'] = split_size[size]
-    #                 validated_data['color'] = split_color[color]
-    #                 parent = super().create(validated_data)
-    # else:
-    #     if len_size > 0:
-    #         for size in range(len_size):
-    #             validated_data['size'] = split_size[size]
-    #             parent = super().create(validated_data)
-    # return parent
-
 
 ### ATTRIBUTE SERIALIZER
 class VariationGroupSerializer(serializers.Serializer):
@@ -350,7 +367,6 @@ class VariationGroupSerializer(serializers.Serializer):
         try:
             attt_type = AttributeType.objects.get(id=get_att_type)
             get_attribute_type_id = attt_type.id
-        # except AttributeType.DoesNotExist:
         except:
             return Response("Incorrect Attribute Type ID")
         try:
@@ -366,15 +382,21 @@ class VariationGroupSerializer(serializers.Serializer):
             )
             attribute.save()
         get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
+
         if len(get_variations) > 0:
             for variations in range(len(get_variations)):
-                variation = Variation(
-                    variation_name=get_variations[variations],
-                    attribute_name_id=get_attribute_id,
-                    status="active",
-                    created_at=DateTime,
-                )
-                variation.save()
+                try:
+                    variation = Variation.objects.filter(attribute_name_id=get_attribute_id)
+                    if get_variations[variations] in variation[variations].variation_name:
+                        pass
+                except:
+                    variation = Variation(
+                        variation_name=get_variations[variations],
+                        attribute_name_id=get_attribute_id,
+                        status="active",
+                        created_at=DateTime,
+                    )
+                    variation.save()
         return validated_data
 
 # class VariationGroupSerializer(serializers.Serializer):
