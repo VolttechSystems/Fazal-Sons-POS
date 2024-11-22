@@ -170,6 +170,9 @@ class CategorySerializer(serializers.ModelSerializer):
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
         category = super().create(validated_data)
+        validated_data['category_name'] = None
+        # category = Category.objects.get(category_name=validated_data['category_name'])
+
         return category
 
     def update(self, instance, validated_data):
