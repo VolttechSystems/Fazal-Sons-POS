@@ -241,7 +241,18 @@ class TempProductSerializer(serializers.ModelSerializer):
                         validated_data['description'] = specs
                         validated_data['created_at'] = DateTime
                         parent = super().create(validated_data)
-                return parent
+            else:
+                for variation in initial_variations:
+                    auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
+                    validated_data['sku'] = auto_sku_code
+                    validated_data['color'] = "FYP"
+                    dd = list(variation)
+                    specs = ", ".join(map(str, dd))
+                    validated_data['description'] = specs
+                    validated_data['created_at'] = DateTime
+                    parent = super().create(validated_data)
+
+            return parent
 
 
 def update(self, instance, validated_data):
@@ -264,15 +275,15 @@ class ProductSerializer(serializers.ModelSerializer):
             auto_code = AutoGenerateCodeForModel(Product, 'sku', 'PR-')
             validated_data['product_name'] = tem_product[x].product_name
             validated_data['sku'] = auto_code
-            validated_data['outlet_name'] = tem_product[x].outlet_name
-            validated_data['sub_category_name'] = tem_product[x].sub_category_name
-            validated_data['brand_name'] = tem_product[x].brand_name
+            validated_data['outlet'] = tem_product[x].outlet
+            validated_data['sub_category'] = tem_product[x].sub_category
+            validated_data['category'] = tem_product[x].category
+            validated_data['brand'] = tem_product[x].brand
             validated_data['season'] = tem_product[x].season
             validated_data['description'] = tem_product[x].description
             validated_data['color'] = tem_product[x].color
             validated_data['size'] = tem_product[x].size
             validated_data['image'] = tem_product[x].image
-            validated_data['used_for_inventory'] = tem_product[x].used_for_inventory
             validated_data['cost_price'] = tem_product[x].cost_price
             validated_data['selling_price'] = tem_product[x].selling_price
             validated_data['discount_price'] = tem_product[x].discount_price
