@@ -417,6 +417,42 @@ def GetVariationGroupView(request, att_id):
             attribute_type.delete()
         return Response('Deleted')
 
+@api_view(['GET'])
+def FetchVariationGroupView(request, att_typ_id):
+    if request.method == 'GET':
+        att_id = att_typ_id
+        array = []
+        try:
+            attribute_type = AttributeType.objects.get(id=att_id)
+            attribute = Attribute.objects.filter(att_type=attribute_type.id)
+        except:
+            return Response("NO RECORD FOUND")
+        for i in range(len(attribute)):
+            att_type = attribute_type.att_type
+            att_type_id = attribute_type.id
+            att_name = attribute[i].attribute_name
+            attribute_name_id = attribute[i].id
+
+            variation = Variation.objects.filter(attribute_name=attribute_name_id)
+            if len(variation) > 0:
+                variation_name = []
+                for i in range(len(variation)):
+                    variation_name.append(variation[i].variation_name)
+                Dict = dict()
+                Dict['att_id'] = att_id
+                Dict['att_type'] = att_type
+                Dict['attribute_name'] = att_name
+                Dict['variation'] = variation_name
+                array.append(Dict)
+            elif len(variation) == 0:
+                Dict = dict()
+                Dict['att_id'] = att_id
+                Dict['att_type'] = att_type
+                Dict['attribute_name'] = att_name
+                Dict['variation'] = None
+                array.append(Dict)
+        return Response(array)
+
 
 @api_view(['GET', 'POST'])
 def AddCategoriesView(request):
@@ -517,37 +553,64 @@ def GetCategoriesView(request, id):
         return Response('Deleted')
 
 @api_view(['GET'])
-def FetchVariationGroupView(request, att_typ_id):
+def FetchCategoriesView(request, id):
     if request.method == 'GET':
-        att_id = att_typ_id
-        array = []
         try:
-            attribute_type = AttributeType.objects.get(id=att_id)
-            attribute = Attribute.objects.filter(att_type=attribute_type.id)
-        except:
-            return Response("NO RECORD FOUND")
-        for i in range(len(attribute)):
-            att_type = attribute_type.att_type
-            att_type_id = attribute_type.id
-            att_name = attribute[i].attribute_name
-            attribute_name_id = attribute[i].id
+            category = Category.objects.get(id=id)
+        except Category.DoesNotExist:
+            return Response("invalid id")
 
-            variation = Variation.objects.filter(attribute_name=attribute_name_id)
-            if len(variation) > 0:
-                variation_name = []
-                for i in range(len(variation)):
-                    variation_name.append(variation[i].variation_name)
-                Dict = dict()
-                Dict['att_id'] = att_id
-                Dict['att_type'] = att_type
-                Dict['attribute_name'] = att_name
-                Dict['variation'] = variation_name
-                array.append(Dict)
-            elif len(variation) == 0:
-                Dict = dict()
-                Dict['att_id'] = att_id
-                Dict['att_type'] = att_type
-                Dict['attribute_name'] = att_name
-                Dict['variation'] = None
-                array.append(Dict)
-        return Response(array)
+        category_attribute = CatrgoryAttribute.objects.filter(category_id=category.id)
+        cat_array = []
+        if len(category_attribute) > 0:
+            for i in range(len(category_attribute)):
+                try:
+                    attribute = Attribute.objects.get(id=category_attribute[i].attribute_id)
+                except:
+                    return Response("Attribute not found against this category")
+
+                variation = Variation.objects.filter(attribute_name_id=attribute.id)
+                if len(variation) > 0:
+                    cat_dict = dict()
+                    cat_dict["id"] = category.id
+                    cat_dict["category"] = category.category_name
+                    cat_dict["attribute"] = attribute.attribute_name
+                    variation_array = []
+                    for x in range(len(variation)):
+                        variation_array.append(variation[x].variation_name)
+                        cat_dict["variation"] =variation_array
+                    cat_array.append(cat_dict)
+            return Response(cat_array)
+
+    #     att_id = att_typ_id
+    #     array = []
+    #     try:
+    #     #     attribute_type = AttributeType.objects.get(id=att_id)
+    #     #     attribute = Attribute.objects.filter(att_type=attribute_type.id)
+    #     # except:
+    #     #     return Response("NO RECORD FOUND")
+    #     # for i in range(len(attribute)):
+    #     #     att_type = attribute_type.att_type
+    #     #     att_type_id = attribute_type.id
+    #     #     att_name = attribute[i].attribute_name
+    #     #     attribute_name_id = attribute[i].id
+    #     #
+    #     #     variation = Variation.objects.filter(attribute_name=attribute_name_id)
+    #     #     if len(variation) > 0:
+    #     #         variation_name = []
+    #     #         for i in range(len(variation)):
+    #     #             variation_name.append(variation[i].variation_name)
+    #     #         Dict = dict()
+    #     #         Dict['att_id'] = att_id
+    #     #         Dict['att_type'] = att_type
+    #     #         Dict['attribute_name'] = att_name
+    #     #         Dict['variation'] = variation_name
+    #     #         array.append(Dict)
+    #     #     elif len(variation) == 0:
+    #     #         Dict = dict()
+    #     #         Dict['att_id'] = att_id
+    #     #         Dict['att_type'] = att_type
+    #     #         Dict['attribute_name'] = att_name
+    #     #         Dict['variation'] = None
+    #     #         array.append(Dict)
+    #     # return Response(array)
