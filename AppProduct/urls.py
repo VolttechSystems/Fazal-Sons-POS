@@ -67,13 +67,9 @@ urlpatterns = [
     re_path(r'action_categories/(?P<id>.+)', GetCategoriesView, name='GetCategories'),
     re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchtCategories'),
 
-    re_path('upload/', ImageUploadView.as_view(), name='image-upload'),
+    # re_path('upload/', ImageUploadView.as_view(), name='image-upload'),
 
     re_path(r'add_subcategories', AddSubCategoriesView, name='AddSubCategories'),
     re_path(r'action_subcategories/(?P<id>.+)', GetSubCategoriesView, name='GetSubCategories'),
 
 ]
-
-# color = [black, blue]
-# Macbook = [13,15,17]
-# Processor = [i3,i5]

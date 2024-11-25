@@ -532,7 +532,7 @@ def AddCategoriesView(request):
             category_dict['attribute_group'] = attribute_group_array
             category_arry.append(category_dict)
             return Response(category_arry)
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'PUT', 'DELETE'])
@@ -607,7 +607,7 @@ def FetchCategoriesView(request, id):
                         variation_array.append(variation[x].variation_name)
                         cat_dict["variation"] = variation_array
                     cat_array.append(cat_dict)
-            return Response(cat_array)
+        return Response(cat_array)
 
     #     att_id = att_typ_id
     #     array = []
@@ -643,16 +643,16 @@ def FetchCategoriesView(request, id):
     #     # return Response(array)
 
 
-from rest_framework.views import APIView
-
-
-class ImageUploadView(APIView):
-    def post(self, request, *args, **kwargs):
-        serializer = ImageModelSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+# from rest_framework.views import APIView
+#
+#
+# class ImageUploadView(APIView):
+#     def post(self, request, *args, **kwargs):
+#         serializer = ImageModelSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(['GET', 'POST'])

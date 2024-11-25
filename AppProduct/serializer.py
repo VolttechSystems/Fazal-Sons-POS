@@ -164,6 +164,7 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
+    # def validate_attribute_group(self, data):
 
     def create(self, validated_data):
         get_subcategory_option = validated_data.get('subcategory_option')
@@ -418,7 +419,7 @@ class VariationGroupSerializer(serializers.Serializer):
 #         return validated_data
 
 
-class ImageModelSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = ImageModel
-        fields = ['id', 'title', 'image', 'uploaded_at']
+# class ImageModelSerializer(serializers.ModelSerializer):
+#     class Meta:
+#         model = ImageModel
+#         fields = ['id', 'title', 'image', 'uploaded_at']
