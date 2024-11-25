@@ -435,6 +435,7 @@ def FetchVariationGroupView(request, att_typ_id):
             att_type = attribute_type.att_type
             att_type_id = attribute_type.id
             att_name = attribute[i].attribute_name
+            attribute_id = attribute[i].id
             attribute_name_id = attribute[i].id
 
             variation = Variation.objects.filter(attribute_name=attribute_name_id)
@@ -446,6 +447,7 @@ def FetchVariationGroupView(request, att_typ_id):
                 Dict['att_id'] = att_id
                 Dict['att_type'] = att_type
                 Dict['attribute_name'] = att_name
+                Dict['attribute_id'] = attribute_id
                 Dict['variation'] = variation_name
                 array.append(Dict)
             elif len(variation) == 0:
@@ -453,6 +455,7 @@ def FetchVariationGroupView(request, att_typ_id):
                 Dict['att_id'] = att_id
                 Dict['att_type'] = att_type
                 Dict['attribute_name'] = att_name
+                Dict['attribute_id'] = attribute_id
                 Dict['variation'] = None
                 array.append(Dict)
         return Response(array)
