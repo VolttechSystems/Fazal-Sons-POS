@@ -120,7 +120,7 @@ class VariationSerializer(serializers.ModelSerializer):
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HeadCategory
-        fields = ['hc_name', 'symbol', 'description', 'status']
+        fields = ['id','hc_name', 'symbol', 'description', 'status']
 
     def create(self, validated_data):
         h_category = super().create(validated_data)
