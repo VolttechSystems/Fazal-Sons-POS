@@ -69,6 +69,9 @@ urlpatterns = [
 
     re_path('upload/', ImageUploadView.as_view(), name='image-upload'),
 
+    re_path(r'add_subcategories', AddSubCategoriesView, name='AddSubCategories'),
+    re_path(r'action_subcategories/(?P<id>.+)', GetSubCategoriesView, name='GetSubCategories'),
+
 ]
 
 # color = [black, blue]

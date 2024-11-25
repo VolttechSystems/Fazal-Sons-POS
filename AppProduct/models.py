@@ -162,12 +162,13 @@ class CatrgoryAttribute(models.Model):
 
 
 class SubCategory(models.Model):
-    category_name = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
+    attribute_group = models.ManyToManyField(Attribute, through='SubCatrgoryAttribute')
     sub_category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
-    attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
+    # attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -180,10 +181,19 @@ class SubCategory(models.Model):
         return self.sub_category_name
 
 
+class SubCatrgoryAttribute(models.Model):
+    sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
+    attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
+
+    class Meta:
+        db_table = 'tbl_subcategory_attribute'
+
+
 class TemporaryProduct(models.Model):
     product_name = models.CharField(max_length=100, null=True)
     sku = models.CharField(max_length=100, null=True, blank=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
+
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)

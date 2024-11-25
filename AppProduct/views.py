@@ -485,7 +485,7 @@ def AddCategoriesView(request):
                     for i in range(len(category_attribute)):
                         attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
                         attribute_group_array.append(attribute)
-                variation_dict['attribute_name'] = attribute_group_array
+                variation_dict['attribute_group'] = attribute_group_array
                 variation_arry.append(variation_dict)
         return Response(variation_arry)
 
@@ -509,7 +509,7 @@ def AddCategoriesView(request):
                 for i in range(len(category_attribute)):
                     attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
                     attribute_group_array.append(attribute)
-            category_dict['attribute_name'] = attribute_group_array
+            category_dict['attribute_group'] = attribute_group_array
             category_arry.append(category_dict)
             return Response(category_arry)
         return Response(serializer.errors)
@@ -633,3 +633,88 @@ class ImageUploadView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET', 'POST'])
+def AddSubCategoriesView(request):
+    if request.method == 'GET':
+        sub_category = SubCategory.objects.all()
+        sub_category_arry = []
+        if len(sub_category) > 0:
+            for i in range(len(sub_category)):
+                sub_category_dict = dict()
+                sub_category_dict['id'] = sub_category[i].id
+                sub_category_dict['sub_category_name'] = sub_category[i].sub_category_name
+                sub_category_dict['symbol'] = sub_category[i].symbol
+                sub_category_dict['description'] = sub_category[i].description
+                sub_category_dict['status'] = sub_category[i].status
+                sub_category_dict['category'] = sub_category[i].category.category_name
+                sub_category_attribute = SubCatrgoryAttribute.objects.filter(sub_category_id=sub_category[i].id)
+                attribute_group_array = []
+                if len(sub_category_attribute) > 0:
+                    for i in range(len(sub_category_attribute)):
+                        attribute = Attribute.objects.get(id=sub_category_attribute[i].attribute_id).attribute_name
+                        attribute_group_array.append(attribute)
+                sub_category_dict['attribute_group'] = attribute_group_array
+                sub_category_arry.append(sub_category_dict)
+        return Response(sub_category_arry)
+    elif request.method == 'POST':
+        serializer = SubCategorySerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            sub_category_arry = []
+            sub_category_dict = dict()
+            sub_category_name = request.data['sub_category_name'].strip()
+            sub_category = SubCategory.objects.get(sub_category_name=sub_category_name)
+            sub_category_dict['id'] = sub_category.id
+            sub_category_dict['category_id'] = sub_category.category_id
+            sub_category_dict['sub_category_name'] = sub_category.sub_category_name
+            sub_category_dict['symbol'] = sub_category.symbol
+            sub_category_dict['description'] = sub_category.description
+            sub_category_dict['status'] = sub_category.status
+            attribute_group_array = []
+            sub_category_attribute = SubCatrgoryAttribute.objects.filter(sub_category_id=sub_category.id)
+            if len(sub_category_attribute) > 0:
+                for i in range(len(sub_category_attribute)):
+                    attribute = Attribute.objects.get(id=sub_category_attribute[i].attribute_id).attribute_name
+                    attribute_group_array.append(attribute)
+            sub_category_dict['attribute_group'] = attribute_group_array
+            sub_category_arry.append(sub_category_dict)
+            return Response(sub_category_arry)
+        return Response(serializer.errors)
+
+
+@api_view(['GET', 'PUT', 'DELETE'])
+def GetSubCategoriesView(request, id):
+    try:
+        sub_category = SubCategory.objects.get(id=id)
+    except SubCategory.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        sub_category_arry = []
+        sub_category_dict = dict()
+        sub_category_dict['id'] = sub_category.id
+        sub_category_dict['sub_category_name'] = sub_category.sub_category_name
+        sub_category_dict['symbol'] = sub_category.symbol
+        sub_category_dict['description'] = sub_category.description
+        sub_category_dict['status'] = sub_category.status
+        sub_category_dict['category'] = sub_category.category.category_name
+        sub_category_attribute = SubCatrgoryAttribute.objects.filter(sub_category_id=sub_category.id)
+        attribute_group_array = []
+        if len(sub_category_attribute) > 0:
+            for i in range(len(sub_category_attribute)):
+                attribute = Attribute.objects.get(id=sub_category_attribute[i].attribute_id).attribute_name
+                attribute_group_array.append(attribute)
+        sub_category_dict['attribute_group'] = attribute_group_array
+        sub_category_arry.append(sub_category_dict)
+        return Response(sub_category_arry)
+
+    elif request.method == 'PUT':
+        serializer = SubCategorySerializer(sub_category, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.initial_data)
+        return Response(serializer.errors)
+    elif request.method == 'DELETE':
+        sub_category.delete()
+        return Response('Deleted')

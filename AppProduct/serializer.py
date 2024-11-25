@@ -6,6 +6,7 @@ from AppStock.models import *
 from rest_framework import status
 from rest_framework.response import Response
 from itertools import product
+import ast
 
 DateTime = datetime.datetime.now()
 
@@ -14,7 +15,7 @@ DateTime = datetime.datetime.now()
 class OutletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Outlet
-        fields = ['outlet_code', 'outlet_name']
+        fields = ['id', 'outlet_code', 'outlet_name']
 
     def create(self, validated_data):
         outlet = super().create(validated_data)
@@ -120,7 +121,7 @@ class VariationSerializer(serializers.ModelSerializer):
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HeadCategory
-        fields = ['id','hc_name', 'symbol', 'description', 'status']
+        fields = ['id', 'hc_name', 'symbol', 'description', 'status']
 
     def create(self, validated_data):
         h_category = super().create(validated_data)
@@ -183,24 +184,24 @@ class CategorySerializer(serializers.ModelSerializer):
         return category
 
 
-
 ### SUB CATEGORY SERIALIZER
 class SubCategorySerializer(serializers.ModelSerializer):
+    attribute_group = serializers.ListField(child=serializers.CharField())
+
     class Meta:
         model = SubCategory
         fields = '__all__'
 
     def create(self, validated_data):
-        sub_category = super().create(validated_data)
-        sub_category.created_at = DateTime
-        sub_category.updated_at = None
-        sub_category.save()
-        return sub_category
+        validated_data['created_at'] = DateTime
+        validated_data['updated_at'] = None
+        subcategory = super().create(validated_data)
+        return subcategory
 
     def update(self, instance, validated_data):
+        validated_data['created_at'] = DateTime
+        validated_data['updated_at'] = None
         sub_category = super().update(instance, validated_data)
-        sub_category.updated_at = DateTime
-        sub_category.save()
         return sub_category
 
 
@@ -211,11 +212,13 @@ class VariationSerializers(serializers.Serializer):
 
 ### TEMPORARY PRODUCT SERIALIZER
 class TempProductSerializer(serializers.ModelSerializer):
-    color = serializers.ListField(child=serializers.CharField())
+    # color = serializers.ListField(child=serializers.CharField())
     #### attribute_name = serializers.ListField(child=serializers.CharField())
     #### attribute = serializers.ListField(child=serializers.CharField(allow_blank=True), required=False )
-    variations = serializers.ListField(child=serializers.ListField(write_only=True), write_only=True)
-    image = serializers.ImageField(required=False)
+    # variations = serializers.ListField(child=serializers.ListField(write_only=True), write_only=True)
+    # image = serializers.ImageField(required=False)
+    color = serializers.CharField(required=False)
+    variations = serializers.CharField(required=False)
 
     class Meta:
         model = TemporaryProduct
@@ -224,9 +227,11 @@ class TempProductSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         parent = ''
         get_color = validated_data.get('color')
+        get_color = ast.literal_eval(get_color)
         # get_attribute = validated_data.get('attribute')
-        # get_variations = validated_data.get('variations')
         get_variations = validated_data.pop('variations', None)
+        get_variations = ast.literal_eval(get_variations)
+
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))
