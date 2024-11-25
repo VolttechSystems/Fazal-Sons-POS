@@ -171,8 +171,6 @@ class CategorySerializer(serializers.ModelSerializer):
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
         category = super().create(validated_data)
-        # validated_data['category_name'] = None
-        # category = Category.objects.get(category_name=validated_data['category_name'])
 
         return category
 
@@ -183,6 +181,7 @@ class CategorySerializer(serializers.ModelSerializer):
         validated_data['updated_at'] = DateTime
         category = super().update(instance, validated_data)
         return category
+
 
 
 ### SUB CATEGORY SERIALIZER
@@ -237,8 +236,8 @@ class TempProductSerializer(serializers.ModelSerializer):
                         auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
                         validated_data['sku'] = auto_sku_code
                         validated_data['color'] = get_color[color]
-                        dd = list(variation)
-                        specs = ", ".join(map(str, dd))
+                        all_variation = list(variation)
+                        specs = ", ".join(map(str, all_variation))
                         validated_data['description'] = specs
                         validated_data['created_at'] = DateTime
                         parent = super().create(validated_data)
@@ -247,19 +246,18 @@ class TempProductSerializer(serializers.ModelSerializer):
                     auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
                     validated_data['sku'] = auto_sku_code
                     validated_data['color'] = "FYP"
-                    dd = list(variation)
-                    specs = ", ".join(map(str, dd))
+                    all_variation = list(variation)
+                    specs = ", ".join(map(str, all_variation))
                     validated_data['description'] = specs
                     validated_data['created_at'] = DateTime
                     parent = super().create(validated_data)
 
             return parent
 
-
-def update(self, instance, validated_data):
-    validated_data['updated_at'] = DateTime
-    parent = super().update(instance, validated_data)
-    return parent
+    def update(self, instance, validated_data):
+        validated_data['updated_at'] = DateTime
+        parent = super().update(instance, validated_data)
+        return parent
 
 
 ### PRODUCT SERIALIZER
@@ -365,6 +363,7 @@ class VariationGroupSerializer(serializers.Serializer):
                     variation.save()
         return validated_data
 
+
 # class VariationGroupSerializer(serializers.Serializer):
 #     att_type = serializers.CharField(required=False)
 #     attribute_name = serializers.CharField(required=False)
@@ -412,7 +411,6 @@ class VariationGroupSerializer(serializers.Serializer):
 #                 )
 #                 variation.save()
 #         return validated_data
-
 
 
 class ImageModelSerializer(serializers.ModelSerializer):

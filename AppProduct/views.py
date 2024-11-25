@@ -490,26 +490,25 @@ def AddCategoriesView(request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            # category_arry = []
-            # category_dict = dict()
-            # category = Category.objects.get(category_name=request.data['category_name'])
-            # category_dict['id'] = category.id
-            # category_dict['pc_name'] = category.pc_name_id
-            # category_dict['category_name'] = category.category_name
-            # category_dict['symbol'] = category.symbol
-            # category_dict['description'] = category.description
-            # category_dict['status'] = category.status
-            # attribute_group_array = []
-            # category_attribute = CatrgoryAttribute.objects.filter(category_id=category.id)
-            # if len(category_attribute) > 0:
-            #     for i in range(len(category_attribute)):
-            #         attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
-            #         attribute_group_array.append(attribute)
-            # category_dict['attribute_name'] = attribute_group_array
-            # category_arry.append(category_dict)
-
-            # return Response(serializer.initial_data)
-            return Response(serializer.initial_data)
+            category_arry = []
+            category_dict = dict()
+            category_name = request.data['category_name'].strip()
+            category = Category.objects.get(category_name=category_name)
+            category_dict['id'] = category.id
+            category_dict['pc_name'] = category.pc_name_id
+            category_dict['category_name'] = category.category_name
+            category_dict['symbol'] = category.symbol
+            category_dict['description'] = category.description
+            category_dict['status'] = category.status
+            attribute_group_array = []
+            category_attribute = CatrgoryAttribute.objects.filter(category_id=category.id)
+            if len(category_attribute) > 0:
+                for i in range(len(category_attribute)):
+                    attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
+                    attribute_group_array.append(attribute)
+            category_dict['attribute_name'] = attribute_group_array
+            category_arry.append(category_dict)
+            return Response(category_arry)
         return Response(serializer.errors)
 
 
