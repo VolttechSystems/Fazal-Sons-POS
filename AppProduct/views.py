@@ -283,8 +283,8 @@ def FetchParentCategoryView(request, code):
 @api_view(['GET'])
 def FetchCategoryView(request, code):
     category = Category.objects.filter(pc_name_id=code)
+    category_array = []
     if len(category) > 0:
-        category_array = []
         for i in range(len(category)):
             category_dict = dict()
             category_dict['id'] = category[i].id
@@ -294,14 +294,24 @@ def FetchCategoryView(request, code):
             category_dict['status'] = category[i].status
             category_dict['pc_name'] = category[i].pc_name_id
             category_array.append(category_dict)
-        return Response(category_array)
+    return Response(category_array)
 
 
 @api_view(['GET'])
 def FetchSubCategoryView(request, code):
-    sub_category = SubCategory.objects.filter(category_name_id=code)
-    serializer = SubCategorySerializer(sub_category, many=True)
-    return Response(serializer.data)
+    sub_category = SubCategory.objects.filter(category_id=code)
+    sub_category_array = []
+    if len(sub_category) > 0:
+        for i in range(len(sub_category)):
+            sub_category_dict = dict()
+            sub_category_dict['id'] = sub_category[i].id
+            sub_category_dict['sub_category_name'] = sub_category[i].sub_category_name
+            sub_category_dict['symbol'] = sub_category[i].symbol
+            sub_category_dict['description'] = sub_category[i].description
+            sub_category_dict['status'] = sub_category[i].status
+            sub_category_dict['category'] = sub_category[i].category_id
+            sub_category_array.append(sub_category_dict)
+    return Response(sub_category_array)
 
 
 @api_view(['GET', 'POST'])
