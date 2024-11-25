@@ -283,8 +283,18 @@ def FetchParentCategoryView(request, code):
 @api_view(['GET'])
 def FetchCategoryView(request, code):
     category = Category.objects.filter(pc_name_id=code)
-    serializer = CategorySerializer(category, many=True)
-    return Response(serializer.data)
+    if len(category) > 0:
+        category_array = []
+        for i in range(len(category)):
+            category_dict = dict()
+            category_dict['id'] = category[i].id
+            category_dict['category_name'] = category[i].category_name
+            category_dict['symbol'] = category[i].symbol
+            category_dict['description'] = category[i].description
+            category_dict['status'] = category[i].status
+            category_dict['pc_name'] = category[i].pc_name_id
+            category_array.append(category_dict)
+        return Response(category_array)
 
 
 @api_view(['GET'])
