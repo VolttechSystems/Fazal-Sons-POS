@@ -67,6 +67,8 @@ urlpatterns = [
     re_path(r'action_categories/(?P<id>.+)', GetCategoriesView, name='GetCategories'),
     re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchtCategories'),
 
+    re_path('upload/', ImageUploadView.as_view(), name='image-upload'),
+
 ]
 
 # color = [black, blue]

@@ -14,6 +14,7 @@ from rest_framework.authtoken.models import Token
 from django.db import connections
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from rest_framework import status
+from rest_framework.parsers import MultiPartParser, FormParser
 
 
 def DictinctFetchAll(cursor):
@@ -200,13 +201,15 @@ class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
 
 ### TEMPORARY PRODUCT VIEW
 class AddTemporaryProductView(generics.ListCreateAPIView):
-    queryset = TemporaryProduct.objects.all().order_by('-size')
+    # parser_classes = [MultiPartParser, FormParser]
+    queryset = TemporaryProduct.objects.all()
     serializer_class = TempProductSerializer
     pagination_class = None
+    # parser_classes = (MultiPartParser, FormParser)
 
 
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TemporaryProduct.objects.all().order_by('-size')
+    queryset = TemporaryProduct.objects.all()
     serializer_class = TempProductSerializer
     pagination_class = None
 
@@ -417,6 +420,7 @@ def GetVariationGroupView(request, att_id):
             attribute_type.delete()
         return Response('Deleted')
 
+
 @api_view(['GET'])
 def FetchVariationGroupView(request, att_typ_id):
     if request.method == 'GET':
@@ -478,7 +482,7 @@ def AddCategoriesView(request):
                     for i in range(len(category_attribute)):
                         attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
                         attribute_group_array.append(attribute)
-                variation_dict['attribute_group'] = attribute_group_array
+                variation_dict['attribute_name'] = attribute_group_array
                 variation_arry.append(variation_dict)
         return Response(variation_arry)
 
@@ -486,28 +490,28 @@ def AddCategoriesView(request):
         serializer = CategorySerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            category_arry = []
-            category_dict = dict()
-            category = Category.objects.get(category_name=request.data['category_name'])
-            category_dict['id'] = category.id
-            category_dict['pc_name'] = category.pc_name_id
-            category_dict['category_name'] = category.category_name
-            category_dict['symbol'] = category.symbol
-            category_dict['description'] = category.description
-            category_dict['status'] = category.status
-            attribute_group_array = []
-            category_attribute = CatrgoryAttribute.objects.filter(category_id=category.id)
-            if len(category_attribute) > 0:
-                for i in range(len(category_attribute)):
-                    attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
-                    attribute_group_array.append(attribute)
-            category_dict['attribute_group'] = attribute_group_array
-            category_arry.append(category_dict)
-
+            # category_arry = []
+            # category_dict = dict()
+            # category = Category.objects.get(category_name=request.data['category_name'])
+            # category_dict['id'] = category.id
+            # category_dict['pc_name'] = category.pc_name_id
+            # category_dict['category_name'] = category.category_name
+            # category_dict['symbol'] = category.symbol
+            # category_dict['description'] = category.description
+            # category_dict['status'] = category.status
+            # attribute_group_array = []
+            # category_attribute = CatrgoryAttribute.objects.filter(category_id=category.id)
+            # if len(category_attribute) > 0:
+            #     for i in range(len(category_attribute)):
+            #         attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
+            #         attribute_group_array.append(attribute)
+            # category_dict['attribute_name'] = attribute_group_array
+            # category_arry.append(category_dict)
 
             # return Response(serializer.initial_data)
-            return Response(category_arry)
+            return Response(serializer.initial_data)
         return Response(serializer.errors)
+
 
 @api_view(['GET', 'PUT', 'DELETE'])
 def GetCategoriesView(request, id):
@@ -552,6 +556,7 @@ def GetCategoriesView(request, id):
         category.delete()
         return Response('Deleted')
 
+
 @api_view(['GET'])
 def FetchCategoriesView(request, id):
     if request.method == 'GET':
@@ -578,7 +583,7 @@ def FetchCategoriesView(request, id):
                     variation_array = []
                     for x in range(len(variation)):
                         variation_array.append(variation[x].variation_name)
-                        cat_dict["variation"] =variation_array
+                        cat_dict["variation"] = variation_array
                     cat_array.append(cat_dict)
             return Response(cat_array)
 
@@ -614,3 +619,15 @@ def FetchCategoriesView(request, id):
     #     #         Dict['variation'] = None
     #     #         array.append(Dict)
     #     # return Response(array)
+
+
+from rest_framework.views import APIView
+
+
+class ImageUploadView(APIView):
+    def post(self, request, *args, **kwargs):
+        serializer = ImageModelSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

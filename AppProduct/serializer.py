@@ -171,7 +171,7 @@ class CategorySerializer(serializers.ModelSerializer):
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
         category = super().create(validated_data)
-        validated_data['category_name'] = None
+        # validated_data['category_name'] = None
         # category = Category.objects.get(category_name=validated_data['category_name'])
 
         return category
@@ -213,9 +213,10 @@ class VariationSerializers(serializers.Serializer):
 ### TEMPORARY PRODUCT SERIALIZER
 class TempProductSerializer(serializers.ModelSerializer):
     color = serializers.ListField(child=serializers.CharField())
-    # attribute_name = serializers.ListField(child=serializers.CharField())
-    # attribute = serializers.ListField(child=serializers.CharField(allow_blank=True), required=False )
+    #### attribute_name = serializers.ListField(child=serializers.CharField())
+    #### attribute = serializers.ListField(child=serializers.CharField(allow_blank=True), required=False )
     variations = serializers.ListField(child=serializers.ListField(write_only=True), write_only=True)
+    image = serializers.ImageField(required=False)
 
     class Meta:
         model = TemporaryProduct
@@ -266,6 +267,12 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+    # def validate_image(self, value):
+    #         # Add any custom validation for the image field here
+    #         if value.size > 2 * 1024 * 1024:  # Example: Max 2 MB size
+    #             raise serializers.ValidationError("Image size should not exceed 2 MB.")
+    #         return value
 
     def create(self, validated_data):
         parent = ''
@@ -405,3 +412,10 @@ class VariationGroupSerializer(serializers.Serializer):
 #                 )
 #                 variation.save()
 #         return validated_data
+
+
+
+class ImageModelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = ImageModel
+        fields = ['id', 'title', 'image', 'uploaded_at']

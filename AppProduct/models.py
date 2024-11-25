@@ -240,3 +240,15 @@ class Product(models.Model):
 
     def __str__(self):
         return self.sku
+
+
+class ImageModel(models.Model):
+    title = models.CharField(max_length=255)
+    image = models.ImageField(upload_to='images/')
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        db_table = 'image_model'
+
+    def __str__(self):
+        return self.title
