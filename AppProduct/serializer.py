@@ -71,50 +71,50 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
         return attr_type
 
 
-### ATTRIBUTE SERIALIZER
-class AttributeSerializer(serializers.ModelSerializer):
-    attribute_name = serializers.ListField(child=serializers.CharField())
+# ### ATTRIBUTE SERIALIZER
+# class AttributeSerializer(serializers.ModelSerializer):
+#     attribute_name = serializers.ListField(child=serializers.CharField())
+#
+#     class Meta:
+#         model = Attribute
+#         fields = ['id', 'attribute_name', 'symbol', 'description', 'status', 'att_type']
+#
+#     def create(self, validated_data):
+#         attribute_names = validated_data.get('attribute_name')
+#         # print(attribute_name)
+#         attribute = super().create(validated_data)
+#         attribute.updated_at = None
+#         attribute.created_at = DateTime
+#         attribute.save()
+#         return attribute
+#
+#     def update(self, instance, validated_data):
+#         attribute = super().update(instance, validated_data)
+#         attribute.updated_at = DateTime
+#         attribute.save()
+#         return attribute
 
-    class Meta:
-        model = Attribute
-        fields = ['id', 'attribute_name', 'symbol', 'description', 'status', 'att_type']
 
-    def create(self, validated_data):
-        attribute_names = validated_data.get('attribute_name')
-        # print(attribute_name)
-        attribute = super().create(validated_data)
-        attribute.updated_at = None
-        attribute.created_at = DateTime
-        attribute.save()
-        return attribute
-
-    def update(self, instance, validated_data):
-        attribute = super().update(instance, validated_data)
-        attribute.updated_at = DateTime
-        attribute.save()
-        return attribute
-
-
-### VARIATION SERIALIZER
-class VariationSerializer(serializers.ModelSerializer):
-    # attribute_name = AttributeSerializer('id')
-    class Meta:
-        model = Variation
-        # fields = ['id','variation_name','symbol', 'description', 'status', 'attribute_name']
-        fields = '__all__'
-
-    def create(self, validated_data):
-        variation = super().create(validated_data)
-        variation.updated_at = None
-        variation.created_at = DateTime
-        variation.save()
-        return variation
-
-    def update(self, instance, validated_data):
-        variation = super().update(instance, validated_data)
-        variation.updated_at = DateTime
-        variation.save()
-        return variation
+# ### VARIATION SERIALIZER
+# class VariationSerializer(serializers.ModelSerializer):
+#     # attribute_name = AttributeSerializer('id')
+#     class Meta:
+#         model = Variation
+#         # fields = ['id','variation_name','symbol', 'description', 'status', 'attribute_name']
+#         fields = '__all__'
+#
+#     def create(self, validated_data):
+#         variation = super().create(validated_data)
+#         variation.updated_at = None
+#         variation.created_at = DateTime
+#         variation.save()
+#         return variation
+#
+#     def update(self, instance, validated_data):
+#         variation = super().update(instance, validated_data)
+#         variation.updated_at = DateTime
+#         variation.save()
+#         return variation
 
 
 ### HEAD CATEGORY SERIALIZER
@@ -164,8 +164,6 @@ class CategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = Category
         fields = '__all__'
-    # def validate_attribute_group(self, data):
-
     def create(self, validated_data):
         get_subcategory_option = validated_data.get('subcategory_option')
         if get_subcategory_option == 'True':
@@ -173,7 +171,6 @@ class CategorySerializer(serializers.ModelSerializer):
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
         category = super().create(validated_data)
-
         return category
 
     def update(self, instance, validated_data):
@@ -210,14 +207,9 @@ class VariationSerializers(serializers.Serializer):
     color = serializers.CharField(max_length=100)
     size = serializers.CharField(max_length=100)
 
-
 ### TEMPORARY PRODUCT SERIALIZER
 class TempProductSerializer(serializers.ModelSerializer):
     # color = serializers.ListField(child=serializers.CharField())
-    #### attribute_name = serializers.ListField(child=serializers.CharField())
-    #### attribute = serializers.ListField(child=serializers.CharField(allow_blank=True), required=False )
-    # variations = serializers.ListField(child=serializers.ListField(write_only=True), write_only=True)
-    # image = serializers.ImageField(required=False)
     color = serializers.CharField(required=False)
     variations = serializers.CharField(required=False)
 
@@ -243,7 +235,7 @@ class TempProductSerializer(serializers.ModelSerializer):
                         validated_data['sku'] = auto_sku_code
                         validated_data['color'] = get_color[color]
                         all_variation = list(variation)
-                        specs = ", ".join(map(str, all_variation))
+                        specs = "-".join(map(str, all_variation))
                         validated_data['description'] = specs
                         validated_data['created_at'] = DateTime
                         parent = super().create(validated_data)

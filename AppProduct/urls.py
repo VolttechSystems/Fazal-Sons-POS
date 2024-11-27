@@ -24,12 +24,12 @@ urlpatterns = [
     re_path(r'add_attribute_type', AddAttributeTypeView.as_view(), name='AddAttributeType'),
     re_path(r'action_attribute_type/(?P<pk>.+)/', AttributeTypeGetView.as_view(), name='GetAttributeType'),
     ### ATTRIBUTES URL
-    re_path(r'add_attribute', AddAttributeView.as_view(), name='AddAttribute'),
-    re_path(r'action_attributes/(?P<pk>.+)/', AttributeGetView.as_view(), name='GetAttribute'),
+    # re_path(r'add_attribute', AddAttributeView.as_view(), name='AddAttribute'),
+    # re_path(r'action_attributes/(?P<pk>.+)/', AttributeGetView.as_view(), name='GetAttribute'),
     ### VARAITIONS URL
     # re_path(r'add_variation', AddVariationView.as_view(), name='AddVariation'),
-    re_path(r'add_variation', AddVariationView, name='AddVariation'),
-    re_path(r'action_variation/(?P<pk>.+)/', VariationGetView.as_view(), name='GetVariation'),
+    # re_path(r'add_variation', AddVariationView, name='AddVariation'),
+    # re_path(r'action_variation/(?P<pk>.+)/', VariationGetView.as_view(), name='GetVariation'),
     ### HEAD CATEGORY URL
     re_path(r'add_head_category', AddHeadCategoryView.as_view(), name='AddHeadCategory'),
     re_path(r'action_head_category/(?P<pk>.+)/', HeadCategoryGetView.as_view(), name='HeadCategoryGet'),
@@ -62,14 +62,17 @@ urlpatterns = [
     re_path(r'variation_group/', AddVariationGroupView, name='VariationView'),
     re_path(r'action_variations_group/(?P<att_id>.+)', GetVariationGroupView, name='GetVariation'),
     re_path(r'fetch_variations_group/(?P<att_typ_id>.+)', FetchVariationGroupView, name='FetxhAttributeGroup'),
-    ### CATEGORY URL
+    ### NEW CATEGORY URL
     re_path(r'add_categories', AddCategoriesView, name='AddCategories'),
     re_path(r'action_categories/(?P<id>.+)', GetCategoriesView, name='GetCategories'),
     re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchtCategories'),
-
-    # re_path('upload/', ImageUploadView.as_view(), name='image-upload'),
-
+    ### NEW SUBCATEGORY URL
     re_path(r'add_subcategories', AddSubCategoriesView, name='AddSubCategories'),
     re_path(r'action_subcategories/(?P<id>.+)', GetSubCategoriesView, name='GetSubCategories'),
+    re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchtCategories'),
 
 ]
+
+
+
+# FY-P1-1

@@ -39,13 +39,13 @@ class MyLimitOffsetPagination(LimitOffsetPagination):
 ### OUTLET VIEW
 class AddOutletView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Outlet.objects.all()
+    queryset = Outlet.objects.all().order_by('outlet_name')
     serializer_class = OutletSerializer
     pagination_class = None
 
 
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Outlet.objects.all()
+    queryset = Outlet.objects.all().order_by('outlet_name')
     serializer_class = OutletSerializer
     pagination_class = None
 
@@ -66,20 +66,20 @@ def FetchOutletView(request):
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Brand.objects.all()
+    queryset = Brand.objects.all().order_by('brand_name')
     serializer_class = BrandSerializer
     pagination_class = MyLimitOffsetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Brand.objects.all()
+    queryset = Brand.objects.all().order_by('brand_name')
     serializer_class = BrandSerializer
 
 
 @api_view(['GET'])
 def SearchBrandView(request, code):
     brand_name = code
-    brand = Brand.objects.filter(brand_name__icontains=brand_name)
+    brand = Brand.objects.filter(brand_name__icontains=brand_name).order_by('brand_name')
     if len(brand) > 0:
         serializer = BrandSerializer(brand, many=True)
         param = {
@@ -92,28 +92,28 @@ def SearchBrandView(request, code):
 
 ### ATTRIBUTES TYPE VIEW
 class AddAttributeTypeView(generics.ListCreateAPIView):
-    queryset = AttributeType.objects.all()
+    queryset = AttributeType.objects.all().order_by('att_type')
     serializer_class = AttributeTypeSerializer
     pagination_class = None
 
 
 class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = AttributeType.objects.all()
+    queryset = AttributeType.objects.all().order_by('att_type')
     serializer_class = AttributeTypeSerializer
     pagination_class = None
 
 
-### ATTRIBUTES VIEW
-class AddAttributeView(generics.ListCreateAPIView):
-    queryset = Attribute.objects.all()
-    serializer_class = AttributeSerializer
-    pagination_class = None
-
-
-class AttributeGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Attribute.objects.all()
-    serializer_class = AttributeSerializer
-    pagination_class = None
+# ### ATTRIBUTES VIEW
+# class AddAttributeView(generics.ListCreateAPIView):
+#     queryset = Attribute.objects.all()
+#     serializer_class = AttributeSerializer
+#     pagination_class = None
+#
+#
+# class AttributeGetView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Attribute.objects.all()
+#     serializer_class = AttributeSerializer
+#     pagination_class = None
 
 
 ## VARIATION VIEW
@@ -123,78 +123,78 @@ class AttributeGetView(generics.RetrieveUpdateDestroyAPIView):
 #     pagination_class = None
 
 
-@api_view(['GET', 'POST'])
-def AddVariationView(request):
-    if request.method == 'GET':
-        cursor = connections['default'].cursor()
-        query_variation = "SELECT vr.id ,variation_name, vr.symbol, vr.description, attribute_name, vr.status FROM tbl_variation vr INNER JOIN tbl_attribute at on vr.attribute_name_id = at.id"
-        cursor.execute(query_variation)
-        variation = DictinctFetchAll(cursor)
-        serializer = VariationSerializer(variation, many=True)
-        return Response(serializer.data)
-
-    elif request.method == 'POST':
-        serializer = VariationSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status='status.HTTP_201_CREATED')
-        return Response(serializer.errors, status='status.HTTP_400_BAD_REQUEST')
-
-
-class VariationGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Variation.objects.all()
-    serializer_class = VariationSerializer
-    pagination_class = None
+# @api_view(['GET', 'POST'])
+# def AddVariationView(request):
+#     if request.method == 'GET':
+#         cursor = connections['default'].cursor()
+#         query_variation = "SELECT vr.id ,variation_name, vr.symbol, vr.description, attribute_name, vr.status FROM tbl_variation vr INNER JOIN tbl_attribute at on vr.attribute_name_id = at.id"
+#         cursor.execute(query_variation)
+#         variation = DictinctFetchAll(cursor)
+#         serializer = VariationSerializer(variation, many=True)
+#         return Response(serializer.data)
+#
+#     elif request.method == 'POST':
+#         serializer = VariationSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status='status.HTTP_201_CREATED')
+#         return Response(serializer.errors, status='status.HTTP_400_BAD_REQUEST')
+#
+#
+# class VariationGetView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Variation.objects.all()
+#     serializer_class = VariationSerializer
+#     pagination_class = None
 
 
 ### HEAD CATEGORY VIEW
 class AddHeadCategoryView(generics.ListCreateAPIView):
-    queryset = HeadCategory.objects.all()
+    queryset = HeadCategory.objects.all().order_by('hc_name')
     serializer_class = HeadCategorySerializer
     pagination_class = None
 
 
 class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = HeadCategory.objects.all()
+    queryset = HeadCategory.objects.all().order_by('hc_name')
     serializer_class = HeadCategorySerializer
     pagination_class = None
 
 
 ### PARENT CATEGORY VIEW
 class AddParentCategoryView(generics.ListCreateAPIView):
-    queryset = ParentCategory.objects.all()
+    queryset = ParentCategory.objects.all().order_by('pc_name')
     serializer_class = ParentCategorySerializer
     pagination_class = None
 
 
 class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ParentCategory.objects.all()
+    queryset = ParentCategory.objects.all().order_by('pc_name')
     serializer_class = ParentCategorySerializer
     pagination_class = None
 
 
 ### CATEGORY VIEW
 class AddCategoryView(generics.ListCreateAPIView):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by('category_name')
     serializer_class = CategorySerializer
     pagination_class = None
 
 
 class CategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all()
+    queryset = Category.objects.all().order_by('category_name')
     serializer_class = CategorySerializer
     pagination_class = None
 
 
 ### SUB CATEGORY VIEW
 class AddSubCategoryView(generics.ListCreateAPIView):
-    queryset = SubCategory.objects.all()
+    queryset = SubCategory.objects.all().order_by('sub_category_name')
     serializer_class = SubCategorySerializer
     pagination_class = None
 
 
 class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SubCategory.objects.all()
+    queryset = SubCategory.objects.all().order_by('sub_category_name')
     serializer_class = SubCategorySerializer
     pagination_class = None
 
@@ -202,27 +202,26 @@ class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
 ### TEMPORARY PRODUCT VIEW
 class AddTemporaryProductView(generics.ListCreateAPIView):
     # parser_classes = [MultiPartParser, FormParser]
-    queryset = TemporaryProduct.objects.all()
+    queryset = TemporaryProduct.objects.all().order_by('product_name')
     serializer_class = TempProductSerializer
     pagination_class = None
-    # parser_classes = (MultiPartParser, FormParser)
 
 
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TemporaryProduct.objects.all()
+    queryset = TemporaryProduct.objects.all().order_by('product_name')
     serializer_class = TempProductSerializer
     pagination_class = None
 
 
 ### PRODUCT VIEW
 class AddProduct(generics.ListCreateAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('product_name')
     serializer_class = ProductSerializer
     pagination_class = None
 
 
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all()
+    queryset = Product.objects.all().order_by('product_name')
     serializer_class = ProductSerializer
     pagination_class = None
 
@@ -401,6 +400,7 @@ def GetVariationGroupView(request, att_id):
             return Response("NO RECORD FOUND")
 
         attribute.attribute_name = data['attribute_name']
+        attribute.att_type_id = data['att_type']
         attribute.save()
 
         variation = Variation.objects.filter(attribute_name=att_id)
@@ -560,11 +560,14 @@ def GetCategoriesView(request, id):
                 variation_dict['pc_name'] = variation_group[i]['pc_name']
                 category_attribute = CatrgoryAttribute.objects.filter(category_id=id)
                 attribute_group_array = []
+                attribute_type_array = []
                 if len(category_attribute) > 0:
                     for i in range(len(category_attribute)):
-                        attribute = Attribute.objects.get(id=category_attribute[i].attribute_id).attribute_name
-                        attribute_group_array.append(attribute)
+                        attribute = Attribute.objects.get(id=category_attribute[i].attribute_id)
+                        attribute_group_array.append(attribute.attribute_name)
+                        attribute_type_array.append(attribute.att_type_id)
                 variation_dict['attribute_group'] = attribute_group_array
+                variation_dict['att_type'] = attribute_type_array
                 variation_arry.append(variation_dict)
         return Response(variation_arry)
 
