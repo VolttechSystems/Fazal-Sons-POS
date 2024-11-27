@@ -26,7 +26,7 @@ urlpatterns = [
     ### ATTRIBUTES URL
     # re_path(r'add_attribute', AddAttributeView.as_view(), name='AddAttribute'),
     # re_path(r'action_attributes/(?P<pk>.+)/', AttributeGetView.as_view(), name='GetAttribute'),
-    ### VARAITIONS URL
+    ### VARIATIONS URL
     # re_path(r'add_variation', AddVariationView.as_view(), name='AddVariation'),
     # re_path(r'add_variation', AddVariationView, name='AddVariation'),
     # re_path(r'action_variation/(?P<pk>.+)/', VariationGetView.as_view(), name='GetVariation'),
@@ -51,7 +51,7 @@ urlpatterns = [
     ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
     re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
     re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
-    re_path(r'fetch_variation/(?P<code>.+)/', FetchlVariationView, name='FetchAttributeName'),
+    re_path(r'fetch_variation/(?P<code>.+)/', FetchVariationView, name='FetchAttributeName'),
     ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK 
     re_path(r'get_all_product/', GetAllProductView, name='GetAllProduct'),
     ### FETCH ALL CATEGORIES ACCORDING TO THEIR SUB_CATEGORIES
@@ -61,15 +61,15 @@ urlpatterns = [
     # VARIATION GROUP
     re_path(r'variation_group/', AddVariationGroupView, name='VariationView'),
     re_path(r'action_variations_group/(?P<att_id>.+)', GetVariationGroupView, name='GetVariation'),
-    re_path(r'fetch_variations_group/(?P<att_typ_id>.+)', FetchVariationGroupView, name='FetxhAttributeGroup'),
+    re_path(r'fetch_variations_group/(?P<att_typ_id>.+)', FetchVariationGroupView, name='FetchAttributeGroup'),
     ### NEW CATEGORY URL
     re_path(r'add_categories', AddCategoriesView, name='AddCategories'),
     re_path(r'action_categories/(?P<id>.+)', GetCategoriesView, name='GetCategories'),
-    re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchtCategories'),
+    re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchCategories'),
     ### NEW SUBCATEGORY URL
     re_path(r'add_subcategories', AddSubCategoriesView, name='AddSubCategories'),
     re_path(r'action_subcategories/(?P<id>.+)', GetSubCategoriesView, name='GetSubCategories'),
-    re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchtCategories'),
+    re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchCategories'),
 
 ]
 

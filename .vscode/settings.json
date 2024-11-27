@@ -1,0 +1,37 @@
+[
+    {
+        "sqltools.connections": [
+            {
+                "previewLimit": 50,
+                "server": "fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com",
+                "port": 5432,
+                "driver": "PostgreSQL",
+                "name": "AWS FazalSons Database",
+                "database": "postgres",
+                "username": "postgres",
+                "password": "Naveed*123"
+            }
+        ],
+        "cSpell.words": [
+            "Appproduct",
+            "authtoken",
+            "Catergory",
+            "corsheaders",
+            "ctsg",
+            "Fazal",
+            "fazalsons",
+            "Naveed"
+        ]
+    },
+    {
+        "python.languageServer": "Pylance",
+        "python.analysis.autoImportCompletions": true,
+        "python.analysis.useLibraryCodeForTypes": true,
+        "editor.quickSuggestions": {
+            "other": true,
+            "comments": true,
+            "strings": true
+        },
+        "editor.suggest.snippetsPreventQuickSuggestions": false
+    }
+]

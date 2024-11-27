@@ -3,7 +3,7 @@ from .models import *
 from .serializer import *
 from rest_framework import generics
 from rest_framework.decorators import api_view
-
+from rest_framework.status import *
 
 
 @api_view(['GET'])
@@ -19,7 +19,7 @@ def AllProductView(request):
             product_dict['color'] = product[i].color
             array.append(product_dict)
         return Response(array)
-    return Response("NO RECORD FOUND")
+    return Response(status=HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -35,7 +35,7 @@ def ProductDetailView(request, code):
             product_dict['selling_price'] = product[i].selling_price
             array.append(product_dict)
         return Response(array)
-    return Response("NO RECORD FOUND")
+    return Response(status=HTTP_404_NOT_FOUND)
 
 
 
@@ -76,7 +76,7 @@ class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
 ### TRANSACTION RETURN VIEW
 class TransactionReturnView(generics.ListCreateAPIView):
     queryset = TransactionReturn.objects.all()
-    serializer_class = TransactionrReturnSerializer
+    serializer_class = TransactionReturnSerializer
     pagination_class = None
 
 
@@ -85,7 +85,7 @@ def GetAllInvoicesView(request):
     cursor = connections['default'].cursor()
     query = "select 'Invoice#: ' || split_part(invoice_code, '-', 2) as invoice, invoice_code from tbl_transaction order by invoice_code"
     cursor.execute(query)
-    invoices = DictinctFetchAll(cursor)
+    invoices = DistinctFetchAll(cursor)
     return Response(invoices)
 
 @api_view(['GET'])    
@@ -93,7 +93,7 @@ def GetInvoiceProductsView(request, code):
     cursor = connections['default'].cursor()
     query = "select pr.sku, product_name, color, size  from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
     cursor.execute(query)
-    invoice_products = DictinctFetchAll(cursor)
+    invoice_products = DistinctFetchAll(cursor)
     if len(invoice_products) > 0:
         return Response(invoice_products)
     return Response("NO RECORD FOUND")
@@ -104,7 +104,7 @@ def GetProductDetailView(request, code, sku):
     cursor = connections['default'].cursor()
     query = "select sku, quantity, rate, gross_total,per_discount, discounted_value, item_total from tbl_transaction_item where sku = '"+ sku +"' and invoice_code_id = '"+ code +"'"
     cursor.execute(query)
-    invoice_products = DictinctFetchAll(cursor)
+    invoice_products = DistinctFetchAll(cursor)
     array = []
     if len(invoice_products) > 0:
         # return_dict = dict()

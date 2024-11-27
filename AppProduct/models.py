@@ -135,7 +135,7 @@ class ParentCategory(models.Model):
 
 class Category(models.Model):
     pc_name = models.ForeignKey(ParentCategory, on_delete=models.CASCADE, null=True)
-    attribute_group = models.ManyToManyField(Attribute, through='CatrgoryAttribute')
+    attribute_group = models.ManyToManyField(Attribute, through='CategoryAttribute')
     category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     subcategory_option = models.TextField(max_length=500, null=True)  # True, False
@@ -153,7 +153,7 @@ class Category(models.Model):
         return self.category_name
 
 
-class CatrgoryAttribute(models.Model):
+class CategoryAttribute(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE)
     attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
 
@@ -163,7 +163,7 @@ class CatrgoryAttribute(models.Model):
 
 class SubCategory(models.Model):
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
-    attribute_group = models.ManyToManyField(Attribute, through='SubCatrgoryAttribute')
+    attribute_group = models.ManyToManyField(Attribute, through='SubCategoryAttribute')
     sub_category_name = models.CharField(max_length=100, null=True, unique=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -181,7 +181,7 @@ class SubCategory(models.Model):
         return self.sub_category_name
 
 
-class SubCatrgoryAttribute(models.Model):
+class SubCategoryAttribute(models.Model):
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE)
     attribute = models.ForeignKey(Attribute, on_delete=models.CASCADE)
 
@@ -193,7 +193,6 @@ class TemporaryProduct(models.Model):
     product_name = models.CharField(max_length=100, null=True)
     sku = models.CharField(max_length=100, null=True, blank=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
-
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)

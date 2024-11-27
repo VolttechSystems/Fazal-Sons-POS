@@ -1,7 +1,7 @@
 
 from django.db import connections
 
-def DictinctFetchAll(cursor):
+def DistinctFetchAll(cursor):
     "Returns all rows from a cursor as a dict"
     desc = cursor.description
     return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
@@ -18,7 +18,7 @@ def AutoGenerateCodeForModel(model, column, code_key):
         tbl = model._meta.db_table
         query = "SELECT SPLIT_PART(" + column + ", '-', 2)::INTEGER AS unique_code FROM " + tbl + " ORDER BY SPLIT_PART(" + column + ", '-', 2)::INTEGER DESC LIMIT 2"
         cursor.execute(query)
-        query_list = DictinctFetchAll(cursor)
+        query_list = DistinctFetchAll(cursor)
         get_code = query_list[0]["unique_code"]
         code_count = int(get_code) + 1
         auto_code = code_key + str(code_count)

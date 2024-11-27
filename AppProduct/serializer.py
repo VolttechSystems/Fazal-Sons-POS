@@ -327,8 +327,8 @@ class VariationGroupSerializer(serializers.Serializer):
         get_variations = validated_data.get('variation')
         get_att_type = validated_data.get('att_type')
         try:
-            attt_type = AttributeType.objects.get(id=get_att_type)
-            get_attribute_type_id = attt_type.id
+            att_type = AttributeType.objects.get(id=get_att_type)
+            get_attribute_type_id = att_type.id
         except:
             return Response("Incorrect Attribute Type ID")
         try:
@@ -415,3 +415,11 @@ class VariationGroupSerializer(serializers.Serializer):
 #     class Meta:
 #         model = ImageModel
 #         fields = ['id', 'title', 'image', 'uploaded_at']
+
+
+num = [0,1,0,3,12]
+for i in range(len(num)):
+    if num[i] == 0:
+        num.insert(-1, num[i])
+        num.pop(i)
+print(num)

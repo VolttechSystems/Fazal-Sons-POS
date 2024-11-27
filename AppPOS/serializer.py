@@ -214,7 +214,7 @@ class AddSalesmanSerializer(serializers.ModelSerializer):
 
 
 ### TRANSACTION RETURN SERIALIZER
-class TransactionrReturnSerializer(serializers.ModelSerializer):
+class TransactionReturnSerializer(serializers.ModelSerializer):
     sku = serializers.ListField(child=serializers.CharField())
     rate = serializers.ListField(child=serializers.CharField())
     quantity = serializers.ListField(child=serializers.CharField())
