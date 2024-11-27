@@ -64,7 +64,7 @@ def FetchOutletView(request):
             "results": serializer.data,
         }
         return Response(param)
-    return Response("NO RECORD FOUND")
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 ### BRAND VIEW
@@ -93,8 +93,7 @@ def SearchBrandView(request, code):
             "results": serializer.data,
         }
         return Response(param)
-    return Response("Not Found")
-
+    return Response(status=status.HTTP_204_NO_CONTENT)
 
 ### ATTRIBUTES TYPE VIEW
 class AddAttributeTypeView(generics.ListCreateAPIView):
@@ -613,8 +612,7 @@ def GetCategoriesView(request, id):
         return Response(serializer.errors)
     elif request.method == "DELETE":
         category.delete()
-        return Response("Deleted")
-
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(["GET"])
 def FetchCategoriesView(request, id):
@@ -755,7 +753,7 @@ def AddSubCategoriesView(request):
             sub_category_dict["attribute_group"] = attribute_group_array
             sub_category_array.append(sub_category_dict)
             return Response(sub_category_array)
-        return Response(serializer.errors)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @api_view(["GET", "PUT", "DELETE"])
@@ -785,7 +783,7 @@ def GetSubCategoriesView(request, id):
                 attribute_group_array.append(attribute)
         sub_category_dict["attribute_group"] = attribute_group_array
         sub_category_array.append(sub_category_dict)
-        return Response(sub_category_array)
+        return Response(sub_category_array, status=status.HTTP_400_BAD_REQUEST)
 
     elif request.method == "PUT":
         serializer = SubCategorySerializer(sub_category, data=request.data)
@@ -795,4 +793,4 @@ def GetSubCategoriesView(request, id):
         return Response(serializer.errors)
     elif request.method == "DELETE":
         sub_category.delete()
-        return Response("Deleted")
+        return Response(status=status.HTTP_204_NO_CONTENT)
