@@ -453,7 +453,7 @@ def GetVariationGroupView(request, att_id):
         if len(attribute_type) == 0:
             attribute_type = AttributeType.objects.get(id=attribute.att_type_id)
             attribute_type.delete()
-        return Response("Deleted")
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 @api_view(["GET"])
@@ -465,7 +465,7 @@ def FetchVariationGroupView(request, att_typ_id):
             attribute_type = AttributeType.objects.get(id=att_id)
             attribute = Attribute.objects.filter(att_type=attribute_type.id)
         except:
-            return Response("NO RECORD FOUND")
+            return Response(status=status.HTTP_404_NOT_FOUND)
         for i in range(len(attribute)):
             att_type = attribute_type.att_type
             att_type_id = attribute_type.id
