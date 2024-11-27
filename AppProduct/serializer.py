@@ -415,11 +415,3 @@ class VariationGroupSerializer(serializers.Serializer):
 #     class Meta:
 #         model = ImageModel
 #         fields = ['id', 'title', 'image', 'uploaded_at']
-
-
-num = [0,1,0,3,12]
-for i in range(len(num)):
-    if num[i] == 0:
-        num.insert(-1, num[i])
-        num.pop(i)
-print(num)
