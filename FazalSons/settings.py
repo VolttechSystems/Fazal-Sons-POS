@@ -17,9 +17,9 @@ CORS_ORIGIN_WHITELIST = [
     'http://localhost:3000'
 ] ### For CORS Headers
 
-INTERNAL_IPS = [ 
-    '127.0.0.1',  
-] ### For Django Debug Toolbar
+# INTERNAL_IPS = [ 
+#     '127.0.0.1',  
+# ] ### For Django Debug Toolbar
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -31,7 +31,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework.authtoken',
     'corsheaders', ### For CORS Headers
-    'debug_toolbar', ### For Django Debug Toolbar
+    # 'debug_toolbar', ### For Django Debug Toolbar
     'AppProduct',
     'AppCustomer',
     'AppStock',
@@ -47,7 +47,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'corsheaders.middleware.CorsMiddleware', ### For CORS Headers
-    'debug_toolbar.middleware.DebugToolbarMiddleware', ### For Django Debug Toolbar
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware', ### For Django Debug Toolbar
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
