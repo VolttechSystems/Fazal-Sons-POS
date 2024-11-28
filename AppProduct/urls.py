@@ -69,7 +69,7 @@ urlpatterns = [
     ### NEW SUBCATEGORY URL
     re_path(r'add_subcategories', AddSubCategoriesView, name='AddSubCategories'),
     re_path(r'action_subcategories/(?P<id>.+)', GetSubCategoriesView, name='GetSubCategories'),
-    re_path(r'fetch_categories/(?P<id>.+)', FetchCategoriesView, name='FetchCategories'),
+    re_path(r'fetch_subcategories/(?P<id>.+)', FetchSubCategoriesView, name='FetchSubCategories'),
 
 ]
 

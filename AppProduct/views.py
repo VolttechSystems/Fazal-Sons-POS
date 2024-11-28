@@ -626,7 +626,7 @@ def FetchCategoriesView(request, id):
         try:
             category = Category.objects.get(id=id)
         except Category.DoesNotExist:
-            return Response("invalid id")
+                 return Response(status=status.HTTP_404_NOT_FOUND)
 
         category_attribute = CategoryAttribute.objects.filter(category_id=category.id)
         cat_array = []
@@ -852,3 +852,72 @@ def GetSubCategoriesView(request, id):
     elif request.method == "DELETE":
         sub_category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+# @api_view(["Get"])
+# def FetchSubCategoriesView(request , id):
+#       if request.method == "GET":
+#         try:
+#             sub_category = SubCategory.objects.get(id=id)
+#         except SubCategory.DoesNotExist:
+#             return Response(status=status.HTTP_404_NOT_FOUND)
+
+#         sub_category_attribute = SubCategoryAttribute.objects.filter(sub_category_id=sub_category.id)
+#         sub_cat_array = []
+#         if len(sub_category_attribute) > 0:
+#             for i in range(len(sub_category_attribute)):
+#                 try:
+#                     attribute = Attribute.objects.get(
+#                         id=sub_category_attribute[i].attribute_id
+#                     )
+#                 except:
+#                     return Response(status=status.HTTP_404_NOT_FOUND)
+
+#                 variation = Variation.objects.filter(attribute_name_id=attribute.id)
+#                 if len(variation) > 0:
+#                     sub_cat_dict = dict()
+#                     sub_cat_dict["id"] = sub_category.id
+#                     sub_cat_dict["sub_category"] = sub_category.sub_category_name
+#                     sub_cat_dict["attribute"] = attribute.attribute_name
+#                     variation_array = []
+#                     for x in range(len(variation)):
+#                         variation_array.append(variation[x].variation_name)
+#                         sub_cat_dict["variation"] = variation_array
+#                     sub_cat_array.append(sub_cat_dict)
+#         return Response(sub_cat_array)
+    
+    
+
+@api_view(["GET"])
+def FetchSubCategoriesView(request, id):
+    try:
+        # Fetch the subcategory by ID
+        sub_category = SubCategory.objects.get(id=id)
+    except SubCategory.DoesNotExist:
+        return Response(
+            {"error": "SubCategory with the given ID does not exist."},
+            status=status.HTTP_404_NOT_FOUND,
+        )
+
+    # Fetch related SubCategoryAttributes and their associated Attributes and Variations
+    sub_category_attributes = SubCategoryAttribute.objects.filter(sub_category_id=sub_category.id).select_related('attribute')
+    response_data = []
+
+    for sub_cat_attr in sub_category_attributes:
+        attribute = sub_cat_attr.attribute
+        if not attribute:
+            continue
+
+        # Fetch all variations for the attribute
+        variations = Variation.objects.filter(attribute_name_id=attribute.id).values_list('variation_name', flat=True)
+
+        # Prepare the response dictionary
+        response_data.append({
+            "id": sub_category.id,
+            "sub_category": sub_category.sub_category_name,
+            "attribute": attribute.attribute_name,
+            "variations": list(variations),
+        })
+
+    # Return the response
+    return Response(response_data, status=status.HTTP_200_OK)
