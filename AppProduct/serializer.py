@@ -183,24 +183,94 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 ### SUB CATEGORY SERIALIZER
+# class SubCategorySerializer(serializers.ModelSerializer):
+#     attribute_group = serializers.ListField(child=serializers.CharField())
+
+#     class Meta:
+#         model = SubCategory
+#         fields = '__all__'
+
+#     def create(self, validated_data):
+#         validated_data['created_at'] = DateTime
+#         validated_data['updated_at'] = None
+#         subcategory = super().create(validated_data)
+#         return subcategory
+
+#     def update(self, instance, validated_data):
+#         validated_data['created_at'] = DateTime
+#         validated_data['updated_at'] = None
+#         sub_category = super().update(instance, validated_data)
+#         return sub_category
+
+
+
+
+
+
+
+from rest_framework import serializers
+from django.utils import timezone
+from .models import SubCategory, SubCategoryAttribute, Attribute
+
+
+class AttributeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Attribute
+        fields = ['id', 'attribute_name']
+
+
 class SubCategorySerializer(serializers.ModelSerializer):
-    attribute_group = serializers.ListField(child=serializers.CharField())
+    # Dynamically handle the attribute group as a nested serializer
+    attribute_group = serializers.SerializerMethodField()
 
     class Meta:
         model = SubCategory
-        fields = '__all__'
+        fields = [
+            'id',
+            'category',
+            'sub_category_name',
+            'symbol',
+            'description',
+            'status',
+            'created_at',
+            'updated_at',
+            'attribute_group',
+        ]
+
+    def get_attribute_group(self, obj):
+        # Fetch related attributes and serialize them
+        attributes = Attribute.objects.filter(
+            subcategoryattribute__sub_category=obj
+        ).distinct()
+        return AttributeSerializer(attributes, many=True).data
 
     def create(self, validated_data):
-        validated_data['created_at'] = DateTime
+        # Set timestamps for create
+        validated_data['created_at'] = timezone.now()
         validated_data['updated_at'] = None
-        subcategory = super().create(validated_data)
-        return subcategory
+        return super().create(validated_data)
 
     def update(self, instance, validated_data):
-        validated_data['created_at'] = DateTime
-        validated_data['updated_at'] = None
-        sub_category = super().update(instance, validated_data)
-        return sub_category
+        # Update only the `updated_at` timestamp
+        validated_data['updated_at'] = timezone.now()
+        return super().update(instance, validated_data)
+
+    def validate_attribute_group(self, value):
+        # Example validation for attribute group
+        if not isinstance(value, list) or not all(isinstance(item, str) for item in value):
+            raise serializers.ValidationError("Attribute group must be a list of strings.")
+        return value
+
+
+
+
+
+
+
+
+
+
+
 
 
 class VariationSerializers(serializers.Serializer):
