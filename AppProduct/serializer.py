@@ -225,7 +225,10 @@ class TempProductSerializer(serializers.ModelSerializer):
         # get_attribute = validated_data.get('attribute')
         get_variations = validated_data.pop('variations', None)
         get_variations = ast.literal_eval(get_variations)
-
+        # outlet = validated_data.get('outlet')
+        # brand = validated_data.get('brand')
+        # print(outlet)
+        # print(brand)
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))

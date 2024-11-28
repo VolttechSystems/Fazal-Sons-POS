@@ -916,7 +916,7 @@ def FetchSubCategoriesView(request, id):
             "id": sub_category.id,
             "sub_category": sub_category.sub_category_name,
             "attribute": attribute.attribute_name,
-            "variations": list(variations),
+            "variation": list(variations),
         })
 
     # Return the response
