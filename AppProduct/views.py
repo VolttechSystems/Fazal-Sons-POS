@@ -651,103 +651,6 @@ def FetchCategoriesView(request, id):
                     cat_array.append(cat_dict)
         return Response(cat_array)
 
-    #     att_id = att_typ_id
-    #     array = []
-    #     try:
-    #     #     attribute_type = AttributeType.objects.get(id=att_id)
-    #     #     attribute = Attribute.objects.filter(att_type=attribute_type.id)
-    #     # except:
-    #     #     return Response("NO RECORD FOUND")
-    #     # for i in range(len(attribute)):
-    #     #     att_type = attribute_type.att_type
-    #     #     att_type_id = attribute_type.id
-    #     #     att_name = attribute[i].attribute_name
-    #     #     attribute_name_id = attribute[i].id
-    #     #
-    #     #     variation = Variation.objects.filter(attribute_name=attribute_name_id)
-    #     #     if len(variation) > 0:
-    #     #         variation_name = []
-    #     #         for i in range(len(variation)):
-    #     #             variation_name.append(variation[i].variation_name)
-    #     #         Dict = dict()
-    #     #         Dict['att_id'] = att_id
-    #     #         Dict['att_type'] = att_type
-    #     #         Dict['attribute_name'] = att_name
-    #     #         Dict['variation'] = variation_name
-    #     #         array.append(Dict)
-    #     #     elif len(variation) == 0:
-    #     #         Dict = dict()
-    #     #         Dict['att_id'] = att_id
-    #     #         Dict['att_type'] = att_type
-    #     #         Dict['attribute_name'] = att_name
-    #     #         Dict['variation'] = None
-    #     #         array.append(Dict)
-    #     # return Response(array)
-
-
-# from rest_framework.views import APIView
-#
-#
-# class ImageUploadView(APIView):
-#     def post(self, request, *args, **kwargs):
-#         serializer = ImageModelSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status=status.HTTP_201_CREATED)
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-# @api_view(["GET", "POST"])
-# def AddSubCategoriesView(request):
-#     if request.method == "GET":
-#         # Use select_related and prefetch_related to optimize queries
-#         sub_categories = SubCategory.objects.select_related('category').prefetch_related(
-#             Prefetch(
-#                 'subcategoryattribute_set',  # Adjust based on your related name
-#                 queryset=SubCategoryAttribute.objects.select_related('attribute')
-#             )
-#         )
-
-#         sub_category_array = []
-#         for sub_category in sub_categories:
-#             sub_category_dict = {
-#                 "id": sub_category.id,
-#                 "sub_category_name": sub_category.sub_category_name,
-#                 "symbol": sub_category.symbol,
-#                 "description": sub_category.description,
-#                 "status": sub_category.status,
-#                 "category": sub_category.category.category_name if sub_category.category else None,
-#                 "attribute_group": [
-#                     attribute.attribute.attribute_name
-#                     for attribute in sub_category.subcategoryattribute_set.all()
-#                 ],
-#             }
-#             sub_category_array.append(sub_category_dict)
-
-#         return Response(sub_category_array)
-
-#     elif request.method == "POST":
-#         serializer = SubCategorySerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             sub_category = serializer.instance  # Access the saved instance directly
-#             sub_category_dict = {
-#                 "id": sub_category.id,
-#                 "category": sub_category.category_id,
-#                 "sub_category_name": sub_category.sub_category_name,
-#                 "symbol": sub_category.symbol,
-#                 "description": sub_category.description,
-#                 "status": sub_category.status,
-#                 "attribute_group": [
-#                     attr.attribute.attribute_name
-#                     for attr in sub_category.subcategoryattribute_set.all()
-#                 ],
-#             }
-#             return Response(sub_category_dict, status=status.HTTP_201_CREATED)
-
-#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
 
 @api_view(["GET", "POST"])
 def AddSubCategoriesView(request):
@@ -816,31 +719,42 @@ def AddSubCategoriesView(request):
 @api_view(["GET", "PUT", "DELETE"])
 def GetSubCategoriesView(request, id):
     try:
-        sub_category = SubCategory.objects.get(id=id)
+        sub_category = SubCategory.objects.select_related("category").get(id=id)
+        # print(sub_category.category.pc_name.id)
+        
+        # sub_category = SubCategory.objects.get(id=id)
     except SubCategory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == "GET":
-        sub_category_array = []
         sub_category_dict = dict()
         sub_category_dict["id"] = sub_category.id
+        sub_category_dict["head_id"] = sub_category.category.pc_name.hc_name.id
+        sub_category_dict["head_name"] = sub_category.category.pc_name.hc_name.hc_name
+        sub_category_dict["parent_id"] = sub_category.category.pc_name.id
+        sub_category_dict["parent_name"] = sub_category.category.pc_name.pc_name
+        sub_category_dict["category_id"] = sub_category.category.id
+        sub_category_dict["category_name"] = sub_category.category.category_name
         sub_category_dict["sub_category_name"] = sub_category.sub_category_name
         sub_category_dict["symbol"] = sub_category.symbol
         sub_category_dict["description"] = sub_category.description
         sub_category_dict["status"] = sub_category.status
-        sub_category_dict["category"] = sub_category.category.category_name
+     
         sub_category_attribute = SubCategoryAttribute.objects.filter(
             sub_category_id=sub_category.id
         )
         attribute_group_array = []
+        attribute_type_array = []
         if len(sub_category_attribute) > 0:
             for i in range(len(sub_category_attribute)):
                 attribute = Attribute.objects.get(
                     id=sub_category_attribute[i].attribute_id
-                ).attribute_name
-                attribute_group_array.append(attribute)
+                )
+                attribute_group_array.append(attribute.attribute_name)
+                attribute_type_array.append(attribute.att_type_id)
         sub_category_dict["attribute_group"] = attribute_group_array
-        sub_category_array.append(sub_category_dict)
-        return Response(sub_category_array, status=status.HTTP_200_OK)
+        sub_category_dict["att_type"] = attribute_type_array
+        
+        return Response(sub_category_dict, status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
         serializer = SubCategorySerializer(sub_category, data=request.data)
@@ -884,8 +798,6 @@ def GetSubCategoriesView(request, id):
 #                         sub_cat_dict["variation"] = variation_array
 #                     sub_cat_array.append(sub_cat_dict)
 #         return Response(sub_cat_array)
-    
-    
 
 @api_view(["GET"])
 def FetchSubCategoriesView(request, id):
