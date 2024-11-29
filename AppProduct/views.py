@@ -28,6 +28,7 @@ from django.db.models import Prefetch
 #     return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
 
 
+
 ### FUNCTION THAT CREATE TOKEN WHEN USER IS CREATED
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
 def create_auth_token(sender, instance=None, created=False, **kwargs):
@@ -454,7 +455,7 @@ def GetVariationGroupView(request, att_id):
         if len(attribute_type) == 0:
             attribute_type = AttributeType.objects.get(id=attribute.att_type_id)
             attribute_type.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=status.HTTP_200_OK)
 
 
 @api_view(["GET"])

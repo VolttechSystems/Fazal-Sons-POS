@@ -11,6 +11,15 @@ import ast
 
 DateTime = datetime.datetime.now()
 
+### GET FIRST CHARACTER OF EACH WORD
+def get_initials(name):
+    return "".join([word[0] for word in name.split()])
+
+### GET FIRST THREE CHARACTER OF WORD
+def get_first_three_of_first_word(name):  # Check if the string contains spaces
+    return name.split()[0][:3]  # Get the first word and slice the first three characters
+
+
 
 ### OUTLET SERIALIZER
 class OutletSerializer(serializers.ModelSerializer):
@@ -225,16 +234,31 @@ class TempProductSerializer(serializers.ModelSerializer):
         # get_attribute = validated_data.get('attribute')
         get_variations = validated_data.pop('variations', None)
         get_variations = ast.literal_eval(get_variations)
-        # outlet = validated_data.get('outlet')
-        # brand = validated_data.get('brand')
-        # print(outlet)
-        # print(brand)
+        outlet = validated_data.get('outlet')
+        brand = validated_data.get('brand')
+        print(brand.brand_name)
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))
             if len(get_color) > 0:
+                # if " " in brand.brand_name:
+                #     brand_code = get_initials(brand.brand_name)
+                # else:
+                #     brand_code = get_first_three_of_first_word(brand.brand_name)
+                    
+                # if " " in outlet.outlet_name:
+                #     outlet_code = get_initials(outlet.outlet_name)
+                # else:
+                #     outlet_code = get_first_three_of_first_word(outlet.outlet_name)
+                # sku_code = brand_code + "_" + outlet_code
+                # print(sku_code)
+            
+                    
+                # brand_code = get_initials(brand)
+                # outlet_code = get_initials(outlet)
                 for color in range(len(get_color)):
                     for variation in initial_variations:
+                        # auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + "-")
                         auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', 'PR-')
                         validated_data['sku'] = auto_sku_code
                         validated_data['color'] = get_color[color]
@@ -261,6 +285,11 @@ class TempProductSerializer(serializers.ModelSerializer):
         parent = super().update(instance, validated_data)
         return parent
 
+
+
+# FY-P1-1
+
+# outlet-brand-color-attributes-number
 
 ### PRODUCT SERIALIZER
 class ProductSerializer(serializers.ModelSerializer):
