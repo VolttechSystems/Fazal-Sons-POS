@@ -576,7 +576,7 @@ def GetCategoriesView(request, id):
         #     + "'"
         # )
         query = (
-            "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, pc.id as parent_id, hc.id as head_id from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id inner join tbl_head_category hc on pc.hc_name_id = hc.id where ca.id = '"+ id +"'"
+            "Select ca.id, category_name, ca.symbol, subcategory_option, ca.description, ca.status, pc_name, pc.id as parent_id, hc.id as head_id, hc_name as head_name, pc_name as parent_name from tbl_category ca inner join tbl_parent_category pc on ca.pc_name_id = pc.id inner join tbl_head_category hc on pc.hc_name_id = hc.id where ca.id = '"+ id +"'"
         )
         cursor.execute(query)
         variation_group = DistinctFetchAll(cursor)
@@ -587,7 +587,9 @@ def GetCategoriesView(request, id):
                 variation_dict = dict()
                 variation_dict["id"] = variation_group[i]["id"]
                 variation_dict["head_id"] = variation_group[i]["head_id"]
+                variation_dict["head_name"] = variation_group[i]["head_name"]
                 variation_dict["parent_id"] = variation_group[i]["parent_id"]
+                variation_dict["parent_name"] = variation_group[i]["parent_name"]
                 variation_dict["category_name"] = variation_group[i]["category_name"]
                 variation_dict["symbol"] = variation_group[i]["symbol"]
                 variation_dict["subcategory_option"] = variation_group[i][
