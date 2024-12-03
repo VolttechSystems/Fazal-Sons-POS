@@ -805,19 +805,15 @@ def FetchSubCategoriesView(request, id):
             {"error": "SubCategory with the given ID does not exist."},
             status=status.HTTP_404_NOT_FOUND,
         )
-
     # Fetch related SubCategoryAttributes and their associated Attributes and Variations
     sub_category_attributes = SubCategoryAttribute.objects.filter(sub_category_id=sub_category.id).select_related('attribute')
     response_data = []
-
     for sub_cat_attr in sub_category_attributes:
         attribute = sub_cat_attr.attribute
         if not attribute:
             continue
-
         # Fetch all variations for the attribute
         variations = Variation.objects.filter(attribute_name_id=attribute.id).values_list('variation_name', flat=True)
-
         # Prepare the response dictionary
         response_data.append({
             "id": sub_category.id,
@@ -825,6 +821,5 @@ def FetchSubCategoriesView(request, id):
             "attribute": attribute.attribute_name,
             "variation": list(variations),
         })
-
     # Return the response
     return Response(response_data, status=status.HTTP_200_OK)

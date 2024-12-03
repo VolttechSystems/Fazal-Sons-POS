@@ -1,11 +1,11 @@
 from django.db import models
 
-SEASONS_CHOICES = (
-    ('Spring', 'Spring'),
-    ('Summer', 'Summer'),
-    ('Autumn', 'Autumn'),
-    ('Winter', 'Winter'),
-)
+# SEASONS_CHOICES = (
+#     ('Spring', 'Spring'),
+#     ('Summer', 'Summer'),
+#     ('Autumn', 'Autumn'),
+#     ('Winter', 'Winter'),
+# )
 
 STATUS = (
     ('active', 'Active'),
@@ -196,7 +196,7 @@ class TemporaryProduct(models.Model):
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
-    season = models.CharField(max_length=10, choices=SEASONS_CHOICES, default='Spring')
+    season = models.CharField(max_length=10,null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     color = models.CharField(max_length=100, null=True, blank=True)
     size = models.CharField(max_length=100, null=True)
@@ -226,7 +226,8 @@ class Product(models.Model):
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
-    season = models.CharField(max_length=10, choices=SEASONS_CHOICES, default='Spring')
+    # season = models.CharField(max_length=10, choices=SEASONS_CHOICES, default='Spring')
+    season = models.CharField(max_length=10,null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     color = models.CharField(max_length=100, null=True, blank=True)
     size = models.CharField(max_length=100, null=True)
