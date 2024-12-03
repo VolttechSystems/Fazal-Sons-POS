@@ -214,7 +214,15 @@ class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TemporaryProduct.objects.all().order_by("product_name")
     serializer_class = TempProductSerializer
     pagination_class = None
-
+    
+@api_view(["DELETE"])
+def DeleteTemporaryProductView(request):
+    try:
+        # Delete all rows
+        TemporaryProduct.objects.all().delete()
+        return Response(status=status.HTTP_200_OK)
+    except Exception as e:
+        return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 ### PRODUCT VIEW
 class AddProduct(generics.ListCreateAPIView):

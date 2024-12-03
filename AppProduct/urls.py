@@ -45,6 +45,7 @@ urlpatterns = [
     ### TEMPORARY PRODUCT
     re_path(r'add_temp_product', AddTemporaryProductView.as_view(), name='AddTemporaryProduct'),
     re_path(r'action_temp_product/(?P<pk>.+)/', TemporaryProductGetView.as_view(), name='GetTemporaryProduct'),
+    re_path(r'all-temp-product-delete/', DeleteTemporaryProductView, name='DeleteTemporaryProduct'),
     ### PRODUCT
     re_path(r'add_product', AddProduct.as_view(), name='AddProduct'),
     re_path(r'action_product/(?P<pk>.+)/', ProductGetView.as_view(), name='GetProduct'),
