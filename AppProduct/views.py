@@ -58,14 +58,10 @@ class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
 
 @api_view(["GET"])
 def FetchOutletView(request):
-    outlet = Outlet.objects.all().values("outlet_name", "outlet_code")
-    if len(outlet) > 0:
-        serializer = OutletSerializer(outlet, many=True)
-        param = {
-            "status": 200,
-            "results": serializer.data,
-        }
-        return Response(param)
+    outlets = Outlet.objects.all()
+    if outlets.exists():
+        serializer = OutletSerializer(outlets, many=True)
+        return Response(serializer.data)
     return Response(status=status.HTTP_204_NO_CONTENT)
 
 

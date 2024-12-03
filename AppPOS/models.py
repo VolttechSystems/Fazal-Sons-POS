@@ -42,7 +42,7 @@ class AdditionalFee(models.Model):
 
 class Transaction(models.Model):
     invoice_code = models.CharField(max_length=100, null=True, unique=True)  # auto generated
-    outlet_code = models.ForeignKey(Outlet, to_field='outlet_code', on_delete=models.CASCADE, null=True,
+    outlet_code = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True,
                                     blank=True)
     cust_code = models.ForeignKey(Customer, to_field='cust_code', on_delete=models.CASCADE, null=True,
                                   blank=True)
