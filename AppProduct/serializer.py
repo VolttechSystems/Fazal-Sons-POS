@@ -292,9 +292,6 @@ class TempProductSerializer(serializers.ModelSerializer):
                     for variation in initial_variations:
                         all_variation = list(variation)
                         specs = "-".join(map(str, all_variation))
-                        # is_spec_already_added(specs)
-
-                        # auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + "-")
                         auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
                         validated_data['sku'] = auto_sku_code
                         validated_data['color'] = get_color[color]
@@ -321,10 +318,6 @@ class TempProductSerializer(serializers.ModelSerializer):
         return parent
 
 
-# FY-P1-1
-
-# outlet-brand-color-attributes-number
-
 ### PRODUCT SERIALIZER
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -342,7 +335,23 @@ class ProductSerializer(serializers.ModelSerializer):
         tem_product = TemporaryProduct.objects.all()
         len_tem_product = len(tem_product)
         for x in range(len_tem_product):
-            # auto_code = AutoGenerateCodeForModel(Product, 'sku', 'PR-')
+            outlet = tem_product[x].outlet
+            brand = tem_product[x].brand
+            outlet_code = "OT"
+            brand_code = "BR"
+            if outlet != None:
+                    if " " in outlet.outlet_name:
+                        outlet_code = get_initials(outlet.outlet_name)
+                    else:
+                        outlet_code = get_first_three_of_first_word(outlet.outlet_name)
+            if brand != None:
+                        if " " in brand.brand_name:
+                            brand_code = get_initials(brand.brand_name)
+                        else:
+                            brand_code = get_first_three_of_first_word(brand.brand_name)
+                        
+            sku_code = outlet_code + "-" + brand_code
+            auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
             validated_data['product_name'] = tem_product[x].product_name
             validated_data['sku'] = tem_product[x].sku
             validated_data['outlet'] = tem_product[x].outlet

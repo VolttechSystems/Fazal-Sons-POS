@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from AppAccount.views import *
 
 urlpatterns = [
-                  # path('', LoginAPIView.as_view(), name='LoginView'),
+                  path('', Root, name='Root'),
                   path('admin/', admin.site.urls),
                   path('pos/products', include('AppProduct.urls')),
                   path('pos/customer', include('AppCustomer.urls')),
@@ -29,7 +29,7 @@ urlpatterns = [
                   path('pos/login', include('AppAccount.urls')),
                   path('pos/transaction', include('AppPOS.urls')),
                   path('pos/report', include('AppReport.urls')),
-
+               
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
