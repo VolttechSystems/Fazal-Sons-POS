@@ -243,5 +243,8 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
                 update_transaction_status.updated_at = DateTime
                 update_transaction_status.save()
         return sales_return
-
     
+class ProductSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Product
+        fields = ['id','product_name', 'sku','cost_price', 'selling_price', 'description']

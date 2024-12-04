@@ -4,42 +4,32 @@ from .serializer import *
 from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.status import *
+from .serializer import ProductSerializer
 
 
 @api_view(['GET'])
 def AllProductView(request):
     product = Product.objects.all()
     array = []
-    if len(product) > 0:
+    if product.exists():
         for i in range(len(product)):
             product_dict = dict()
             product_dict['product_name'] = product[i].product_name
             product_dict['sku'] = product[i].sku
-            product_dict['size'] = product[i].size
-            product_dict['color'] = product[i].color
+            product_dict['item_name'] = product[i].description
             array.append(product_dict)
-        return Response(array)
-    return Response(status=HTTP_404_NOT_FOUND)
+    return Response(array,status=HTTP_200_OK)
 
 
 @api_view(['GET'])
 def ProductDetailView(request, code):
-    product = Product.objects.filter(sku=code)
-    array = []
-    if len(product) > 0:
-        for i in range(len(product)):
-            product_dict = dict()
-            product_dict['product_name'] = product[i].product_name
-            product_dict['sku'] = product[i].sku
-            product_dict['cost_price'] = product[i].cost_price
-            product_dict['selling_price'] = product[i].selling_price
-            array.append(product_dict)
-        return Response(array)
-    return Response(status=HTTP_404_NOT_FOUND)
-
-
-
-
+    try:
+        product = Product.objects.get(sku=code)
+    except Product.DoesNotExist:
+         return Response(status=HTTP_404_NOT_FOUND)
+    serializer = ProductSerializer(product)
+    return Response(serializer.data)
+   
 ### TRANSACTION VIEW
 class AddTransactionView(generics.ListCreateAPIView):
     queryset = TransactionItem.objects.all()

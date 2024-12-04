@@ -126,22 +126,3 @@ class TransactionReturn(models.Model):
 
     def __str__(self):
         return self.invoice_code
-
-
-
-# {
-#     "sku": "['PR-4', 'PR-5']",
-#     "quantity": "[1,2]",
-#     "rate": "[2200, 1800]", 
-#     "item_discount": "[5,10]", 
-#     "cust_code": "CUST-1"   ,
-#     "overall_discount": "0",
-#     "outlet_code": "FS-01", 
-#     "saleman_code": "SL-1", 
-#     "advanced_payment": "0",
-#     // "additional_fee_code": "",
-#     // "additional_fee": ""
- 
-#     "additional_fee_code": "['FEE-1', 'FEE-2']",
-#     "additional_fee": "[500,300]"   
-# }

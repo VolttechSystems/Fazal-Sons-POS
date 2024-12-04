@@ -271,22 +271,24 @@ class TempProductSerializer(serializers.ModelSerializer):
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))
-            if len(get_color) > 0:
-
-                if " " in outlet.outlet_name:
-                    outlet_code = get_initials(outlet.outlet_name)
-                else:
-                    outlet_code = get_first_three_of_first_word(outlet.outlet_name)
-
-                brand_code = "BR"
-                if brand != None:
-                    if " " in brand.brand_name:
-                        brand_code = get_initials(brand.brand_name)
+            # if len(get_color) > 0:
+            outlet_code = "OT"
+            brand_code = "BR"
+            if outlet != None:
+                    if " " in outlet.outlet_name:
+                        outlet_code = get_initials(outlet.outlet_name)
                     else:
-                        brand_code = get_first_three_of_first_word(brand.brand_name)
-                sku_code = outlet_code + "-" + brand_code
+                        outlet_code = get_first_three_of_first_word(outlet.outlet_name)
 
-                for color in range(len(get_color)):
+                    
+                    if brand != None:
+                        if " " in brand.brand_name:
+                            brand_code = get_initials(brand.brand_name)
+                        else:
+                            brand_code = get_first_three_of_first_word(brand.brand_name)
+            sku_code = outlet_code + "-" + brand_code
+
+            for color in range(len(get_color)):
                     for variation in initial_variations:
                         all_variation = list(variation)
                         specs = "-".join(map(str, all_variation))
@@ -300,7 +302,7 @@ class TempProductSerializer(serializers.ModelSerializer):
                         validated_data['description'] = specs
                         validated_data['created_at'] = DateTime
                         parent = super().create(validated_data)
-            else:
+        else:
                 for variation in initial_variations:
                     auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
                     validated_data['sku'] = auto_sku_code
@@ -311,7 +313,7 @@ class TempProductSerializer(serializers.ModelSerializer):
                     validated_data['created_at'] = DateTime
                     parent = super().create(validated_data)
 
-            return parent
+        return parent
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
