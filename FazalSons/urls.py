@@ -21,7 +21,7 @@ from django.conf.urls.static import static
 from AppAccount.views import *
 
 urlpatterns = [
-                  path('', Root, name='Root'),
+                  path('', FazalSons, name='FazalSons'),
                   path('admin/', admin.site.urls),
                   path('pos/products', include('AppProduct.urls')),
                   path('pos/customer', include('AppCustomer.urls')),
