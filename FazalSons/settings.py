@@ -9,17 +9,18 @@ PRODUCT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-a!*(fow%l)n7(6_g#jj8+8%=$v&^h+&-(wb%zu2^92b30l1&#q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = False
 
 ALLOWED_HOSTS = ['*']
 
 CORS_ORIGIN_WHITELIST = [
-    'http://localhost:3000'
+    'http://localhost:3000',
+    'http://195.26.253.123:3000'
 ] ### For CORS Headers
 
-INTERNAL_IPS = [ 
-    '127.0.0.1',  
-] ### For Django Debug Toolbar
+# INTERNAL_IPS = [ 
+#     '127.0.0.1',  
+# ] ### For Django Debug Toolbar
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -78,23 +79,15 @@ WSGI_APPLICATION = 'FazalSons.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'db_fazal_sons_pos',
-    #     'USER': 'postgres',
-    #     'PASSWORD': '123',
-    #     'PORT': '5432',
-    #     'HOST': 'localhost',
-    # }
-
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'db_fazal_sons_pos',
         'USER': 'postgres',
-        'PASSWORD': 'Naveed*123',
+        'PASSWORD': '12345678',
         'PORT': '5432',
-        'HOST': 'fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com',
+        'HOST': 'localhost',
     }
+
 }
 
 # Password validation
