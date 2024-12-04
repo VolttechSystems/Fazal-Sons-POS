@@ -79,14 +79,23 @@ WSGI_APPLICATION = 'FazalSons.wsgi.application'
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases
 
 DATABASES = {
-    'default': {
+    # 'default': {
+    #     'ENGINE': 'django.db.backends.postgresql',
+    #     'NAME': 'db_fazal_sons_pos',
+    #     'USER': 'postgres',
+    #     'PASSWORD': '12345678',
+    #     'PORT': '5432',
+    #     'HOST': 'localhost',
+    # }
+   'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'db_fazal_sons_pos',
         'USER': 'postgres',
-        'PASSWORD': '12345678',
+        'PASSWORD': 'Naveed*123',
         'PORT': '5432',
-        'HOST': 'localhost',
+        'HOST': 'fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com',
     }
+
 
 }
 
