@@ -14,9 +14,11 @@ def AllProductView(request):
     if product.exists():
         for i in range(len(product)):
             product_dict = dict()
+            # product_dict['id'] = product[i].id
             product_dict['product_name'] = product[i].product_name
             product_dict['sku'] = product[i].sku
             product_dict['item_name'] = product[i].description
+            product_dict['color'] = product[i].color
             array.append(product_dict)
     return Response(array,status=HTTP_200_OK)
 
