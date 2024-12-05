@@ -9,7 +9,7 @@ PRODUCT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = 'django-insecure-a!*(fow%l)n7(6_g#jj8+8%=$v&^h+&-(wb%zu2^92b30l1&#q'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['*']
 
@@ -83,28 +83,30 @@ DATABASES = {
     #     'ENGINE': 'django.db.backends.postgresql',
     #     'NAME': 'db_fazal_sons_pos',
     #     'USER': 'postgres',
-    #     'PASSWORD': '123',
+    #     'PASSWORD': '12345678',
     #     'PORT': '5432',
     #     'HOST': 'localhost',
     # }
-
-    # 'default': {
-    #     'ENGINE': 'django.db.backends.postgresql',
-    #     'NAME': 'db_fazal_sons_pos',
-    #     'USER': 'postgres',
-    #     'PASSWORD': 'Naveed*123',
-    #     'PORT': '5432',
-    #     'HOST': 'fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com',
-    # }
     
-      'default': {
+    'default': {
         'ENGINE': 'django.db.backends.postgresql',
         'NAME': 'db_fazal_sons_pos',
         'USER': 'postgres',
-        'PASSWORD': '12345678',
+        'PASSWORD': 'Naveed*123',
         'PORT': '5432',
-        'HOST': 'localhost',
+        'HOST': 'fazalsons.ctsg24aca9u5.eu-north-1.rds.amazonaws.com',
     }
+      
+#    'default': {
+#         'ENGINE': 'django.db.backends.postgresql',
+#         'NAME': 'db_fazal_sons_pos',
+#         'USER': 'postgres',
+#         'PASSWORD': '12345678',
+#         'PORT': '5432',
+#         'HOST': 'localhost',
+#     }
+
+
 }
 
 # Password validation

@@ -351,9 +351,9 @@ class ProductSerializer(serializers.ModelSerializer):
                             brand_code = get_first_three_of_first_word(brand.brand_name)
                         
             sku_code = outlet_code + "-" + brand_code
-            auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
+            auto_sku_code = AutoGenerateCodeForModel(Product, 'sku', sku_code + '-')
             validated_data['product_name'] = tem_product[x].product_name
-            validated_data['sku'] = tem_product[x].sku
+            validated_data['sku'] = auto_sku_code
             validated_data['outlet'] = tem_product[x].outlet
             validated_data['sub_category'] = tem_product[x].sub_category
             validated_data['category'] = tem_product[x].category
@@ -373,7 +373,7 @@ class ProductSerializer(serializers.ModelSerializer):
             # Add Stock
             add_stock = Stock(
                 product_name=tem_product[x].product_name,
-                sku=tem_product[x].sku,
+                sku=auto_sku_code,
                 color=tem_product[x].color,
                 size=tem_product[x].size,
                 avail_quantity=0,

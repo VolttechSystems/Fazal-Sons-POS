@@ -9,6 +9,7 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view
 
 class LoginAPIView(APIView):
 
@@ -50,6 +51,10 @@ class CreateUserView(generics.ListCreateAPIView):
     permission_classes = [IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    
+@api_view(["GET"])
+def FazalSons(request):
+    return Response("Backend in Working Fine")
     
     
 @api_view(["GET"])
