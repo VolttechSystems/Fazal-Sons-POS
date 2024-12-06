@@ -1,5 +1,4 @@
 import datetime
-
 from rest_framework import serializers
 from .models import *
 from AppCustomer.utils import *
@@ -9,12 +8,11 @@ from AppAccount.admin import *
 
 DateTime = datetime.datetime.now()
 
-
 ### TRANSACTION SERIALIZER
 class AdditionalFeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalFee
-        fields = ['fee_name']
+        fields = ['id','fee_code','fee_name']
 
     def create(self, validated_data):
         validated_data['fee_code'] = AutoGenerateCodeForModel(AdditionalFee, 'fee_code', 'FEE-')
@@ -105,7 +103,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
             )
             transaction.save()
 
-            Total_quatity = 0
+            Total_quantity = 0
             Gross_total = 0
             item_wise_discount = 0
             Grand_total = 0
@@ -135,7 +133,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     created_at=DateTime
                 )
                 transaction_item.save()
-                Total_quatity += quantity
+                Total_quantity += quantity
                 Gross_total += int(item_gross_total)
                 item_wise_discount += int(item_discount)
             ## Update Transaction
@@ -147,7 +145,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 
             transaction = Transaction.objects.get(invoice_code=invoice_auto_code)
 
-            transaction.quantity = Total_quatity
+            transaction.quantity = Total_quantity
             transaction.gross_total = Gross_total
             transaction.per_discount = get_overall_discount
             transaction.discounted_value = total_discount
@@ -160,20 +158,20 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     fee_code = get_additional_fee_code[x].strip()
                     additional_fee = AdditionalFee.objects.get(fee_code=fee_code)
 
-                    transcation_additional_fee = FeeRecord(
+                    transaction_additional_fee = FeeRecord(
                         fee_type_id=additional_fee.id,
                         transaction_id_id=transaction.id,
                         fee=get_additional_fee[x],
                     )
-                    transcation_additional_fee.save()
+                    transaction_additional_fee.save()
                     total_additional_fee += int(get_additional_fee[x])
 
-            grand_tota_with_fee = Grand_total + total_additional_fee
+            grand_total_with_fee = Grand_total + total_additional_fee
             transaction.additional_fees = total_additional_fee
-            transaction.grand_total = grand_tota_with_fee
+            transaction.grand_total = grand_total_with_fee
 
             if int(get_advanced_payment) != 0:
-                due_amount = int(grand_tota_with_fee) - int(get_advanced_payment)
+                due_amount = int(grand_total_with_fee) - int(get_advanced_payment)
                 transaction.advanced_payment = get_advanced_payment
                 transaction.due_amount = due_amount
                 transaction.status = "unpaid"

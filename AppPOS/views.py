@@ -84,7 +84,8 @@ def GetAllInvoicesView(request):
 @api_view(['GET'])    
 def GetInvoiceProductsView(request, code):
     cursor = connections['default'].cursor()
-    query = "select pr.sku, product_name, color, size  from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
+    # query = "select pr.sku, product_name, color, description  from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
+    query = "select pr.sku, product_name, description || ' ' || color as items from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
     cursor.execute(query)
     invoice_products = DistinctFetchAll(cursor)
     if len(invoice_products) > 0:

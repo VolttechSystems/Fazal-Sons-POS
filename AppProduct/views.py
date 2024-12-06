@@ -600,15 +600,28 @@ def GetCategoriesView(request, id):
         variation_dict["status"] = variation_data["status"]
         variation_dict["pc_name"] = variation_data["pc_name"]
         category_attribute = CategoryAttribute.objects.filter(category_id=id)
+        # attribute_group_array = []
+        # attribute_type_array = []
+        # if len(category_attribute) > 0:
+        #     for i in range(len(category_attribute)):
+        #         attribute = Attribute.objects.get(
+        #             id=category_attribute[i].attribute_id
+        #         )
+        #         attribute_group_array.append(attribute.attribute_name)
+        #         attribute_type_array.append(attribute.att_type_id)
         attribute_group_array = []
         attribute_type_array = []
+        attribute_group_dict = dict()
         if len(category_attribute) > 0:
             for i in range(len(category_attribute)):
                 attribute = Attribute.objects.get(
                     id=category_attribute[i].attribute_id
                 )
-                attribute_group_array.append(attribute.attribute_name)
-                attribute_type_array.append(attribute.att_type_id)
+                
+                attribute_group_dict["id"] =attribute.id
+                attribute_group_dict["name"] =attribute.attribute_name
+                attribute_group_array.append(attribute_group_dict)
+                # attribute_type_array.append(attribute.att_type_id)
         variation_dict["attribute_group"] = attribute_group_array
         variation_dict["att_type"] = attribute_type_array
         return Response(variation_dict)
