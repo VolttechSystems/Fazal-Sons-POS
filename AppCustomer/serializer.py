@@ -51,7 +51,7 @@ class CustomerSerializer(ModelSerializer):
         model = Customer
 
         fields = (
-            'id', 'customer_channel', 'customer_type', 'first_name', 'first_name', 'last_name', 'display_name', 'gender',
+            'id','cust_code', 'customer_channel', 'customer_type', 'first_name', 'first_name', 'last_name', 'display_name', 'gender',
             'company_name', 'email', 'mobile_no', 'international_no', 'landline_no', 'password', 'address',
             'shipping_address', 'city', 'zip_code', 'province', 'country', 'internal_note', 'image', 'online_access',
             'status')

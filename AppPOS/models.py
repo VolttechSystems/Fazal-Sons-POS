@@ -114,9 +114,9 @@ class TransactionReturn(models.Model):
     invoice_code = models.ForeignKey(Transaction, to_field='invoice_code', on_delete=models.CASCADE, null=True,
                                      blank=True)
     sku = models.CharField(null=True, blank=True)
-    rate = models.CharField(null=True, blank=True)
-    quantity = models.CharField(null=True, blank=True)
-    total_amount = models.CharField(null=True, blank=True)
+    rate = models.IntegerField(null=True, blank=True)
+    quantity = models.FloatField(null=True, blank=True)
+    total_amount = models.IntegerField(null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)

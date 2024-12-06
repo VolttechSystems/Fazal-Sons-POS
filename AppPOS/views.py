@@ -33,7 +33,8 @@ def ProductDetailView(request, code):
     return Response(serializer.data)
    
 ### TRANSACTION VIEW
-class AddTransactionView(generics.ListCreateAPIView):
+# class AddTransactionView(generics.ListCreateAPIView):
+class AddTransactionView(generics.CreateAPIView):
     queryset = TransactionItem.objects.all()
     serializer_class = TransactionItemSerializer
     pagination_class = None

@@ -241,22 +241,29 @@ class TempProductSerializer(serializers.ModelSerializer):
         model = TemporaryProduct
         fields = '__all__'
 
-    def validate_variations(self, value):
+    def validate(self, data):
         """
         Check if the specification already exists in the description.
         """
-        parsed_data = json.loads(value)
-        initial_variations = list(product(*parsed_data))
-        print(initial_variations)
+        get_variations = data.get('variations')
+        get_color = data.get('color')
+        # print(variations)
+        # print(color)
+        parsed_color = ast.literal_eval(get_color)
+      
+        # parsed_color = json.loads(get_color)
+        parsed_variations = json.loads(get_variations)
+        initial_variations = list(product(*parsed_variations))
+
         for variation in initial_variations:
             all_variation = list(variation)
             specs = "-".join(map(str, all_variation))
-
-            if TemporaryProduct.objects.filter(description__icontains=specs).exists():
-                raise serializers.ValidationError("The specification " + specs + " is already added.")
-            if Product.objects.filter(description__icontains=specs).exists():
-                raise serializers.ValidationError("The specification " + specs + " is already added in the Product.")
-        return value
+            for color in parsed_color:
+                if TemporaryProduct.objects.filter(description__iexact=specs, color__iexact=color).exists():
+                    raise serializers.ValidationError("The specification " + specs + "-" + color + " is already added.")
+            # if Product.objects.filter(description__iexact=specs).exists():
+            #     raise serializers.ValidationError("The specification " + specs + " is already added in the Product.")s
+        return data
 
     def create(self, validated_data):
         parent = ''
@@ -271,7 +278,6 @@ class TempProductSerializer(serializers.ModelSerializer):
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))
-            # if len(get_color) > 0:
             outlet_code = "OT"
             brand_code = "BR"
             if outlet != None:
@@ -279,8 +285,6 @@ class TempProductSerializer(serializers.ModelSerializer):
                         outlet_code = get_initials(outlet.outlet_name)
                     else:
                         outlet_code = get_first_three_of_first_word(outlet.outlet_name)
-
-                    
                     if brand != None:
                         if " " in brand.brand_name:
                             brand_code = get_initials(brand.brand_name)
@@ -295,7 +299,6 @@ class TempProductSerializer(serializers.ModelSerializer):
                         auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
                         validated_data['sku'] = auto_sku_code
                         validated_data['color'] = get_color[color]
-
                         validated_data['description'] = specs
                         validated_data['created_at'] = DateTime
                         parent = super().create(validated_data)

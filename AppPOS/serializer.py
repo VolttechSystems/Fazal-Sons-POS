@@ -47,7 +47,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = TransactionItem
         fields = "__all__"
-
+      
     def create(self, validated_data):
         get_sku = validated_data.get('sku')
         get_quantity = validated_data.get('quantity')
