@@ -73,13 +73,32 @@ class TransactionReturnView(generics.ListCreateAPIView):
     pagination_class = None
 
 
+# @api_view(['GET'])
+# def GetAllInvoicesView(request, outlet):
+#     cursor = connections['default'].cursor()
+#     query = "select 'Invoice#: ' || split_part(invoice_code, '-', 2) as invoice, invoice_code from tbl_transaction where outlet_code_id = '" + outlet +"' order by invoice_code"
+#     cursor.execute(query)
+#     invoices = DistinctFetchAll(cursor)
+#     return Response(invoices)
+
 @api_view(['GET'])
-def GetAllInvoicesView(request):
-    cursor = connections['default'].cursor()
-    query = "select 'Invoice#: ' || split_part(invoice_code, '-', 2) as invoice, invoice_code from tbl_transaction order by invoice_code"
-    cursor.execute(query)
-    invoices = DistinctFetchAll(cursor)
-    return Response(invoices)
+def GetAllInvoicesView(request, outlet):
+    Invoices = Transaction.objects.filter(outlet_code_id=outlet).values('invoice_code').order_by('invoice_code')
+    invoices_array = []
+    for invoice in Invoices:
+            try:
+                # Safely split the invoice code
+                split_invoice_code = invoice['invoice_code'].split('-')[1]
+                invoices_array.append({
+                    'invoice': f"Invoice #: {split_invoice_code}",
+                    'invoice_code': invoice['invoice_code']
+                })
+            except IndexError:
+            # Handle cases where invoice_code format is invalid
+                continue
+    return Response(invoices_array)
+
+
 
 @api_view(['GET'])    
 def GetInvoiceProductsView(request, code):
@@ -115,6 +134,67 @@ def GetProductDetailView(request, code, sku):
             array.append(return_dict)
             return Response(array)
     return Response("NO RECORD FOUND")
+
+
+### DUE RECEIVABLE VIEWS
+@api_view(['GET'])
+def GetDueInvoicesView(request, outlet):
+    transactions = Transaction.objects.filter(outlet_code_id=outlet, due_amount__gt=0).values('invoice_code').order_by('invoice_code')
+    due_payment_array = []
+    for transaction in transactions:
+            try:
+                # Safely split the invoice code
+                split_invoice_code = transaction['invoice_code'].split('-')[1]
+                due_payment_array.append({
+                    'invoice': f"Invoice #: {split_invoice_code}",
+                    'invoice_code': transaction['invoice_code']
+                })
+            except IndexError:
+            # Handle cases where invoice_code format is invalid
+                continue
+    return Response(due_payment_array)
+
+
+@api_view(['GET'])
+def GetDueInvoiceAmountView(request, invoice_code):
+    try:
+        due_amount = Transaction.objects.get(invoice_code=invoice_code).due_amount
+    except Transaction.DoesNotExist:
+       return Response(status=HTTP_404_NOT_FOUND)
+    return Response({"due_amount": due_amount})
+
+
+@api_view(['PUT'])
+def ReceiveDueInvoiceView(request, invoice_code):
+    try:
+        transaction =Transaction.objects.get(invoice_code=invoice_code)
+    except Transaction.DoesNotExist:
+          return Response("Invalid Transaction Id" ,status=HTTP_404_NOT_FOUND)
+      
+    due_amount = request.data.get('due_amount')
+    if due_amount > int(transaction.due_amount):
+         return Response("The Amount You Enter is greater than due amount" ,status=HTTP_400_BAD_REQUEST)
+    if due_amount < 0:
+         return Response("Due Amount Cannot Be Negative" ,status=HTTP_400_BAD_REQUEST)
+    due = int(transaction.due_amount) - due_amount
+    if due == 0:
+        advance = 0
+        status = "paid"
+    else:
+        advance = int(transaction.advanced_payment) + due_amount
+        status = "unpaid" 
+    transaction.due_amount = due
+    transaction.advanced_payment = advance
+    transaction.status = status
+    transaction.save()
+    return Response("Due Amount Update")
+
+
+
+
+
+            
+
     
     
     

@@ -246,3 +246,17 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = ['id','product_name', 'sku','cost_price', 'selling_price', 'description']
+        
+class TransactionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Transaction
+        fields = "__all__"
+        
+    # def update(self, instance, data):
+
+        
+        
+        #     def update(self, instance, validated_data):
+        # validated_data['updated_at'] = DateTime
+        # salesman = super().update(instance, validated_data)
+        # return validated_data
