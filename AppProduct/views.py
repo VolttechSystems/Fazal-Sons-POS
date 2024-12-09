@@ -593,9 +593,7 @@ def GetCategoriesView(request, id):
         variation_dict["parent_name"] = variation_data["parent_name"]
         variation_dict["category_name"] = variation_data["category_name"]
         variation_dict["symbol"] = variation_data["symbol"]
-        variation_dict["subcategory_option"] = variation_data[
-            "subcategory_option"
-        ]
+        variation_dict["subcategory_option"] = variation_data["subcategory_option"]
         variation_dict["description"] = variation_data["description"]
         variation_dict["status"] = variation_data["status"]
         variation_dict["pc_name"] = variation_data["pc_name"]
@@ -617,7 +615,6 @@ def GetCategoriesView(request, id):
                 attribute = Attribute.objects.get(
                     id=category_attribute[i].attribute_id
                 )
-                
                 attribute_group_dict["id"] =attribute.id
                 attribute_group_dict["name"] =attribute.attribute_name
                 attribute_group_array.append(attribute_group_dict)

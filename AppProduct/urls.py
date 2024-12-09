@@ -74,8 +74,3 @@ urlpatterns = [
 
 ]
 
-
-
-# FY-P1-1
-
-# outlet-brand-color-attributes-number
