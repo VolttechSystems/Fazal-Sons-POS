@@ -252,11 +252,12 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = "__all__"
         
-    # def update(self, instance, data):
 
-        
-        
-        #     def update(self, instance, validated_data):
-        # validated_data['updated_at'] = DateTime
-        # salesman = super().update(instance, validated_data)
-        # return validated_data
+class TodaySaleReportSerializer(serializers.ModelSerializer):
+    customer = serializers.CharField(source='cust_code.customer_type.customer_type')
+    salesman = serializers.CharField(source='salesman_code.salesman_name')
+
+    class Meta:
+        model = Transaction
+        fields = ['id','invoice_code', 'customer', 'salesman', 'grand_total']
+    

@@ -5,6 +5,7 @@ from rest_framework import generics
 from rest_framework.decorators import api_view
 from rest_framework.status import *
 from .serializer import ProductSerializer
+from datetime import date
 
 
 @api_view(['GET'])
@@ -103,7 +104,6 @@ def GetAllInvoicesView(request, outlet):
 @api_view(['GET'])    
 def GetInvoiceProductsView(request, code):
     cursor = connections['default'].cursor()
-    # query = "select pr.sku, product_name, color, description  from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
     query = "select pr.sku, product_name, description || ' ' || color as items from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
     cursor.execute(query)
     invoice_products = DistinctFetchAll(cursor)
@@ -189,6 +189,22 @@ def ReceiveDueInvoiceView(request, invoice_code):
     transaction.save()
     return Response("Due Amount Update")
 
+@api_view(['GET'])
+def TodaySaleReportView(request, outlet):
+    today = date.today()
+    print(today)
+    today_report = Transaction.objects.filter(outlet_code_id=outlet, created_at__date=today).select_related('cust_code__customer_type', 'salesman_code')
+    today_sale_report = []
+    for report in today_report:
+         today_sale_report.append({
+            'invoice': report.invoice_code.split('-')[1],
+            'invoice_code': report.invoice_code,
+            'customer': report.cust_code.customer_type.customer_type,
+            'salesman': report.salesman_code.salesman_name,
+            'grand_total': report.grand_total
+        })
+    return Response(today_sale_report)
+  
 
 
 

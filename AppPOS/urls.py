@@ -3,7 +3,6 @@ from .views import*
 
 
 urlpatterns = [
-        
         ### ADDITIONAL FEE URL
         re_path(r'add_additional_fee', AddAdditionalFeeView.as_view(), name='AddAdditionalFee'),
         re_path(r'action_additional_fee/(?P<pk>.+)/', GetAdditionalFeeView.as_view(), name='GetAdditionalFee'),
@@ -23,4 +22,6 @@ urlpatterns = [
         re_path(r'get_due_invoices/(?P<outlet>.+)', GetDueInvoicesView, name='GetDueInvoices'),
         re_path(r'get_amount_of_due_invoices/(?P<invoice_code>.+)', GetDueInvoiceAmountView, name='GetDueInvoiceAmount'),
         re_path(r'receive_due_invoice/(?P<invoice_code>.+)', ReceiveDueInvoiceView, name='ReceiveDueInvoice'),
+         ### TODAY SALE REPORT
+        re_path(r'today_sale_report/(?P<outlet>.+)', TodaySaleReportView, name='TodaySaleReport'),   
 ]
