@@ -54,7 +54,7 @@ urlpatterns = [
     re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
     re_path(r'fetch_variation/(?P<code>.+)/', FetchVariationView, name='FetchAttributeName'),
     ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK 
-    re_path(r'get_all_product/', GetAllProductView, name='GetAllProduct'),
+    re_path(r'get_product/', GetAllProductView, name='GetAllProduct'),
     ### FETCH ALL CATEGORIES ACCORDING TO THEIR SUB_CATEGORIES
     re_path(r'fetch_head_to_parent_category/(?P<code>.+)/', FetchParentCategoryView, name='FetchParentCategory'),
     re_path(r'fetch_parent_to_category/(?P<code>.+)/', FetchCategoryView, name='FetchCategory'),

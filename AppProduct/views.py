@@ -285,7 +285,8 @@ def FetchVariationView(request, code):
 @api_view(["GET"])
 def GetAllProductView(request):
     cursor = connections["default"].cursor()
-    query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_name_id = ot.outlet_name "
+    # query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_name_id = ot.outlet_name "
+    query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_id = ot.id"
     cursor.execute(query_employee)
     product_name = DistinctFetchAll(cursor)
     return Response(product_name)
