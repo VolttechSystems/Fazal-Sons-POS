@@ -362,7 +362,7 @@ class ProductSerializer(serializers.ModelSerializer):
             validated_data['description'] = tem_product[x].description
             validated_data['notes'] = tem_product[x].notes
             validated_data['color'] = tem_product[x].color
-            validated_data['size'] = tem_product[x].size
+            # validated_data['size'] = tem_product[x].size
             validated_data['image'] = tem_product[x].image
             validated_data['cost_price'] = tem_product[x].cost_price
             validated_data['selling_price'] = tem_product[x].selling_price
@@ -376,7 +376,7 @@ class ProductSerializer(serializers.ModelSerializer):
                 product_name=tem_product[x].product_name,
                 sku=auto_sku_code,
                 color=tem_product[x].color,
-                size=tem_product[x].size,
+                # size=tem_product[x].size,
                 avail_quantity=0,
                 created_at=DateTime
             )
