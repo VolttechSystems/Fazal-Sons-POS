@@ -5,6 +5,7 @@ from AppCustomer.utils import *
 from rest_framework.response import Response
 from AppCustomer.utils import *
 from AppAccount.admin import *
+from AppStock.models import Stock
 
 DateTime = datetime.datetime.now()
 
@@ -45,6 +46,29 @@ class TransactionItemSerializer(serializers.ModelSerializer):
     class Meta:
         model = TransactionItem
         fields = "__all__"
+        
+    def validate(self, validated_data):
+        get_sku = validated_data.get('sku')
+        get_quantity = validated_data.get('quantity')
+        len_sku = len(get_sku)
+        # Fetch all stock entries for the provided SKUs
+        stock_objects = Stock.objects.filter(sku__in=get_sku)
+        stock_dict = {stock.sku: stock for stock in stock_objects}
+
+        for sku, quantity in zip(get_sku, get_quantity):
+            if sku not in stock_dict:
+                raise serializers.ValidationError(f"Stock not found for SKU: {sku}")
+            stock = stock_dict[sku]
+            available_quantity = int(stock.avail_quantity)
+            requested_quantity = int(quantity)
+
+            if requested_quantity > available_quantity:
+                raise serializers.ValidationError(
+                    f"The stock quantity for SKU {sku} is {available_quantity}, but {requested_quantity} was requested."
+                )
+        return validated_data
+
+        
       
     def create(self, validated_data):
         get_sku = validated_data.get('sku')
@@ -59,41 +83,13 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_additional_fee = validated_data.get('additional_fee')
         get_advanced_payment = validated_data.get('advanced_payment')
 
-        # get_sku = get_sku.replace("'", "")
-        # get_sku = get_sku.replace("[", "")
-        # get_sku = get_sku.replace("]", "")
-        # get_sku = get_sku.split(",")
         len_sku = len(get_sku)
-
-        # get_quantity = get_quantity.replace("'", "")
-        # get_quantity = get_quantity.replace("[", "")
-        # get_quantity = get_quantity.replace("]", "")
-        # get_quantity = get_quantity.split(",")
-
-        # get_rate = get_rate.replace("'", "")
-        # get_rate = get_rate.replace("[", "")
-        # get_rate = get_rate.replace("]", "")
-        # get_rate = get_rate.split(",")
-
-        # get_item_discount = get_item_discount.replace("'", "")
-        # get_item_discount = get_item_discount.replace("[", "")
-        # get_item_discount = get_item_discount.replace("]", "")
-        # get_item_discount = get_item_discount.split(",")
         len_additional_fee_code = 0
         if get_additional_fee_code != '':
-            # get_additional_fee_code = get_additional_fee_code.replace("'", "")
-            # get_additional_fee_code = get_additional_fee_code.replace("[", "")
-            # get_additional_fee_code = get_additional_fee_code.replace("]", "")
-            # get_additional_fee_code = get_additional_fee_code.split(",")
             len_additional_fee_code = len(get_additional_fee_code)
-
-        # get_additional_fee = get_additional_fee.replace("'", "")
-        # get_additional_fee = get_additional_fee.replace("[", "")
-        # get_additional_fee = get_additional_fee.replace("]", "")
-        # get_additional_fee = get_additional_fee.split(",")
-
         if len_sku > 0:
             invoice_auto_code = AutoGenerateCodeForModel(Transaction, 'invoice_code', 'INV-')
+            ### ADD TRANSACTION 
             transaction = Transaction(
                 invoice_code=invoice_auto_code,
                 cust_code_id=get_customer,
@@ -102,13 +98,8 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 outlet_code_id=get_outlet_code
             )
             transaction.save()
-
-            Total_quantity = 0
-            Gross_total = 0
-            item_wise_discount = 0
-            Grand_total = 0
-            total_discount = 0
-            due_amount = 0
+            
+            Total_quantity, Gross_total,item_wise_discount, Grand_total, total_discount, due_amount =0,0,0,0,0,0
 
             for item in range(len_sku):
                 invoice_item_auto_code = AutoGenerateCodeForModel(TransactionItem, 'invoice_item_code', 'IIT-')
@@ -119,7 +110,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 item_discount_per = int(get_item_discount[item].strip())
                 item_discount = int(item_discount_per * item_gross_total / 100)
                 item_total = item_gross_total - item_discount
-
+                   ### ADD TRANSACTION ITEMS
                 transaction_item = TransactionItem(
                     invoice_code_id=invoice_auto_code,
                     sku=sku,
@@ -130,9 +121,14 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     per_discount=item_discount_per,
                     discounted_value=item_discount,
                     item_total=item_total,
-                    created_at=DateTime
+                    created_at=DateTime,
+                    status="Sold",
                 )
                 transaction_item.save()
+                ### UPDATE STOCK
+                stock = Stock.objects.get(sku=sku)
+                stock.avail_quantity = int(stock.avail_quantity) - int(quantity)
+                stock.save()
                 Total_quantity += quantity
                 Gross_total += int(item_gross_total)
                 item_wise_discount += int(item_discount)
@@ -144,7 +140,6 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 total_discount = discount_amount + item_wise_discount
 
             transaction = Transaction.objects.get(invoice_code=invoice_auto_code)
-
             transaction.quantity = Total_quantity
             transaction.gross_total = Gross_total
             transaction.per_discount = get_overall_discount
@@ -169,7 +164,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
             grand_total_with_fee = Grand_total + total_additional_fee
             transaction.additional_fees = total_additional_fee
             transaction.grand_total = grand_total_with_fee
-
+            ### ADVANCED PAYMENT
             if int(get_advanced_payment) != 0:
                 due_amount = int(grand_total_with_fee) - int(get_advanced_payment)
                 transaction.advanced_payment = get_advanced_payment
@@ -179,9 +174,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 transaction.advanced_payment = 0
                 transaction.due_amount = 0
                 transaction.status = "paid"
-
             transaction.save()
-
         return validated_data
 
 
@@ -225,8 +218,7 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
         get_rate = validated_data.get('rate')
         get_quantity = validated_data.get('quantity')
         invoice_code = validated_data.get('invoice_code')
-        # print(len(get_quantity))
-        
+
         if len(get_sku) > 0:
             for i in range(len(get_sku)):
                 validated_data['sku'] = get_sku[i]
@@ -236,10 +228,17 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
                 validated_data['updated_at'] = None
                 validated_data['created_at'] = DateTime
                 sales_return = super().create(validated_data)
+                ### UPDATE TRANSACTION
                 update_transaction_status = TransactionItem.objects.get(sku=get_sku[i], invoice_code_id= invoice_code)
                 update_transaction_status.status = 'return'
                 update_transaction_status.updated_at = DateTime
                 update_transaction_status.save()
+                ### UPDATE STOCK
+                stock = Stock.objects.get(sku=get_sku[i])
+                stock_return = int(stock.avail_quantity) + int(get_quantity[i])
+                stock.avail_quantity = stock_return
+                stock.save()
+                
         return sales_return
     
 class ProductSerializer(serializers.ModelSerializer):
@@ -253,11 +252,11 @@ class TransactionSerializer(serializers.ModelSerializer):
         fields = "__all__"
         
 
-class TodaySaleReportSerializer(serializers.ModelSerializer):
-    customer = serializers.CharField(source='cust_code.customer_type.customer_type')
-    salesman = serializers.CharField(source='salesman_code.salesman_name')
+# class TodaySaleReportSerializer(serializers.ModelSerializer):
+#     customer = serializers.CharField(source='cust_code.customer_type.customer_type')
+#     salesman = serializers.CharField(source='salesman_code.salesman_name')
 
-    class Meta:
-        model = Transaction
-        fields = ['id','invoice_code', 'customer', 'salesman', 'grand_total']
+#     class Meta:
+#         model = Transaction
+#         fields = ['id','invoice_code', 'customer', 'salesman', 'grand_total']
     

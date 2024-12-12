@@ -45,13 +45,13 @@ class MyLimitOffsetPagination(LimitOffsetPagination):
 ### OUTLET VIEW
 class AddOutletView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Outlet.objects.all().order_by("outlet_name")
+    queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
     pagination_class = None
 
 
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Outlet.objects.all().order_by("outlet_name")
+    queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
     pagination_class = None
 
@@ -68,13 +68,13 @@ def FetchOutletView(request):
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Brand.objects.all().order_by("brand_name")
+    queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
     pagination_class = MyLimitOffsetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Brand.objects.all().order_by("brand_name")
+    queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
 
 
@@ -82,7 +82,7 @@ class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
 def SearchBrandView(request, code):
     brand_name = code
     brand = Brand.objects.filter(brand_name__icontains=brand_name).order_by(
-        "brand_name"
+        "id"
     )
     if len(brand) > 0:
         serializer = BrandSerializer(brand, many=True)
@@ -95,13 +95,13 @@ def SearchBrandView(request, code):
 
 ### ATTRIBUTES TYPE VIEW
 class AddAttributeTypeView(generics.ListCreateAPIView):
-    queryset = AttributeType.objects.all().order_by("att_type")
+    queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
     pagination_class = None
 
 
 class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = AttributeType.objects.all().order_by("att_type")
+    queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
     pagination_class = None
 
@@ -152,52 +152,52 @@ class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
 
 ### HEAD CATEGORY VIEW
 class AddHeadCategoryView(generics.ListCreateAPIView):
-    queryset = HeadCategory.objects.all().order_by("hc_name")
+    queryset = HeadCategory.objects.all().order_by("id")
     serializer_class = HeadCategorySerializer
     pagination_class = None
 
 
 class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = HeadCategory.objects.all().order_by("hc_name")
+    queryset = HeadCategory.objects.all().order_by("id")
     serializer_class = HeadCategorySerializer
     pagination_class = None
 
 
 ### PARENT CATEGORY VIEW
 class AddParentCategoryView(generics.ListCreateAPIView):
-    queryset = ParentCategory.objects.all().order_by("pc_name")
+    queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
     pagination_class = None
 
 
 class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ParentCategory.objects.all().order_by("pc_name")
+    queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
     pagination_class = None
 
 
 ### CATEGORY VIEW
 class AddCategoryView(generics.ListCreateAPIView):
-    queryset = Category.objects.all().order_by("category_name")
+    queryset = Category.objects.all().order_by("id")
     serializer_class = CategorySerializer
     pagination_class = None
 
 
 class CategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all().order_by("category_name")
+    queryset = Category.objects.all().order_by("id")
     serializer_class = CategorySerializer
     pagination_class = None
 
 
 ### SUB CATEGORY VIEW
 class AddSubCategoryView(generics.ListCreateAPIView):
-    queryset = SubCategory.objects.all().order_by("sub_category_name")
+    queryset = SubCategory.objects.all().order_by("id")
     serializer_class = SubCategorySerializer
     pagination_class = None
 
 
 class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SubCategory.objects.all().order_by("sub_category_name")
+    queryset = SubCategory.objects.all().order_by("id")
     serializer_class = SubCategorySerializer
     pagination_class = None
 
@@ -205,13 +205,13 @@ class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
 ### TEMPORARY PRODUCT VIEW
 class AddTemporaryProductView(generics.ListCreateAPIView):
     # parser_classes = [MultiPartParser, FormParser]
-    queryset = TemporaryProduct.objects.all().order_by("product_name")
+    queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
     pagination_class = None
 
 
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TemporaryProduct.objects.all().order_by("product_name")
+    queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
     pagination_class = None
     
@@ -226,13 +226,13 @@ def DeleteTemporaryProductView(request):
 
 ### PRODUCT VIEW
 class AddProduct(generics.ListCreateAPIView):
-    queryset = Product.objects.all().order_by("product_name")
+    queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
     pagination_class = None
 
 
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all().order_by("product_name")
+    queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
     pagination_class = None
 
