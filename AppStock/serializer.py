@@ -5,7 +5,7 @@ from .models import *
 class StockSerializer(ModelSerializer):
     class Meta:
         model = Stock
-        fields = ('id', 'product_name', 'avail_quantity', 'sku', 'color', 'size')
+        fields = ('id', 'product_name', 'avail_quantity', 'sku', 'color')
         
     def update(self, instance, validated_data):
         stock = validated_data
