@@ -241,6 +241,7 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
         delete_stock = Stock.objects.filter(
             product_name=instance.product_name, sku=instance.sku
         )
+        # print(delete_stock)
         delete_stock.delete()
         self.perform_destroy(instance)
         return Response(status="200")

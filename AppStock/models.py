@@ -6,7 +6,7 @@ from django.db import models
 
 class Stock(models.Model):
     product_name = models.CharField(max_length=200, null=True)
-    sku = models.CharField(max_length=200, null=True, unique=True)
+    # sku = models.CharField(max_length=200, null=True, unique=True)
     color = models.CharField(max_length=100, null=True,blank=True)
     size = models.CharField(max_length=100, null=True, blank=True)
     avail_quantity = models.CharField(max_length=100, null=True, blank=True)
