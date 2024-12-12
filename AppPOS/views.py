@@ -111,7 +111,7 @@ def GetInvoiceProductsView(request, code):
     invoice_products = DistinctFetchAll(cursor)
     if len(invoice_products) > 0:
         return Response(invoice_products)
-    return Response("NO RECORD FOUND")
+    return Response([], status=HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -135,7 +135,7 @@ def GetProductDetailView(request, code, sku):
             return_dict["item_total"] = int(invoice_products[x]["item_total"])
             array.append(return_dict)
             return Response(array)
-    return Response("NO RECORD FOUND")
+    return Response([], status=HTTP_404_NOT_FOUND)
 
 
 ### DUE RECEIVABLE VIEWS
