@@ -841,5 +841,4 @@ def FetchSubCategoriesView(request, id):
             "attribute": attribute.attribute_name,
             "variation": list(variations),
         })
-    # Return the response
     return Response(response_data, status=status.HTTP_200_OK)

@@ -70,7 +70,7 @@ class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
     
     
 ### TRANSACTION RETURN VIEW
-class TransactionReturnView(generics.ListCreateAPIView):
+class TransactionReturnView(generics.CreateAPIView):
     queryset = TransactionReturn.objects.all()
     serializer_class = TransactionReturnSerializer
     pagination_class = None

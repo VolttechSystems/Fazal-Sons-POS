@@ -2,7 +2,7 @@ from .models import *
 from .serializer import *
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from rest_framework import generics
+# from rest_framework import generics
 from rest_framework import status
 
 
@@ -15,15 +15,12 @@ def AddStockView(request, code):
     elif request.method == 'PUT':
         if not isinstance(request.data, list):  # Ensure the request data is a list
             return Response({'detail': 'Expected a list of items.'}, status=status.HTTP_400_BAD_REQUEST)
-
         updated_stock = []
         errors = []
-
         for item in request.data:
             try:
                 stock = Stock.objects.get(sku=item['sku'])
                 serializer = StockSerializer(stock, data=item, partial=True)  # partial=True allows partial updates
-
                 if serializer.is_valid():
                     serializer.save()
                     updated_stock.append(serializer.data)
@@ -31,7 +28,6 @@ def AddStockView(request, code):
                     errors.append({item['sku']: serializer.errors})
             except Stock.DoesNotExist:
                 errors.append({item['sku']: 'Stock with this sku not found.'})
-
         if errors:
             return Response(errors, status=status.HTTP_400_BAD_REQUEST)
         return Response({'updated_stock': updated_stock}, status=status.HTTP_200_OK)
