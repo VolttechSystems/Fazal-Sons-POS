@@ -6,6 +6,8 @@ from rest_framework.response import Response
 from AppCustomer.utils import *
 from AppAccount.admin import *
 from AppStock.models import Stock
+from django.utils.timezone import now
+
 
 DateTime = datetime.datetime.now()
 
@@ -94,7 +96,8 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 invoice_code=invoice_auto_code,
                 cust_code_id=get_customer,
                 salesman_code_id=get_saleman_code,
-                created_at=DateTime,
+                # created_at=DateTime,
+                created_at = now(),
                 outlet_code_id=get_outlet_code
             )
             transaction.save()

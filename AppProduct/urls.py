@@ -49,6 +49,8 @@ urlpatterns = [
     ### PRODUCT
     re_path(r'add_product', AddProduct.as_view(), name='AddProduct'),
     re_path(r'action_product/(?P<pk>.+)/', ProductGetView.as_view(), name='GetProduct'),
+    re_path(r'show_product/(?P<outlet>.+)/', ShowAllProductView, name='ShowAllProduct'),
+    re_path(r'shows_all_product_detail/(?P<product_id>.+)/', ShowAllProductDetailView, name='ShowAllProductDetail'),
     ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
     re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
     re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
@@ -79,4 +81,7 @@ urlpatterns = [
 ## stock update krna jab koi return ho
 ## stock 0 ho tu transaction mai show na ho ya error show ho 
 ## Update product ho tu stock b update ho
+
+
+## Product Edit 
 

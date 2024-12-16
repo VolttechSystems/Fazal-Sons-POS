@@ -317,7 +317,6 @@ class TempProductSerializer(serializers.ModelSerializer):
         parent = super().update(instance, validated_data)
         return parent
 
-
 ### PRODUCT SERIALIZER
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -394,6 +393,12 @@ class ProductSerializer(serializers.ModelSerializer):
         Update_stock.save()
         parent = super().update(instance, validated_data)
         return parent
+class ShowAllProductSerializer(serializers.ModelSerializer):
+    outlet = serializers.StringRelatedField()  
+    brand = serializers.StringRelatedField()  
+    class Meta:
+        model = Product
+        fields = ['id', 'product_name', 'outlet', 'brand']
 
 
 ### ATTRIBUTE SERIALIZER

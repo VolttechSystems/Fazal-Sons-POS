@@ -21,7 +21,8 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from AppCustomer.utils import DistinctFetchAll
 from django.db.models import Prefetch
-
+from rest_framework.exceptions import NotFound
+from django.shortcuts import get_object_or_404
 # def DistinctFetchAll(cursor):
 #     "Returns all rows from a cursor as a dict"
 #     desc = cursor.description
@@ -245,6 +246,61 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
         delete_stock.delete()
         self.perform_destroy(instance)
         return Response(status="200")
+    
+@api_view(['GET'])    
+def ShowAllProductView(request, outlet):
+    products = Product.objects.filter(outlet_id=outlet).distinct('product_name').select_related('outlet', 'brand')
+    serializer = ShowAllProductSerializer(products, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET']) 
+def ShowAllProductDetailView(request, product_id):
+    try:
+        ### Retrieve the product and its name
+        get_product_name = Product.objects.get(id=product_id).product_name
+    except Product.DoesNotExist:
+        raise NotFound(detail=f"Product with ID {product_id} does not exist.")
+    ### FILTER PRODUCTS DETAIL
+    products = Product.objects.filter(product_name=get_product_name).select_related('outlet', 'brand', 'category__pc_name__hc_name', 'sub_category')
+
+    product_header_array = []
+    product_detail_array = []
+
+    product_dict = dict()
+
+    if products.exists:
+            product = products[0]  ### Fetch the first product
+            product_dict = {
+                "product_name": product.product_name,
+                "outlet": product.outlet.outlet_name if product.outlet else None,
+                "head_category": getattr(product.category.pc_name.hc_name, 'hc_name', None) if product.category else None,
+                "parent_category": getattr(product.category.pc_name, 'pc_name', None) if product.category else None,
+                "category": getattr(product.category, 'category_name', None) if product.category else None,
+                "sub_category": getattr(product.sub_category, 'sub_category_name', None),
+            }
+            product_header_array.append(product_dict)
+    ### OTHER DETAIL
+    for product in products:
+        product_detail_array.append({
+            "description": product.description,
+            "color": product.color,
+            "sku": product.sku,
+            "cost_price": product.cost_price,
+            "selling_price": product.selling_price,
+            "discount_price": product.discount_price,
+            "wholesale_price": product.wholesale_price,
+            "retail_price": product.retail_price,
+            "token_price": product.token_price
+        })
+        
+    param = {
+            "header_array": product_header_array,
+            "detail_array": product_detail_array,
+        }
+        
+    return Response(param)
+
+   
 
 
 ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES VIEW
