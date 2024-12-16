@@ -221,7 +221,7 @@ class TemporaryProduct(models.Model):
 
 
 class Product(models.Model):
-    product_name = models.CharField(max_length=100, null=True)
+    product_name = models.CharField(max_length=100, null=True)  
     sku = models.CharField(max_length=100, null=True, unique=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
