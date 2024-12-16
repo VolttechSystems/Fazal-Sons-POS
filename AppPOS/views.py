@@ -203,7 +203,7 @@ def TodaySaleReportView(request, outlet):
         today_sale_report.append({
             'invoice': report.invoice_code.split('-')[1],
             'invoice_code': invoice_code,
-            'customer': report.cust_code.customer_type.customer_type,
+            'customer': report.cust_code.customer_type.customer_type if report.cust_code.customer_type else None,
             'salesman': report.salesman_code.salesman_name,
             'total_amount': int(report.grand_total),
             'return_amount':  transaction_return["total_return"],
