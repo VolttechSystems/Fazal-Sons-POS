@@ -248,11 +248,7 @@ class TempProductSerializer(serializers.ModelSerializer):
         """
         get_variations = data.get('variations')
         get_color = data.get('color')
-        # print(variations)
-        # print(color)
         parsed_color = ast.literal_eval(get_color)
-      
-        # parsed_color = json.loads(get_color)
         parsed_variations = json.loads(get_variations)
         initial_variations = list(product(*parsed_variations))
 
@@ -263,7 +259,7 @@ class TempProductSerializer(serializers.ModelSerializer):
                 if TemporaryProduct.objects.filter(description__iexact=specs, color__iexact=color).exists():
                     raise serializers.ValidationError("The specification " + specs + "-" + color + " is already added.")
             # if Product.objects.filter(description__iexact=specs).exists():
-            #     raise serializers.ValidationError("The specification " + specs + " is already added in the Product.")s
+            #     raise serializers.ValidationError("The specification " + specs + " is already added in the Product.")
         return data
 
     def create(self, validated_data):
@@ -321,7 +317,6 @@ class TempProductSerializer(serializers.ModelSerializer):
         parent = super().update(instance, validated_data)
         return parent
 
-
 ### PRODUCT SERIALIZER
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
@@ -364,8 +359,9 @@ class ProductSerializer(serializers.ModelSerializer):
             validated_data['brand'] = tem_product[x].brand
             validated_data['season'] = tem_product[x].season
             validated_data['description'] = tem_product[x].description
+            validated_data['notes'] = tem_product[x].notes
             validated_data['color'] = tem_product[x].color
-            validated_data['size'] = tem_product[x].size
+            # validated_data['size'] = tem_product[x].size
             validated_data['image'] = tem_product[x].image
             validated_data['cost_price'] = tem_product[x].cost_price
             validated_data['selling_price'] = tem_product[x].selling_price
@@ -379,7 +375,7 @@ class ProductSerializer(serializers.ModelSerializer):
                 product_name=tem_product[x].product_name,
                 sku=auto_sku_code,
                 color=tem_product[x].color,
-                size=tem_product[x].size,
+                # size=tem_product[x].size,
                 avail_quantity=0,
                 created_at=DateTime
             )
@@ -391,8 +387,18 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
+        print(validated_data['sku'])
+        Update_stock = Stock.objects.get(sku=validated_data['sku'])
+        Update_stock.product_name = validated_data['product_name'] 
+        Update_stock.save()
         parent = super().update(instance, validated_data)
         return parent
+class ShowAllProductSerializer(serializers.ModelSerializer):
+    outlet = serializers.StringRelatedField()  
+    brand = serializers.StringRelatedField()  
+    class Meta:
+        model = Product
+        fields = ['id', 'product_name', 'outlet', 'brand']
 
 
 ### ATTRIBUTE SERIALIZER

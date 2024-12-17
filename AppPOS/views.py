@@ -6,6 +6,9 @@ from rest_framework.decorators import api_view
 from rest_framework.status import *
 from .serializer import ProductSerializer
 from datetime import date
+from django.db.models import Sum, Value
+from django.db.models.functions import Coalesce
+from AppProduct.models import *
 
 
 @api_view(['GET'])
@@ -68,7 +71,7 @@ class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
     
     
 ### TRANSACTION RETURN VIEW
-class TransactionReturnView(generics.ListCreateAPIView):
+class TransactionReturnView(generics.CreateAPIView):
     queryset = TransactionReturn.objects.all()
     serializer_class = TransactionReturnSerializer
     pagination_class = None
@@ -109,7 +112,7 @@ def GetInvoiceProductsView(request, code):
     invoice_products = DistinctFetchAll(cursor)
     if len(invoice_products) > 0:
         return Response(invoice_products)
-    return Response("NO RECORD FOUND")
+    return Response([], status=HTTP_404_NOT_FOUND)
 
 
 @api_view(['GET'])
@@ -133,7 +136,7 @@ def GetProductDetailView(request, code, sku):
             return_dict["item_total"] = int(invoice_products[x]["item_total"])
             array.append(return_dict)
             return Response(array)
-    return Response("NO RECORD FOUND")
+    return Response([], status=HTTP_404_NOT_FOUND)
 
 
 ### DUE RECEIVABLE VIEWS
@@ -190,18 +193,26 @@ def ReceiveDueInvoiceView(request, invoice_code):
     return Response("Due Amount Update")
 
 @api_view(['GET'])
-def TodaySaleReportView(request, outlet):
+def TodaySaleReportView(request, outlet_id):
+    try:
+        get_outlet = Outlet.objects.get(id=outlet_id)
+    except Outlet.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
     today = date.today()
-    print(today)
-    today_report = Transaction.objects.filter(outlet_code_id=outlet, created_at__date=today).select_related('cust_code__customer_type', 'salesman_code')
+    today_report = Transaction.objects.filter(outlet_code_id=outlet_id, created_at__date=today).select_related('cust_code__customer_type', 'salesman_code')
     today_sale_report = []
     for report in today_report:
-         today_sale_report.append({
+        invoice_code = report.invoice_code
+        transaction_return =TransactionReturn.objects.filter(invoice_code_id=invoice_code).aggregate(total_return=Coalesce(Sum('rate'),0))
+    
+        today_sale_report.append({
             'invoice': report.invoice_code.split('-')[1],
-            'invoice_code': report.invoice_code,
-            'customer': report.cust_code.customer_type.customer_type,
+            'invoice_code': invoice_code,
+            'customer': report.cust_code.customer_type.customer_type if report.cust_code.customer_type else None,
             'salesman': report.salesman_code.salesman_name,
-            'grand_total': report.grand_total
+            'total_amount': int(report.grand_total),
+            'return_amount':  transaction_return["total_return"],
+            'total': int(report.grand_total) - transaction_return["total_return"]
         })
     return Response(today_sale_report)
   

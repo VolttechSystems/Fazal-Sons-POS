@@ -49,12 +49,14 @@ urlpatterns = [
     ### PRODUCT
     re_path(r'add_product', AddProduct.as_view(), name='AddProduct'),
     re_path(r'action_product/(?P<pk>.+)/', ProductGetView.as_view(), name='GetProduct'),
+    re_path(r'show_product/(?P<outlet>.+)/', ShowAllProductView, name='ShowAllProduct'),
+    re_path(r'shows_all_product_detail/(?P<product_id>.+)/', ShowAllProductDetailView, name='ShowAllProductDetail'),
     ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
     re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
     re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
     re_path(r'fetch_variation/(?P<code>.+)/', FetchVariationView, name='FetchAttributeName'),
     ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK 
-    re_path(r'get_all_product/', GetAllProductView, name='GetAllProduct'),
+    re_path(r'get_product/', GetAllProductView, name='GetAllProduct'),
     ### FETCH ALL CATEGORIES ACCORDING TO THEIR SUB_CATEGORIES
     re_path(r'fetch_head_to_parent_category/(?P<code>.+)/', FetchParentCategoryView, name='FetchParentCategory'),
     re_path(r'fetch_parent_to_category/(?P<code>.+)/', FetchCategoryView, name='FetchCategory'),
@@ -73,4 +75,13 @@ urlpatterns = [
     re_path(r'fetch_subcategories/(?P<id>.+)', FetchSubCategoriesView, name='FetchSubCategories'),
 
 ]
+
+## Outlet ki alag alag products add ho gi means 1 outlet ki product second outlet mai show ho gi ya ni 
+## stock minus krna jab transaction ho 
+## stock update krna jab koi return ho
+## stock 0 ho tu transaction mai show na ho ya error show ho 
+## Update product ho tu stock b update ho
+
+
+## Product Edit 
 

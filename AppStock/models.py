@@ -8,7 +8,7 @@ class Stock(models.Model):
     product_name = models.CharField(max_length=200, null=True)
     sku = models.CharField(max_length=200, null=True, unique=True)
     color = models.CharField(max_length=100, null=True,blank=True)
-    size = models.CharField(max_length=100, null=True, blank=True)
+    # size = models.CharField(max_length=100, null=True, blank=True)
     avail_quantity = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)

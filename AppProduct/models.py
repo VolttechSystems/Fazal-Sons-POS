@@ -198,8 +198,9 @@ class TemporaryProduct(models.Model):
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, null=True)
     season = models.CharField(max_length=10,null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
+    notes = models.TextField(max_length=500, null=True, blank=True)
     color = models.CharField(max_length=100, null=True, blank=True)
-    size = models.CharField(max_length=100, null=True)
+    # size = models.CharField(max_length=100, null=True)
     image = models.ImageField(upload_to='TemProduct', default='', null=True, blank=True)
     cost_price = models.CharField(max_length=100, null=True, blank=True)
     selling_price = models.CharField(max_length=100, null=True, blank=True)
@@ -220,7 +221,7 @@ class TemporaryProduct(models.Model):
 
 
 class Product(models.Model):
-    product_name = models.CharField(max_length=100, null=True)
+    product_name = models.CharField(max_length=100, null=True)  
     sku = models.CharField(max_length=100, null=True, unique=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
@@ -229,8 +230,9 @@ class Product(models.Model):
     # season = models.CharField(max_length=10, choices=SEASONS_CHOICES, default='Spring')
     season = models.CharField(max_length=10,null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
+    notes = models.TextField(max_length=500, null=True, blank=True)
     color = models.CharField(max_length=100, null=True, blank=True)
-    size = models.CharField(max_length=100, null=True)
+    # size = models.CharField(max_length=100, null=True)
     image = models.ImageField(upload_to='Product', default='', null=True, blank=True)
     cost_price = models.CharField(max_length=100, null=True, blank=True)
     selling_price = models.CharField(max_length=100, null=True, blank=True)

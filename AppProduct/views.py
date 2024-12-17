@@ -21,7 +21,8 @@ from rest_framework import status
 from rest_framework.parsers import MultiPartParser, FormParser
 from AppCustomer.utils import DistinctFetchAll
 from django.db.models import Prefetch
-
+from rest_framework.exceptions import NotFound
+from django.shortcuts import get_object_or_404
 # def DistinctFetchAll(cursor):
 #     "Returns all rows from a cursor as a dict"
 #     desc = cursor.description
@@ -45,13 +46,13 @@ class MyLimitOffsetPagination(LimitOffsetPagination):
 ### OUTLET VIEW
 class AddOutletView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Outlet.objects.all().order_by("outlet_name")
+    queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
     pagination_class = None
 
 
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Outlet.objects.all().order_by("outlet_name")
+    queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
     pagination_class = None
 
@@ -68,13 +69,13 @@ def FetchOutletView(request):
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Brand.objects.all().order_by("brand_name")
+    queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
     pagination_class = MyLimitOffsetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Brand.objects.all().order_by("brand_name")
+    queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
 
 
@@ -82,7 +83,7 @@ class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
 def SearchBrandView(request, code):
     brand_name = code
     brand = Brand.objects.filter(brand_name__icontains=brand_name).order_by(
-        "brand_name"
+        "id"
     )
     if len(brand) > 0:
         serializer = BrandSerializer(brand, many=True)
@@ -95,13 +96,13 @@ def SearchBrandView(request, code):
 
 ### ATTRIBUTES TYPE VIEW
 class AddAttributeTypeView(generics.ListCreateAPIView):
-    queryset = AttributeType.objects.all().order_by("att_type")
+    queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
     pagination_class = None
 
 
 class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = AttributeType.objects.all().order_by("att_type")
+    queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
     pagination_class = None
 
@@ -152,52 +153,52 @@ class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
 
 ### HEAD CATEGORY VIEW
 class AddHeadCategoryView(generics.ListCreateAPIView):
-    queryset = HeadCategory.objects.all().order_by("hc_name")
+    queryset = HeadCategory.objects.all().order_by("id")
     serializer_class = HeadCategorySerializer
     pagination_class = None
 
 
 class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = HeadCategory.objects.all().order_by("hc_name")
+    queryset = HeadCategory.objects.all().order_by("id")
     serializer_class = HeadCategorySerializer
     pagination_class = None
 
 
 ### PARENT CATEGORY VIEW
 class AddParentCategoryView(generics.ListCreateAPIView):
-    queryset = ParentCategory.objects.all().order_by("pc_name")
+    queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
     pagination_class = None
 
 
 class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = ParentCategory.objects.all().order_by("pc_name")
+    queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
     pagination_class = None
 
 
 ### CATEGORY VIEW
 class AddCategoryView(generics.ListCreateAPIView):
-    queryset = Category.objects.all().order_by("category_name")
+    queryset = Category.objects.all().order_by("id")
     serializer_class = CategorySerializer
     pagination_class = None
 
 
 class CategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all().order_by("category_name")
+    queryset = Category.objects.all().order_by("id")
     serializer_class = CategorySerializer
     pagination_class = None
 
 
 ### SUB CATEGORY VIEW
 class AddSubCategoryView(generics.ListCreateAPIView):
-    queryset = SubCategory.objects.all().order_by("sub_category_name")
+    queryset = SubCategory.objects.all().order_by("id")
     serializer_class = SubCategorySerializer
     pagination_class = None
 
 
 class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SubCategory.objects.all().order_by("sub_category_name")
+    queryset = SubCategory.objects.all().order_by("id")
     serializer_class = SubCategorySerializer
     pagination_class = None
 
@@ -205,13 +206,13 @@ class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
 ### TEMPORARY PRODUCT VIEW
 class AddTemporaryProductView(generics.ListCreateAPIView):
     # parser_classes = [MultiPartParser, FormParser]
-    queryset = TemporaryProduct.objects.all().order_by("product_name")
+    queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
     pagination_class = None
 
 
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TemporaryProduct.objects.all().order_by("product_name")
+    queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
     pagination_class = None
     
@@ -226,13 +227,13 @@ def DeleteTemporaryProductView(request):
 
 ### PRODUCT VIEW
 class AddProduct(generics.ListCreateAPIView):
-    queryset = Product.objects.all().order_by("product_name")
+    queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
     pagination_class = None
 
 
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Product.objects.all().order_by("product_name")
+    queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
     pagination_class = None
 
@@ -244,6 +245,65 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
         delete_stock.delete()
         self.perform_destroy(instance)
         return Response(status="200")
+    
+@api_view(['GET'])    
+def ShowAllProductView(request, outlet):
+    try:
+        get_outlet = Outlet.objects.get(id=outlet)
+    except Outlet.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    products = Product.objects.filter(outlet_id=outlet).distinct('product_name').select_related('outlet', 'brand')
+    serializer = ShowAllProductSerializer(products, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET']) 
+def ShowAllProductDetailView(request, product_id):
+    try:
+        ### Retrieve the product and its name
+        get_product_name = Product.objects.get(id=product_id).product_name
+    except Product.DoesNotExist:
+        raise NotFound(detail=f"Product with ID {product_id} does not exist.")
+    ### FILTER PRODUCTS DETAIL
+    products = Product.objects.filter(product_name=get_product_name).select_related('outlet', 'brand', 'category__pc_name__hc_name', 'sub_category')
+
+    product_header_array = []
+    product_detail_array = []
+
+    product_dict = dict()
+
+    if products.exists:
+            product = products[0]  ### Fetch the first product
+            product_dict = {
+                "product_name": product.product_name,
+                "outlet": product.outlet.outlet_name if product.outlet else None,
+                "head_category": getattr(product.category.pc_name.hc_name, 'hc_name', None) if product.category else None,
+                "parent_category": getattr(product.category.pc_name, 'pc_name', None) if product.category else None,
+                "category": getattr(product.category, 'category_name', None) if product.category else None,
+                "sub_category": getattr(product.sub_category, 'sub_category_name', None),
+            }
+            product_header_array.append(product_dict)
+    ### OTHER DETAIL
+    for product in products:
+        product_detail_array.append({
+            "description": product.description,
+            "color": product.color,
+            "sku": product.sku,
+            "cost_price": product.cost_price,
+            "selling_price": product.selling_price,
+            "discount_price": product.discount_price,
+            "wholesale_price": product.wholesale_price,
+            "retail_price": product.retail_price,
+            "token_price": product.token_price
+        })
+        
+    param = {
+            "header_array": product_header_array,
+            "detail_array": product_detail_array,
+        }
+        
+    return Response(param)
+
+   
 
 
 ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES VIEW
@@ -284,7 +344,8 @@ def FetchVariationView(request, code):
 @api_view(["GET"])
 def GetAllProductView(request):
     cursor = connections["default"].cursor()
-    query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_name_id = ot.outlet_name "
+    # query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_name_id = ot.outlet_name "
+    query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_id = ot.id"
     cursor.execute(query_employee)
     product_name = DistinctFetchAll(cursor)
     return Response(product_name)
@@ -839,5 +900,4 @@ def FetchSubCategoriesView(request, id):
             "attribute": attribute.attribute_name,
             "variation": list(variations),
         })
-    # Return the response
     return Response(response_data, status=status.HTTP_200_OK)

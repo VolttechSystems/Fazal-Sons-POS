@@ -17,7 +17,8 @@ def AutoGenerateCodeForModel(model, column, code_key):
     else:
         tbl = model._meta.db_table
         # query = "SELECT SPLIT_PART(" + column + ", '-', 2)::INTEGER AS unique_code FROM " + tbl + " ORDER BY SPLIT_PART(" + column + ", '-', 2)::INTEGER DESC LIMIT 2"
-        query = "SELECT SPLIT_PART(" + column + ", '-', -1)::INTEGER AS unique_code FROM " + tbl + " ORDER BY SPLIT_PART(" + column + ", '-', -1)::INTEGER DESC LIMIT 2"
+        # query = "SELECT SPLIT_PART(" + column + ", '-', -1)::INTEGER AS unique_code FROM " + tbl + " ORDER BY SPLIT_PART(" + column + ", '-', -1)::INTEGER DESC LIMIT 2"
+        query = "SELECT (REGEXP_SPLIT_TO_ARRAY(" + column + ", '-'))[array_length(REGEXP_SPLIT_TO_ARRAY(" + column + ", '-'), 1)]::INTEGER AS unique_code FROM " + tbl + " ORDER BY (REGEXP_SPLIT_TO_ARRAY(" + column + ", '-'))[array_length(REGEXP_SPLIT_TO_ARRAY(" + column + ", '-'), 1)]::INTEGER DESC LIMIT 2;"
         cursor.execute(query)
         query_list = DistinctFetchAll(cursor)
         get_code = query_list[0]["unique_code"]
