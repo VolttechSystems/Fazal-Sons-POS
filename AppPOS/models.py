@@ -8,7 +8,7 @@ from AppProduct.models import *
 class Salesman(models.Model):
     salesman_code = models.CharField(max_length=100, null=True, unique=True) # SL-1
     salesman_name = models.CharField(max_length=100, null=True, blank=True)
-    outlet_code = models.ForeignKey(Outlet, to_field='outlet_code', on_delete=models.CASCADE, null=True)
+    outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
     wholesale_commission = models.CharField(max_length=100, null=True, blank=True)
     retail_commission = models.CharField(max_length=100, null=True, blank=True)
     token_commission = models.CharField(max_length=100, null=True, blank=True)

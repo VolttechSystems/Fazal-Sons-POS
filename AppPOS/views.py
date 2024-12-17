@@ -8,6 +8,7 @@ from .serializer import ProductSerializer
 from datetime import date
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
+from AppProduct.models import *
 
 
 @api_view(['GET'])
@@ -192,14 +193,18 @@ def ReceiveDueInvoiceView(request, invoice_code):
     return Response("Due Amount Update")
 
 @api_view(['GET'])
-def TodaySaleReportView(request, outlet):
+def TodaySaleReportView(request, outlet_id):
+    try:
+        get_outlet = Outlet.objects.get(id=outlet_id)
+    except Outlet.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
     today = date.today()
-    today_report = Transaction.objects.filter(outlet_code_id=outlet, created_at__date=today).select_related('cust_code__customer_type', 'salesman_code')
+    today_report = Transaction.objects.filter(outlet_code_id=outlet_id, created_at__date=today).select_related('cust_code__customer_type', 'salesman_code')
     today_sale_report = []
     for report in today_report:
         invoice_code = report.invoice_code
         transaction_return =TransactionReturn.objects.filter(invoice_code_id=invoice_code).aggregate(total_return=Coalesce(Sum('rate'),0))
-        print(transaction_return)
+    
         today_sale_report.append({
             'invoice': report.invoice_code.split('-')[1],
             'invoice_code': invoice_code,
