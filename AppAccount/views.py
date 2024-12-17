@@ -56,7 +56,3 @@ class CreateUserView(generics.ListCreateAPIView):
 def FazalSons(request):
     return Response("Backend in Working Fine")
     
-    
-@api_view(["GET"])
-def FazalSons(request):
-    return Response("Backend in Working Fine")
