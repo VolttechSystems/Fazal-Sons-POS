@@ -248,6 +248,10 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     
 @api_view(['GET'])    
 def ShowAllProductView(request, outlet):
+    try:
+        get_outlet = Outlet.objects.get(id=outlet)
+    except Outlet.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
     products = Product.objects.filter(outlet_id=outlet).distinct('product_name').select_related('outlet', 'brand')
     serializer = ShowAllProductSerializer(products, many=True)
     return Response(serializer.data)
