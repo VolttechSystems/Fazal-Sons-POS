@@ -9,6 +9,8 @@ from datetime import date
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from AppProduct.models import *
+from .permissions import *
+from rest_framework.permissions import IsAuthenticated, IsAdminUser
 
 
 @api_view(['GET'])
@@ -41,6 +43,7 @@ def ProductDetailView(request, code):
 class AddTransactionView(generics.CreateAPIView):
     queryset = TransactionItem.objects.all()
     serializer_class = TransactionItemSerializer
+    permission_classes = [IsAuthenticated, IsCashier]
     pagination_class = None
 
 
