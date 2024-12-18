@@ -41,8 +41,15 @@ class LoginAPIView(APIView):
 
 class LogoutView(APIView):
     def post(self, request):
-        request.user.auth_token.delete()  # Delete the user's authentication token
-        return Response({"message": "Successfully logged out."})
+        if request.user.is_authenticated:
+            # Delete token if authenticated
+            request.user.auth_token.delete()
+            return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
+        else:
+            # Handle unauthenticated users
+            return Response({"detail": "User is not authenticated."}, status=status.HTTP_200_OK)
+        # request.user.auth_token.delete()  # Delete the user's authentication token
+        # return Response({"message": "Successfully logged out."})
 
 
 class CreateUserView(generics.ListCreateAPIView):
