@@ -43,7 +43,7 @@ def ProductDetailView(request, code):
 class AddTransactionView(generics.CreateAPIView):
     queryset = TransactionItem.objects.all()
     serializer_class = TransactionItemSerializer
-    permission_classes = [IsAuthenticated, IsCashier]
+    # permission_classes = [IsAuthenticated, IsCashier]
     pagination_class = None
 
 
