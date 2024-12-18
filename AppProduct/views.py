@@ -659,27 +659,41 @@ def GetCategoriesView(request, id):
         variation_dict["status"] = variation_data["status"]
         variation_dict["pc_name"] = variation_data["pc_name"]
         category_attribute = CategoryAttribute.objects.filter(category_id=id)
-        # attribute_group_array = []
-        # attribute_type_array = []
+ 
+        attribute_group_array = []
+        attribute_type_array = []
+        if category_attribute:
+            # Fetch all attribute IDs in a single query
+            attribute_ids = [item.attribute_id for item in category_attribute]
+            attributes = Attribute.objects.filter(id__in=attribute_ids).select_related('att_type')
+
+            # Iterate through fetched attributes
+            for attribute in attributes:
+                # Add to attribute group array
+                attribute_group_array.append({
+                    "id": attribute.id,
+                    "name": attribute.attribute_name,
+                })
+                # Add to attribute type array
+                if attribute.att_type:
+                    attribute_type_array.append({
+                        "id": attribute.att_type_id,
+                        "name": attribute.att_type.att_type,
+                
+              })
         # if len(category_attribute) > 0:
         #     for i in range(len(category_attribute)):
         #         attribute = Attribute.objects.get(
         #             id=category_attribute[i].attribute_id
         #         )
-        #         attribute_group_array.append(attribute.attribute_name)
-        #         attribute_type_array.append(attribute.att_type_id)
-        attribute_group_array = []
-        attribute_type_array = []
-        attribute_group_dict = dict()
-        if len(category_attribute) > 0:
-            for i in range(len(category_attribute)):
-                attribute = Attribute.objects.get(
-                    id=category_attribute[i].attribute_id
-                )
-                attribute_group_dict["id"] =attribute.id
-                attribute_group_dict["name"] =attribute.attribute_name
-                attribute_group_array.append(attribute_group_dict)
-                # attribute_type_array.append(attribute.att_type_id)
+        #         attribute_group_dict = dict()
+        #         attribute_group_dict["id"] =attribute.id
+        #         attribute_group_dict["name"] =attribute.attribute_name
+        #         attribute_group_array.append(attribute_group_dict)
+        #         attribute_att_dict = dict()
+        #         attribute_att_dict["id"] =attribute.att_type_id
+        #         attribute_att_dict["name"] =attribute.att_type.att_type
+        #         attribute_type_array.append(attribute_att_dict)
         variation_dict["attribute_group"] = attribute_group_array
         variation_dict["att_type"] = attribute_type_array
         return Response(variation_dict)
