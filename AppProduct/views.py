@@ -662,6 +662,7 @@ def GetCategoriesView(request, id):
  
         attribute_group_array = []
         attribute_type_array = []
+        # variation_dict = {"attribute_group": [], "att_type": []}
         if category_attribute:
             # Fetch all attribute IDs in a single query
             attribute_ids = [item.attribute_id for item in category_attribute]

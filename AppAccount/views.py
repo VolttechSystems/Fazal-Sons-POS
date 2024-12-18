@@ -18,14 +18,14 @@ from django.contrib.auth.models import User
 from .models import *
 from .serializer import *
 
-@receiver(post_save, sender=User)
-def create_user_profile(sender, instance, created, **kwargs):
-    if created:
-        UserProfile.objects.create(user=instance)
+# @receiver(post_save, sender=User)
+# def create_user_profile(sender, instance, created, **kwargs):
+#     if created:
+#         UserProfile.objects.create(user=instance)
 
-@receiver(post_save, sender=User)
-def save_user_profile(sender, instance, **kwargs):
-    instance.userprofile.save()
+# @receiver(post_save, sender=User)
+# def save_user_profile(sender, instance, **kwargs):
+#     instance.userprofile.save()
 
 
 ## Login View 
@@ -68,6 +68,19 @@ class CreateUserView(generics.ListCreateAPIView):
     # permission_classes = [IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserSerializer
+    
+        
+### FOR DELETE USERS
+class UserDeleteAPIView(APIView):
+    permission_classes = [IsAdminUser]  # Only admins can delete users
+
+    def delete(self, request, user_id):
+        try:
+            user = User.objects.get(id=user_id)
+            user.delete()
+            return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+        except User.DoesNotExist:
+            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
     
 ### For Api Test 
 @api_view(["GET"])

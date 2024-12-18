@@ -81,7 +81,5 @@ urlpatterns = [
 ## stock update krna jab koi return ho
 ## stock 0 ho tu transaction mai show na ho ya error show ho 
 ## Update product ho tu stock b update ho
-
-
 ## Product Edit 
 
