@@ -19,21 +19,6 @@ ONLINE_ACCESS = (
 )
 
 
-class SystemRole(models.Model):
-    sys_role_code = models.CharField(max_length=200, null=True, unique=True)  # SYSR-1
-    sys_role_name = models.TextField(max_length=200, null=True)
-    status = models.TextField(max_length=200, null=True)
-    created_at = models.DateTimeField(auto_now_add=True)
-    created_by = models.CharField(max_length=200, null=True)
-    updated_at = models.DateTimeField(auto_now=True)
-    updated_by = models.CharField(max_length=200, null=True)
-
-    class Meta:
-        db_table = 'tbl_system_role'
-
-    def __str__(self):
-        return self.sys_role_name
-
 
 class CustomerChannel(models.Model):
     cus_ch_code = models.CharField(max_length=200, null=True, unique=True)  # CCH-1
