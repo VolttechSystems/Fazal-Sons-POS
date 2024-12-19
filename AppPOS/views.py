@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from .models import *
 from .serializer import *
 from rest_framework import generics
@@ -20,7 +19,6 @@ def AllProductView(request):
     if product.exists():
         for i in range(len(product)):
             product_dict = dict()
-            # product_dict['id'] = product[i].id
             product_dict['product_name'] = product[i].product_name
             product_dict['sku'] = product[i].sku
             product_dict['item_name'] = product[i].description
@@ -38,8 +36,7 @@ def ProductDetailView(request, code):
     serializer = ProductSerializer(product)
     return Response(serializer.data)
    
-### TRANSACTION VIEW
-# class AddTransactionView(generics.ListCreateAPIView):
+   
 class AddTransactionView(generics.CreateAPIView):
     queryset = TransactionItem.objects.all()
     serializer_class = TransactionItemSerializer
@@ -79,14 +76,6 @@ class TransactionReturnView(generics.CreateAPIView):
     serializer_class = TransactionReturnSerializer
     pagination_class = None
 
-
-# @api_view(['GET'])
-# def GetAllInvoicesView(request, outlet):
-#     cursor = connections['default'].cursor()
-#     query = "select 'Invoice#: ' || split_part(invoice_code, '-', 2) as invoice, invoice_code from tbl_transaction where outlet_code_id = '" + outlet +"' order by invoice_code"
-#     cursor.execute(query)
-#     invoices = DistinctFetchAll(cursor)
-#     return Response(invoices)
 
 @api_view(['GET'])
 def GetAllInvoicesView(request, outlet):

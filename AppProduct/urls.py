@@ -1,16 +1,8 @@
 from django.urls import re_path
 from AppProduct.views import *
 
-# from rest_framework.authtoken.views import obtain_auth_token
-# from rest_framework.routers import DefaultRouter
-# from rest_framework.authtoken import views
-
 urlpatterns = [
-    # USER URL
 
-    # AUTHENTICATION TOKEN
-    # re_path(r'Generate/tokens/', obtain_auth_token, name='auth_token'),
-    # re_path('api-token-auth/', views.obtain_auth_token),
 
     ### OUTLET URL
     re_path(r'add_outlet', AddOutletView.as_view(), name='AddOutlet'),
@@ -37,11 +29,11 @@ urlpatterns = [
     re_path(r'add_parent_category', AddParentCategoryView.as_view(), name='AddParentCategory'),
     re_path(r'action_parent_category/(?P<pk>.+)/', ParentCategoryGetView.as_view(), name='GetParentCategory'),
     ### CATEGORY URL
-    re_path(r'add_category', AddCategoryView.as_view(), name='AddCategory'),
-    re_path(r'action_category/(?P<pk>.+)/', CategoryGetView.as_view(), name='GetCategory'),
+    # re_path(r'add_category', AddCategoryView.as_view(), name='AddCategory'),
+    # re_path(r'action_category/(?P<pk>.+)/', CategoryGetView.as_view(), name='GetCategory'),
     ### SUB CATEGORY URL
-    re_path(r'add_subcategory', AddSubCategoryView.as_view(), name='AddSubCategory'),
-    re_path(r'action_subcategory/(?P<pk>.+)/', SubCategoryGetView.as_view(), name='GetSubCategory'),
+    # re_path(r'add_subcategory', AddSubCategoryView.as_view(), name='AddSubCategory'),
+    # re_path(r'action_subcategory/(?P<pk>.+)/', SubCategoryGetView.as_view(), name='GetSubCategory'),
     ### TEMPORARY PRODUCT
     re_path(r'add_temp_product', AddTemporaryProductView.as_view(), name='AddTemporaryProduct'),
     re_path(r'action_temp_product/(?P<pk>.+)/', TemporaryProductGetView.as_view(), name='GetTemporaryProduct'),

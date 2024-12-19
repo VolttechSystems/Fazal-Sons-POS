@@ -8,6 +8,9 @@ from rest_framework import status
 from rest_framework.response import Response
 from itertools import product
 import ast
+import json
+
+
 
 DateTime = datetime.datetime.now()
 
@@ -172,55 +175,55 @@ class ParentCategorySerializer(serializers.ModelSerializer):
 
 
 ### CATEGORY SERIALIZER
-class CategorySerializer(serializers.ModelSerializer):
-    attribute_group = serializers.ListField(child=serializers.CharField())
+# class CategorySerializer(serializers.ModelSerializer):
+#     attribute_group = serializers.ListField(child=serializers.CharField())
 
-    class Meta:
-        model = Category
-        fields = '__all__'
+#     class Meta:
+#         model = Category
+#         fields = '__all__'
 
-    def create(self, validated_data):
-        get_subcategory_option = validated_data.get('subcategory_option')
-        if get_subcategory_option == 'True':
-            validated_data['attribute_group'] = []
-        validated_data['created_at'] = DateTime
-        validated_data['updated_at'] = None
-        category = super().create(validated_data)
-        return category
+#     def create(self, validated_data):
+#         get_subcategory_option = validated_data.get('subcategory_option')
+#         if get_subcategory_option == 'True':
+#             validated_data['attribute_group'] = []
+#         validated_data['created_at'] = DateTime
+#         validated_data['updated_at'] = None
+#         category = super().create(validated_data)
+#         return category
 
-    def update(self, instance, validated_data):
-        get_subcategory_option = validated_data.get('subcategory_option')
-        if get_subcategory_option == 'True':
-            validated_data['attribute_group'] = []
-        validated_data['updated_at'] = DateTime
-        category = super().update(instance, validated_data)
-        return category
+#     def update(self, instance, validated_data):
+#         get_subcategory_option = validated_data.get('subcategory_option')
+#         if get_subcategory_option == 'True':
+#             validated_data['attribute_group'] = []
+#         validated_data['updated_at'] = DateTime
+#         category = super().update(instance, validated_data)
+#         return category
 
 
 ### SUB CATEGORY SERIALIZER
-class SubCategorySerializer(serializers.ModelSerializer):
-    attribute_group = serializers.ListField(child=serializers.CharField())
+# class SubCategorySerializer(serializers.ModelSerializer):
+#     attribute_group = serializers.ListField(child=serializers.CharField())
 
-    class Meta:
-        model = SubCategory
-        fields = '__all__'
+#     class Meta:
+#         model = SubCategory
+#         fields = '__all__'
 
-    def create(self, validated_data):
-        validated_data['created_at'] = DateTime
-        validated_data['updated_at'] = None
-        subcategory = super().create(validated_data)
-        return subcategory
+#     def create(self, validated_data):
+#         validated_data['created_at'] = DateTime
+#         validated_data['updated_at'] = None
+#         subcategory = super().create(validated_data)
+#         return subcategory
 
-    def update(self, instance, validated_data):
-        validated_data['created_at'] = DateTime
-        validated_data['updated_at'] = None
-        sub_category = super().update(instance, validated_data)
-        return sub_category
+#     def update(self, instance, validated_data):
+#         validated_data['created_at'] = DateTime
+#         validated_data['updated_at'] = None
+#         sub_category = super().update(instance, validated_data)
+#         return sub_category
 
 
-class VariationSerializers(serializers.Serializer):
-    color = serializers.CharField(max_length=100)
-    size = serializers.CharField(max_length=100)
+# class VariationSerializers(serializers.Serializer):
+#     color = serializers.CharField(max_length=100)
+#     size = serializers.CharField(max_length=100)
 
 
 # def is_spec_already_added(specs):
@@ -228,8 +231,6 @@ class VariationSerializers(serializers.Serializer):
 #     if exists:
 #            return Response("status=status.HTTP_200_OK")
 #     return False
-
-import json
 
 
 ### TEMPORARY PRODUCT SERIALIZER

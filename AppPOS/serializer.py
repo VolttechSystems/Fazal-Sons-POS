@@ -35,7 +35,6 @@ class TransactionItemSerializer(serializers.ModelSerializer):
     cust_code = serializers.CharField(required=False)
     saleman_code = serializers.CharField(required=False)
     overall_discount = serializers.CharField(required=False)
-    # item_discount = serializers.CharField(required=False)
     outlet_code = serializers.CharField(required=False)
     additional_fee_code = serializers.CharField(required=False, allow_blank=True)
     additional_fee = serializers.CharField(required=False, allow_blank=True)
@@ -254,12 +253,3 @@ class TransactionSerializer(serializers.ModelSerializer):
         model = Transaction
         fields = "__all__"
         
-
-# class TodaySaleReportSerializer(serializers.ModelSerializer):
-#     customer = serializers.CharField(source='cust_code.customer_type.customer_type')
-#     salesman = serializers.CharField(source='salesman_code.salesman_name')
-
-#     class Meta:
-#         model = Transaction
-#         fields = ['id','invoice_code', 'customer', 'salesman', 'grand_total']
-    

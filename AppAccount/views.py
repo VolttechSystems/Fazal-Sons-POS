@@ -1,4 +1,3 @@
-from django.shortcuts import render
 from rest_framework.authtoken.models import Token
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -9,12 +8,7 @@ from rest_framework import generics
 from django.contrib.auth.models import User
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from rest_framework.decorators import api_view
-from rest_framework.decorators import api_view
 
-##### Automatically create a profile for new users
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from django.contrib.auth.models import User
 from .models import *
 from .serializer import *
 

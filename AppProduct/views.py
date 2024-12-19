@@ -178,29 +178,29 @@ class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
 
 
 ### CATEGORY VIEW
-class AddCategoryView(generics.ListCreateAPIView):
-    queryset = Category.objects.all().order_by("id")
-    serializer_class = CategorySerializer
-    pagination_class = None
+# class AddCategoryView(generics.ListCreateAPIView):
+#     queryset = Category.objects.all().order_by("id")
+#     serializer_class = CategorySerializer
+#     pagination_class = None
 
 
-class CategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Category.objects.all().order_by("id")
-    serializer_class = CategorySerializer
-    pagination_class = None
+# class CategoryGetView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = Category.objects.all().order_by("id")
+#     serializer_class = CategorySerializer
+#     pagination_class = None
 
 
-### SUB CATEGORY VIEW
-class AddSubCategoryView(generics.ListCreateAPIView):
-    queryset = SubCategory.objects.all().order_by("id")
-    serializer_class = SubCategorySerializer
-    pagination_class = None
+# ### SUB CATEGORY VIEW
+# class AddSubCategoryView(generics.ListCreateAPIView):
+#     queryset = SubCategory.objects.all().order_by("id")
+#     serializer_class = SubCategorySerializer
+#     pagination_class = None
 
 
-class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = SubCategory.objects.all().order_by("id")
-    serializer_class = SubCategorySerializer
-    pagination_class = None
+# class SubCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = SubCategory.objects.all().order_by("id")
+#     serializer_class = SubCategorySerializer
+#     pagination_class = None
 
 
 ### TEMPORARY PRODUCT VIEW
@@ -662,7 +662,7 @@ def GetCategoriesView(request, id):
  
         attribute_group_array = []
         attribute_type_array = []
-        # variation_dict = {"attribute_group": [], "att_type": []}
+
         if category_attribute:
             # Fetch all attribute IDs in a single query
             attribute_ids = [item.attribute_id for item in category_attribute]
@@ -682,19 +682,7 @@ def GetCategoriesView(request, id):
                         "name": attribute.att_type.att_type,
                 
               })
-        # if len(category_attribute) > 0:
-        #     for i in range(len(category_attribute)):
-        #         attribute = Attribute.objects.get(
-        #             id=category_attribute[i].attribute_id
-        #         )
-        #         attribute_group_dict = dict()
-        #         attribute_group_dict["id"] =attribute.id
-        #         attribute_group_dict["name"] =attribute.attribute_name
-        #         attribute_group_array.append(attribute_group_dict)
-        #         attribute_att_dict = dict()
-        #         attribute_att_dict["id"] =attribute.att_type_id
-        #         attribute_att_dict["name"] =attribute.att_type.att_type
-        #         attribute_type_array.append(attribute_att_dict)
+
         variation_dict["attribute_group"] = attribute_group_array
         variation_dict["att_type"] = attribute_type_array
         return Response(variation_dict)
@@ -856,38 +844,6 @@ def GetSubCategoriesView(request, id):
         sub_category.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 
-
-# @api_view(["Get"])
-# def FetchSubCategoriesView(request , id):
-#       if request.method == "GET":
-#         try:
-#             sub_category = SubCategory.objects.get(id=id)
-#         except SubCategory.DoesNotExist:
-#             return Response(status=status.HTTP_404_NOT_FOUND)
-
-#         sub_category_attribute = SubCategoryAttribute.objects.filter(sub_category_id=sub_category.id)
-#         sub_cat_array = []
-#         if len(sub_category_attribute) > 0:
-#             for i in range(len(sub_category_attribute)):
-#                 try:
-#                     attribute = Attribute.objects.get(
-#                         id=sub_category_attribute[i].attribute_id
-#                     )
-#                 except:
-#                     return Response(status=status.HTTP_404_NOT_FOUND)
-
-#                 variation = Variation.objects.filter(attribute_name_id=attribute.id)
-#                 if len(variation) > 0:
-#                     sub_cat_dict = dict()
-#                     sub_cat_dict["id"] = sub_category.id
-#                     sub_cat_dict["sub_category"] = sub_category.sub_category_name
-#                     sub_cat_dict["attribute"] = attribute.attribute_name
-#                     variation_array = []
-#                     for x in range(len(variation)):
-#                         variation_array.append(variation[x].variation_name)
-#                         sub_cat_dict["variation"] = variation_array
-#                     sub_cat_array.append(sub_cat_dict)
-#         return Response(sub_cat_array)
 
 @api_view(["GET"])
 def FetchSubCategoriesView(request, id):
