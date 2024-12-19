@@ -60,12 +60,24 @@ class UserDeleteAPIView(APIView):
     permission_classes = [IsAdminUser]  # Only admins can delete users
 
     def delete(self, request, user_id):
+         # Check if the user is trying to delete themselves
+        if request.user.id == int(user_id):
+            return Response("You cannot delete your own account.", status=status.HTTP_400_BAD_REQUEST)
         try:
             user = User.objects.get(id=user_id)
+            username = User.username
             user.delete()
-            return Response({"message": "User deleted successfully."}, status=status.HTTP_204_NO_CONTENT)
+            return Response(f"User {username} deleted successfully.", status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
-            return Response({"error": "User not found."}, status=status.HTTP_404_NOT_FOUND)
+            return Response("User not found.", status=status.HTTP_404_NOT_FOUND)
+        
+        
+class AddSystemRoleView(generics.ListCreateAPIView):
+    permission_classes = [IsAdminUser]
+    queryset = SystemRole.objects.all()
+    serializer_class = SystemRoleSerializer
+  
+    
     
 ### For Api Test 
 @api_view(["GET"])
