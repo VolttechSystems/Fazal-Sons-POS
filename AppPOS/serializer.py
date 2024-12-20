@@ -36,17 +36,18 @@ class TransactionItemSerializer(serializers.ModelSerializer):
     saleman_code = serializers.CharField(required=False)
     overall_discount = serializers.CharField(required=False)
     outlet_code = serializers.CharField(required=False)
-    additional_fee_code = serializers.CharField(required=False, allow_blank=True)
-    additional_fee = serializers.CharField(required=False, allow_blank=True)
+    fee_code = serializers.ListField(child=serializers.CharField(), required=False)
+    fee_amount = serializers.ListField(child=serializers.CharField(), required=False)
     advanced_payment = serializers.CharField(required=False, allow_blank=True)
     sku = serializers.ListField(child=serializers.CharField())
     quantity = serializers.ListField(child=serializers.CharField())
-    rate = serializers.ListField(child=serializers.CharField())
+    rate = serializers.ListField(child=serializers.CharField()) 
     item_discount = serializers.ListField(child=serializers.CharField())
 
     class Meta:
         model = TransactionItem
-        fields = "__all__"
+        # fields = "__all__"
+        fields = ['cust_code', 'saleman_code', 'overall_discount', 'outlet_code','advanced_payment', 'sku', 'quantity', 'rate', 'item_discount', 'fee_code', 'fee_amount']
         
     def validate(self, validated_data):
         get_sku = validated_data.get('sku')
@@ -80,13 +81,14 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_overall_discount = validated_data.get('overall_discount')
         get_item_discount = validated_data.get('item_discount')
         get_outlet_code = validated_data.get('outlet_code')
-        get_additional_fee_code = validated_data.get('additional_fee_code')
-        get_additional_fee = validated_data.get('additional_fee')
+        get_additional_fee_code = validated_data.get('fee_code')
+        get_additional_fee = validated_data.get('fee_amount')
         get_advanced_payment = validated_data.get('advanced_payment')
-
+    
+        
         len_sku = len(get_sku)
         len_additional_fee_code = 0
-        if get_additional_fee_code != '':
+        if get_additional_fee_code != []:
             len_additional_fee_code = len(get_additional_fee_code)
         if len_sku > 0:
             invoice_auto_code = AutoGenerateCodeForModel(Transaction, 'invoice_code', 'INV-')
@@ -95,7 +97,6 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 invoice_code=invoice_auto_code,
                 cust_code_id=get_customer,
                 salesman_code_id=get_saleman_code,
-                # created_at=DateTime,
                 created_at = now(),
                 outlet_code_id=get_outlet_code
             )
@@ -151,6 +152,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
             ## ADD ADDITIONAL FEE
             total_additional_fee = 0
             if len_additional_fee_code > 0:
+            
                 for x in range(len_additional_fee_code):
                     fee_code = get_additional_fee_code[x].strip()
                     additional_fee = AdditionalFee.objects.get(fee_code=fee_code)
