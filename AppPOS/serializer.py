@@ -46,13 +46,14 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TransactionItem
-        # fields = "__all__"
         fields = ['cust_code', 'saleman_code', 'overall_discount', 'outlet_code','advanced_payment', 'sku', 'quantity', 'rate', 'item_discount', 'fee_code', 'fee_amount']
         
     def validate(self, validated_data):
         get_sku = validated_data.get('sku')
         get_quantity = validated_data.get('quantity')
         len_sku = len(get_sku)
+        if len_sku == 0:
+            raise serializers.ValidationError("please select one product")
         # Fetch all stock entries for the provided SKUs
         stock_objects = Stock.objects.filter(sku__in=get_sku)
         stock_dict = {stock.sku: stock for stock in stock_objects}

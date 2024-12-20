@@ -25,3 +25,6 @@ urlpatterns = [
          ### TODAY SALE REPORT
         re_path(r'today_sale_report/(?P<outlet_id>.+)', TodaySaleReportView, name='TodaySaleReport'),   
 ]
+
+
+# Generate salesman not found error in transaction
