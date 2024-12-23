@@ -1,0 +1,46 @@
+[
+
+    {
+        "model": "AppAccount.Permissions",
+        "pk": 1,
+        "fields":  {
+            "permission_name": "Transaction"
+          }
+      },
+      {
+        "model": "AppAccount.Permissions",
+        "pk": 2,
+        "fields":  {
+            "permission_name": "Admin"
+          }
+      },
+      {
+        "model": "AppAccount.Permissions",
+        "pk": 3,
+        "fields":  {
+            "permission_name": "Reports"
+          }
+      },
+      {
+        "model": "AppAccount.Permissions",
+        "pk": 4,
+        "fields":  {
+            "permission_name": "Customer"
+          }
+      },
+      {
+        "model": "AppAccount.Permissions",
+        "pk": 5,
+        "fields":  {
+            "permission_name": "product"
+          }
+      },
+      {
+        "model": "AppAccount.Permissions",
+        "pk": 6,
+        "fields":  {
+            "permission_name": "stock"
+          }
+      }
+ 
+  ]
