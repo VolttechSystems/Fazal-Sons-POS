@@ -129,7 +129,7 @@ class CreateUserView(generics.ListCreateAPIView):
         
 ### FOR DELETE USERS
 class UserDeleteAPIView(APIView):
-    permission_classes = [IsAdminUser]  # Only admins can delete users
+    # permission_classes = [IsAdminUser]  # Only admins can delete users
 
     def delete(self, request, user_id):
          # Check if the user is trying to delete themselves
@@ -145,7 +145,7 @@ class UserDeleteAPIView(APIView):
         
         
 class AddSystemRoleView(generics.ListCreateAPIView):
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
     queryset = SystemRole.objects.all()
     serializer_class = SystemRoleSerializer
   
