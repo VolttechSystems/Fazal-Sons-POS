@@ -1,12 +1,15 @@
 from .models import *
 from .serializer import *
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
-# from rest_framework import generics
 from rest_framework import status
+from .permissions import *
+from rest_framework.permissions import IsAuthenticated
+
 
 
 @api_view(['PUT', 'GET'])
+@permission_classes([IsAuthenticated,IsStock])
 def AddStockView(request, code):
     if request.method == 'GET':
         stock = Stock.objects.filter(product_name=code)

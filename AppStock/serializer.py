@@ -9,7 +9,6 @@ class StockSerializer(ModelSerializer):
         
     def update(self, instance, validated_data):
         stock = validated_data
-        print(stock)
         stock_quantity = int(validated_data.get('avail_quantity'))
         stock = int(Stock.objects.get(sku=instance).avail_quantity)
         stock += stock_quantity

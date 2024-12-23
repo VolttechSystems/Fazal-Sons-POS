@@ -86,54 +86,7 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
         attr_type.updated_at = DateTime
         attr_type.save()
         return attr_type
-
-
-# ### ATTRIBUTE SERIALIZER
-# class AttributeSerializer(serializers.ModelSerializer):
-#     attribute_name = serializers.ListField(child=serializers.CharField())
-#
-#     class Meta:
-#         model = Attribute
-#         fields = ['id', 'attribute_name', 'symbol', 'description', 'status', 'att_type']
-#
-#     def create(self, validated_data):
-#         attribute_names = validated_data.get('attribute_name')
-#         # print(attribute_name)
-#         attribute = super().create(validated_data)
-#         attribute.updated_at = None
-#         attribute.created_at = DateTime
-#         attribute.save()
-#         return attribute
-#
-#     def update(self, instance, validated_data):
-#         attribute = super().update(instance, validated_data)
-#         attribute.updated_at = DateTime
-#         attribute.save()
-#         return attribute
-
-
-# ### VARIATION SERIALIZER
-# class VariationSerializer(serializers.ModelSerializer):
-#     # attribute_name = AttributeSerializer('id')
-#     class Meta:
-#         model = Variation
-#         # fields = ['id','variation_name','symbol', 'description', 'status', 'attribute_name']
-#         fields = '__all__'
-#
-#     def create(self, validated_data):
-#         variation = super().create(validated_data)
-#         variation.updated_at = None
-#         variation.created_at = DateTime
-#         variation.save()
-#         return variation
-#
-#     def update(self, instance, validated_data):
-#         variation = super().update(instance, validated_data)
-#         variation.updated_at = DateTime
-#         variation.save()
-#         return variation
-
-
+    
 ### HEAD CATEGORY SERIALIZER
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -175,50 +128,50 @@ class ParentCategorySerializer(serializers.ModelSerializer):
 
 
 ### CATEGORY SERIALIZER
-# class CategorySerializer(serializers.ModelSerializer):
-#     attribute_group = serializers.ListField(child=serializers.CharField())
+class CategorySerializer(serializers.ModelSerializer):
+    attribute_group = serializers.ListField(child=serializers.CharField())
 
-#     class Meta:
-#         model = Category
-#         fields = '__all__'
+    class Meta:
+        model = Category
+        fields = '__all__'
 
-#     def create(self, validated_data):
-#         get_subcategory_option = validated_data.get('subcategory_option')
-#         if get_subcategory_option == 'True':
-#             validated_data['attribute_group'] = []
-#         validated_data['created_at'] = DateTime
-#         validated_data['updated_at'] = None
-#         category = super().create(validated_data)
-#         return category
+    def create(self, validated_data):
+        get_subcategory_option = validated_data.get('subcategory_option')
+        if get_subcategory_option == 'True':
+            validated_data['attribute_group'] = []
+        validated_data['created_at'] = DateTime
+        validated_data['updated_at'] = None
+        category = super().create(validated_data)
+        return category
 
-#     def update(self, instance, validated_data):
-#         get_subcategory_option = validated_data.get('subcategory_option')
-#         if get_subcategory_option == 'True':
-#             validated_data['attribute_group'] = []
-#         validated_data['updated_at'] = DateTime
-#         category = super().update(instance, validated_data)
-#         return category
+    def update(self, instance, validated_data):
+        get_subcategory_option = validated_data.get('subcategory_option')
+        if get_subcategory_option == 'True':
+            validated_data['attribute_group'] = []
+        validated_data['updated_at'] = DateTime
+        category = super().update(instance, validated_data)
+        return category
 
 
 ### SUB CATEGORY SERIALIZER
-# class SubCategorySerializer(serializers.ModelSerializer):
-#     attribute_group = serializers.ListField(child=serializers.CharField())
+class SubCategorySerializer(serializers.ModelSerializer):
+    attribute_group = serializers.ListField(child=serializers.CharField())
 
-#     class Meta:
-#         model = SubCategory
-#         fields = '__all__'
+    class Meta:
+        model = SubCategory
+        fields = '__all__'
 
-#     def create(self, validated_data):
-#         validated_data['created_at'] = DateTime
-#         validated_data['updated_at'] = None
-#         subcategory = super().create(validated_data)
-#         return subcategory
+    def create(self, validated_data):
+        validated_data['created_at'] = DateTime
+        validated_data['updated_at'] = None
+        subcategory = super().create(validated_data)
+        return subcategory
 
-#     def update(self, instance, validated_data):
-#         validated_data['created_at'] = DateTime
-#         validated_data['updated_at'] = None
-#         sub_category = super().update(instance, validated_data)
-#         return sub_category
+    def update(self, instance, validated_data):
+        validated_data['created_at'] = DateTime
+        validated_data['updated_at'] = None
+        sub_category = super().update(instance, validated_data)
+        return sub_category
 
 
 # class VariationSerializers(serializers.Serializer):
