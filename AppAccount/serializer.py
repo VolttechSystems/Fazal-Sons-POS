@@ -39,3 +39,9 @@ class UserSerializer(serializers.ModelSerializer):
 class LoginSerializers(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
+    
+class SystemRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemRole
+        fields = "__all__"
+    
