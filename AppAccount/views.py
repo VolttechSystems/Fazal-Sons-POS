@@ -147,7 +147,7 @@ class UserDeleteAPIView(APIView):
 class AddSystemRoleView(generics.ListCreateAPIView):
     # permission_classes = [IsAdminUser]
     queryset = SystemRole.objects.all()
-    serializer_class = SystemRoleSerializer
+    serializer_class = SystemRoleSerializer 
   
     
     
