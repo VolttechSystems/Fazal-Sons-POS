@@ -12,6 +12,7 @@ class AddCustomerChannel(ListCreateAPIView):
     queryset = CustomerChannel.objects.all()
     serializer_class = CustomerChannelSerializer
     permission_classes = [IsAuthenticated, IsCustomer]
+    # print(request.user.username)
     pagination_class = None
 
 

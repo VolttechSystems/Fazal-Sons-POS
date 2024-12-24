@@ -200,6 +200,13 @@ class TransactionItemSerializer(serializers.ModelSerializer):
     def validate(self, validated_data):
         get_sku = validated_data.get('sku')
         get_quantity = validated_data.get('quantity')
+        get_outlet = validated_data.get('outlet_code')
+        
+        try:
+            outlet = Outlet.objects.get(id=get_outlet)
+        except Outlet.DoesNotExist:
+            raise serializers.ValidationError("Invalid Outlet id")
+            
         len_sku = len(get_sku)
         if len_sku == 0:
             raise serializers.ValidationError("please select one product")

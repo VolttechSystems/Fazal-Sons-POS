@@ -80,5 +80,5 @@ class AddSystemRoleView(generics.ListCreateAPIView):
 ### For Api Test 
 @api_view(["GET"])
 def FazalSons(request):
-    return Response("Backend in Working Fine")
+    return Response("Backend is Working Fine")
     

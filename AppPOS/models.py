@@ -54,8 +54,7 @@ class Transaction(models.Model):
     per_discount = models.CharField(null=True, blank=True)  # Discount in %
     discounted_value = models.CharField(null=True, blank=True)  # Discount in RS
     items_discount = models.CharField(null=True, blank=True)  # All Item Discount in RS
-    grand_total = models.CharField(null=True,
-                                   blank=True)  # Final amount payable after applying discounts, fees, and any advance payments.
+    grand_total = models.IntegerField(null=True, blank=True)  # Final amount payable after applying discounts, fees, and any advance payments.
     advanced_payment = models.CharField(null=True, blank=True)
     due_amount = models.CharField(null=True,
                                   blank=True)  # If the customer makes a partial payment, the system will calculate the due amount to be paid later.

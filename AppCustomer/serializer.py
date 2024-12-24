@@ -16,6 +16,10 @@ class CustomerChannelSerializer(ModelSerializer):
         validated_data['cus_ch_code'] = AutoGenerateCodeForModel(CustomerChannel, 'cus_ch_code', 'CCH-')
         validated_data['updated_at'] = None
         validated_data['created_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user.username
+       
         cust_channel = super().create(validated_data)
         return cust_channel
 
