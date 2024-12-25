@@ -26,6 +26,9 @@ class CustomerChannelSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         cust_channel = super().update(instance, validated_data)
         cust_channel.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            cust_channel.updated_by = request.user.username
         cust_channel.save()
         return cust_channel
 
@@ -40,12 +43,18 @@ class CustomerTypeSerializer(ModelSerializer):
         validated_data['cus_type_code'] = AutoGenerateCodeForModel(CustomerType, 'cus_type_code', 'CTP-')
         validated_data['updated_at'] = None
         validated_data['created_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user.username
         cust_type = super().create(validated_data)
         return cust_type
 
     def update(self, instance, validated_data):
         cust_type = super().update(instance, validated_data)
         cust_type.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+             cust_type.updated_by = request.user.username
         cust_type.save()
         return cust_type
 
@@ -64,6 +73,9 @@ class CustomerSerializer(ModelSerializer):
         validated_data['cust_code'] = AutoGenerateCodeForModel(Customer, 'cust_code', 'CUST-')
         validated_data['updated_at'] = None
         validated_data['created_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user.username
         customer = super().create(validated_data)
         customer.updated_at = None
         return customer
@@ -71,5 +83,8 @@ class CustomerSerializer(ModelSerializer):
     def update(self, instance, validated_data):
         customer = super().update(instance, validated_data)
         customer.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            customer.updated_by= request.user.username
         customer.save()
         return customer

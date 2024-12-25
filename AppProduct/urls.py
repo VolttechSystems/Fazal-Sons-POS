@@ -68,3 +68,11 @@ urlpatterns = [
 ## Update product ho tu stock b update ho
 ## Product Edit 
 ## Remove edi button from add temp product 
+
+
+
+
+
+#### Return product and invoice code issue in reports
+#### How to View Returns Transaction
+#### Testing of profit report

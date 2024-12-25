@@ -1,14 +1,14 @@
-from django.shortcuts import render
+# from django.shortcuts import render
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializer import *
-from django.http import Http404
+# from django.http import Http404
 from rest_framework import generics
-from rest_framework.authentication import (
-    SessionAuthentication,
-    TokenAuthentication,
-    BaseAuthentication,
-)
+# from rest_framework.authentication import (
+#     SessionAuthentication,
+#     TokenAuthentication,
+#     BaseAuthentication,
+# )
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
 
 from django.conf import settings
@@ -18,11 +18,11 @@ from rest_framework.authtoken.models import Token
 from django.db import connections
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from rest_framework import status
-from rest_framework.parsers import MultiPartParser, FormParser
+# from rest_framework.parsers import MultiPartParser, FormParser
 from AppCustomer.utils import DistinctFetchAll
-from django.db.models import Prefetch
+# from django.db.models import Prefetch
 from rest_framework.exceptions import NotFound
-from django.shortcuts import get_object_or_404
+# from django.shortcuts import get_object_or_404
 from .permissions import *
 
 
