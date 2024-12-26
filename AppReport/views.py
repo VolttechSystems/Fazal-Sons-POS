@@ -258,7 +258,7 @@ from django.db.models import IntegerField
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated, IsReportUser])
-def SalesReportView(request, start_date, end_date):
+def SalesReportView(request,outlet, start_date, end_date):
    
     parsed_start_date = datetime.strptime(start_date, '%Y-%m-%d')
     parsed_end_date = datetime.strptime(end_date, '%Y-%m-%d')
@@ -270,7 +270,7 @@ def SalesReportView(request, start_date, end_date):
     # .order_by('-till_date')
     # )
     transactions = (
-    Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date])
+    Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date], outlet_code_id=outlet)
     .annotate(till_date=TruncDate('created_at'))
     .annotate(grand_total_casted=Cast(F('grand_total'), output_field=IntegerField()))
     .values('till_date')
