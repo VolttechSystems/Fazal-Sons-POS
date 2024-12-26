@@ -303,6 +303,16 @@ def ShowAllProductDetailView(request, product_id):
         
     return Response(param)
 
+
+@api_view(['GET']) 
+def BarcodeDataView(request, sku):
+    try:
+        get_product = Product.objects.get(sku=sku)
+    except Outlet.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+    serializer = ProductSerializer(get_product)
+    
+    return Response(serializer.data)
    
 
 
