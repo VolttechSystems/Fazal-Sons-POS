@@ -10,6 +10,7 @@ from django.db.models.functions import Coalesce
 from AppProduct.models import *
 from .permissions import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from AppProduct.views import MyLimitOffsetPagination
 
 
 ### ADDITIONAL FEE VIEW
@@ -17,7 +18,7 @@ class AddAdditionalFeeView(generics.ListCreateAPIView):
     queryset = AdditionalFee.objects.all()
     serializer_class = AdditionalFeeSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = None
+    pagination_class = MyLimitOffsetPagination
 
 
 class GetAdditionalFeeView(generics.RetrieveUpdateDestroyAPIView):
@@ -31,7 +32,7 @@ class AddSalesmanView(generics.ListCreateAPIView):
     queryset = Salesman.objects.all()
     serializer_class = AddSalesmanSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = None
+    pagination_class = MyLimitOffsetPagination
 
 
 class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
@@ -73,7 +74,7 @@ class AddTransactionView(generics.CreateAPIView):
     queryset = TransactionItem.objects.all()
     serializer_class = TransactionItemSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = None
+    pagination_class = MyLimitOffsetPagination
 
 
 
@@ -85,7 +86,7 @@ class TransactionReturnView(generics.CreateAPIView):
     queryset = TransactionReturn.objects.all()
     serializer_class = TransactionReturnSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = None
+    pagination_class = MyLimitOffsetPagination
 
 
 @api_view(['GET'])
