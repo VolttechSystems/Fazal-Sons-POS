@@ -257,8 +257,8 @@ def DailySaleDetailView(request, invoice_code):
 # @permission_classes([IsAuthenticated, IsReportUser])
 def SalesReportView(request, start_date, end_date):
    
-    parsed_start_date = datetime.strptime(date_string, '%Y-%m-%d')
-    parsed_end_date = datetime.strptime(date_string, '%Y-%m-%d')
+    parsed_start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    parsed_end_date = datetime.strptime(end_date, '%Y-%m-%d')
     transactions = (
     Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date])
     .annotate(till_date=TruncDate('created_at'))
@@ -329,8 +329,8 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
     
     ## VALIDATE DATE RANGE
     try:
-        get_start_date = datetime.strptime(date_string, '%Y-%m-%d')
-        get_end_date =  datetime.strptime(date_string, '%Y-%m-%d')
+        get_start_date = datetime.strptime(start_date, '%Y-%m-%d')
+        get_end_date =  datetime.strptime(end_date, '%Y-%m-%d')
         if start_date > end_date:
             return Response("Invalid date range", status=HTTP_400_BAD_REQUEST)
     except ValueError:
