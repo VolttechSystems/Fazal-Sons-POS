@@ -1,9 +1,11 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-# Create your models here.
+from django.contrib.auth.models import AbstractUser, Group, Permission
 
-class Permissions(models.Model):
+
+
+class CustomPermissions(models.Model):
     permission_name = models.CharField(max_length=200, null=False, unique=True)
 
     class Meta:
@@ -14,7 +16,7 @@ class Permissions(models.Model):
     
 
 class SystemRole(models.Model):
-    permissions = models.ManyToManyField('Permissions', related_name='roles')
+    permissions = models.ManyToManyField('CustomPermissions', related_name='roles')
     sys_role_name = models.CharField(max_length=200, null=True)  # Changed to CharField for consistency
     status = models.TextField(max_length=200, null=True) # Active, BLock
     created_at = models.DateTimeField(auto_now_add=True)
@@ -30,6 +32,7 @@ class SystemRole(models.Model):
 
 
 class UserProfile(models.Model):
+    phone_number = models.CharField(max_length=15, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     system_roles = models.ManyToManyField(SystemRole, related_name='users')
 
@@ -38,3 +41,4 @@ class UserProfile(models.Model):
 
     def __str__(self):
         return f"{self.user.username}'s Profile"
+    

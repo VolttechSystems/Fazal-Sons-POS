@@ -1,42 +1,42 @@
 [
 
     {
-        "model": "AppAccount.Permissions",
+        "model": "AppAccount.CustomPermissions",
         "pk": 1,
         "fields":  {
             "permission_name": "Transaction"
           }
       },
       {
-        "model": "AppAccount.Permissions",
+        "model": "AppAccount.CustomPermissions",
         "pk": 2,
         "fields":  {
             "permission_name": "Admin"
           }
       },
       {
-        "model": "AppAccount.Permissions",
+        "model": "AppAccount.CustomPermissions",
         "pk": 3,
         "fields":  {
             "permission_name": "Reports"
           }
       },
       {
-        "model": "AppAccount.Permissions",
+        "model": "AppAccount.CustomPermissions",
         "pk": 4,
         "fields":  {
             "permission_name": "Customer"
           }
       },
       {
-        "model": "AppAccount.Permissions",
+        "model": "AppAccount.CustomPermissions",
         "pk": 5,
         "fields":  {
             "permission_name": "product"
           }
       },
       {
-        "model": "AppAccount.Permissions",
+        "model": "AppAccount.CustomPermissions",
         "pk": 6,
         "fields":  {
             "permission_name": "stock"
