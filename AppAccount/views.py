@@ -143,14 +143,29 @@ class UserDeleteAPIView(APIView):
         except User.DoesNotExist:
             return Response("User not found.", status=status.HTTP_404_NOT_FOUND)
         
-class AddSystemRoleView(generics.ListCreateAPIView):
-    permission_classes = [IsAdminUser]
-    queryset = SystemRole.objects.all()
-    serializer_class = SystemRoleSerializer
-    pagination_class = None
+# class AddSystemRoleView(generics.ListCreateAPIView):
+#     # permission_classes = [IsAdminUser]
+#     queryset = SystemRole.objects.all()
+#     serializer_class = SystemRoleSerializer
+#     pagination_class = None
     
+@api_view(['GET', 'POST'])
+def AddSystemRoleView(request):
+   
+    if request.method == 'GET':
+        system_role = SystemRole.objects.all()
+        serializer = SystemRoleSerializer(system_role, many=True)
+        return Response(serializer.data)
+
+    elif request.method == 'POST':
+        serializer = PostSystemRoleSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
+
 class ActionSystemRoleView(generics.RetrieveUpdateDestroyAPIView):
-    permission_classes = [IsAdminUser]
+    # permission_classes = [IsAdminUser]
     queryset = SystemRole.objects.all()
     serializer_class = SystemRoleSerializer
   

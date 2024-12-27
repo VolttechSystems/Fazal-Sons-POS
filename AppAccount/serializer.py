@@ -44,7 +44,19 @@ class LoginSerializers(serializers.Serializer):
     username = serializers.CharField()
     password = serializers.CharField()
     
+    
+class PermissionSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = CustomPermissions
+        fields = ['permission_name']
+    
 class SystemRoleSerializer(serializers.ModelSerializer):
+    permissions = PermissionSerializer(many=True, read_only=True)
+    class Meta:
+        model = SystemRole
+        fields = "__all__"
+
+class PostSystemRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = SystemRole
         fields = "__all__"
