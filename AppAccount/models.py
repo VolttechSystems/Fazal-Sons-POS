@@ -31,6 +31,7 @@ class SystemRole(models.Model):
         return self.sys_role_name
 
 
+
 class UserProfile(models.Model):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
