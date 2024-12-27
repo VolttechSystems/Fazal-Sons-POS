@@ -175,7 +175,7 @@ def AddSystemRoleView(request):
 class ActionSystemRoleView(generics.RetrieveUpdateDestroyAPIView):
     # permission_classes = [IsAdminUser]
     queryset = SystemRole.objects.all()
-    serializer_class = SystemRoleSerializer
+    serializer_class = PostSystemRoleSerializer
   
     
     
