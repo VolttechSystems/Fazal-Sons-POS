@@ -178,6 +178,14 @@ class ActionSystemRoleView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = PostSystemRoleSerializer
   
     
+@api_view(["GET"])
+def FetchSystemRoleView(request):
+    if request.method == 'GET':
+        system_role = SystemRole.objects.all()
+        serializer = FetchSystemRoleSerializer(system_role, many=True)
+        return Response(serializer.data)
+
+    
     
 ### For Api Test 
 @api_view(["GET"])

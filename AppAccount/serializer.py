@@ -75,5 +75,10 @@ class PostSystemRoleSerializer(serializers.ModelSerializer):
             validated_data['updated_by'] = request.user.username
         salesman = super().update(instance, validated_data)
         return validated_data
+    
+class FetchSystemRoleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = SystemRole
+        fields = ['id', 'sys_role_name']
 
     

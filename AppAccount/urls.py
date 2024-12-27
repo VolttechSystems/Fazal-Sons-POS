@@ -13,6 +13,7 @@ urlpatterns = [
     re_path(r'get-all-permissions', GetPermissionsView, name='GetPermissions'),
     re_path(r'add-system-role/', AddSystemRoleView, name='AddSystemRole'),
     re_path(r'action-system-role/(?P<pk>.+)/', ActionSystemRoleView.as_view(), name='ActionSystemRole'),
+    re_path(r'fetch-system-role/', FetchSystemRoleView, name='FetchSystemRole'),
   
 ]
 

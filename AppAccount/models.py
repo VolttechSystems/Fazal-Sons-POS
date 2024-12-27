@@ -17,7 +17,7 @@ class CustomPermissions(models.Model):
 
 class SystemRole(models.Model):
     permissions = models.ManyToManyField('CustomPermissions', related_name='roles')
-    sys_role_name = models.CharField(max_length=200, null=True)  # Changed to CharField for consistency
+    sys_role_name = models.CharField(max_length=200, null=True, unique=True)
     status = models.TextField(max_length=200, null=True) # Active, BLock
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
