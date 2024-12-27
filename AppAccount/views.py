@@ -74,6 +74,13 @@ class AddSystemRoleView(generics.ListCreateAPIView):
     permission_classes = [IsAdminUser]
     queryset = SystemRole.objects.all()
     serializer_class = SystemRoleSerializer
+    pagination_class = None
+    
+class ActionSystemRoleView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminUser]
+    queryset = SystemRole.objects.all()
+    serializer_class = SystemRoleSerializer
+  
   
     
     

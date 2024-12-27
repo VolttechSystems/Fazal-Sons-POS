@@ -21,6 +21,7 @@ class AdditionalFeeSerializer(serializers.ModelSerializer):
         validated_data['fee_code'] = AutoGenerateCodeForModel(AdditionalFee, 'fee_code', 'FEE-')
         validated_data['updated_at'] = None
         validated_data['created_at'] = DateTime
+        request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['created_by'] = request.user.username
         fee = super().create(validated_data)
@@ -28,6 +29,7 @@ class AdditionalFeeSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['updated_by'] = request.user.username
         fee = super().update(instance, validated_data)
@@ -245,6 +247,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_additional_fee_code = validated_data.get('fee_code')
         get_additional_fee = validated_data.get('fee_amount')
         get_advanced_payment = validated_data.get('advanced_payment')
+        request = self.context.get('request')
         if request and hasattr(request, 'user'):
             get_username = request.user.username
     
@@ -365,6 +368,7 @@ class AddSalesmanSerializer(serializers.ModelSerializer):
             validated_data['token_commission'] = str(get_salesman_commision['token_commission'])
         validated_data['updated_at'] = None
         validated_data['created_at'] = DateTime
+        request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['created_by'] = request.user.username
         salesman = super().create(validated_data)
@@ -372,6 +376,7 @@ class AddSalesmanSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
         if request and hasattr(request, 'user'):
             validated_data['updated_by'] = request.user.username
         salesman = super().update(instance, validated_data)
@@ -401,6 +406,7 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
                 validated_data['total_amount'] = int(get_quantity[i]) * int(get_rate[i])
                 validated_data['updated_at'] = None
                 validated_data['created_at'] = DateTime
+                request = self.context.get('request')
                 if request and hasattr(request, 'user'):
                     validated_data['created_by'] = request.user.username
                 sales_return = super().create(validated_data)

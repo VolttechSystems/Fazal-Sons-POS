@@ -8,6 +8,8 @@ DateTime = datetime.datetime.now()
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    phone_number = serializers.CharField(required=False, allow_blank=True)
+    # email = serializers.CharField(required=False)
     system_roles = serializers.PrimaryKeyRelatedField(
         queryset=SystemRole.objects.all(), 
         many=True, 
@@ -15,11 +17,12 @@ class UserSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = UserModel
-        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'password', 'system_roles']
+        fields = ['username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'password', 'phone_number', 'system_roles']
 
 
     def create(self, validated_data):
         system_roles_data = validated_data.pop('system_roles', [])
+        phone_number = validated_data.pop('phone_number', None)
         user = UserModel.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
@@ -29,9 +32,10 @@ class UserSerializer(serializers.ModelSerializer):
             is_staff=validated_data['is_staff'],
             is_active=validated_data['is_active'],
         )
+        
+        user_profile = UserProfile.objects.create(user=user,  phone_number=phone_number)
         # Assign system roles to the UserProfile
         if system_roles_data:
-            user_profile = UserProfile.objects.create(user=user)
             user_profile.system_roles.set(system_roles_data)  # Set the many-to-many relationships
 
         return user
@@ -44,4 +48,20 @@ class SystemRoleSerializer(serializers.ModelSerializer):
     class Meta:
         model = SystemRole
         fields = "__all__"
+    def create(self, validated_data):
+        validated_data['created_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                    validated_data['created_by'] = request.user.username
+        system_role = super().create(validated_data)
+        return system_role
+    
+    def update(self, instance, validated_data):
+        validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['updated_by'] = request.user.username
+        salesman = super().update(instance, validated_data)
+        return validated_data
+
     

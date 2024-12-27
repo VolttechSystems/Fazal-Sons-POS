@@ -10,9 +10,9 @@ from rest_framework.permissions import IsAuthenticated
 
 @api_view(['PUT', 'GET'])
 @permission_classes([IsAuthenticated,IsStock])
-def AddStockView(request, code):
+def AddStockView(request, product_name):
     if request.method == 'GET':
-        stock = Stock.objects.filter(product_name=code)
+        stock = Stock.objects.filter(product_name=product_name)
         serializer = StockSerializer(stock, many=True)
         return Response(serializer.data)
     elif request.method == 'PUT':
@@ -23,7 +23,7 @@ def AddStockView(request, code):
         for item in request.data:
             try:
                 stock = Stock.objects.get(sku=item['sku'])
-                serializer = StockSerializer(stock, data=item, partial=True)  # partial=True allows partial updates
+                serializer = StockSerializer(stock, data=item, partial=True ,  context={'request': request})  # partial=True allows partial updates
                 if serializer.is_valid():
                     serializer.save()
                     updated_stock.append(serializer.data)

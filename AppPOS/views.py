@@ -25,7 +25,6 @@ class GetAdditionalFeeView(generics.RetrieveUpdateDestroyAPIView):
     queryset = AdditionalFee.objects.all()
     serializer_class = AdditionalFeeSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = None
     
 
 class AddSalesmanView(generics.ListCreateAPIView):
@@ -39,12 +38,12 @@ class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Salesman.objects.all()
     serializer_class = AddSalesmanSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = None
+  
     
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsTransaction])
 def AllProductView(request):
     product = Product.objects.all()
     array = []
@@ -60,10 +59,10 @@ def AllProductView(request):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def ProductDetailView(request, code):
+@permission_classes([IsAuthenticated, IsTransaction])
+def ProductDetailView(request, sku):
     try:
-        product = Product.objects.get(sku=code)
+        product = Product.objects.get(sku=sku)
     except Product.DoesNotExist:
          return Response(status=HTTP_404_NOT_FOUND)
     serializer = ProductSerializer(product)
@@ -74,7 +73,6 @@ class AddTransactionView(generics.CreateAPIView):
     queryset = TransactionItem.objects.all()
     serializer_class = TransactionItemSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = MyLimitOffsetPagination
 
 
 
@@ -86,17 +84,16 @@ class TransactionReturnView(generics.CreateAPIView):
     queryset = TransactionReturn.objects.all()
     serializer_class = TransactionReturnSerializer
     permission_classes = [IsAuthenticated, IsTransaction]
-    pagination_class = MyLimitOffsetPagination
-
+    
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsTransaction])
 def GetAllInvoicesView(request, outlet):
     Invoices = Transaction.objects.filter(outlet_code_id=outlet).values('invoice_code').order_by('invoice_code')
     invoices_array = []
     for invoice in Invoices:
             try:
-                # Safely split the invoice code
+                # split the invoice code
                 split_invoice_code = invoice['invoice_code'].split('-')[1]
                 invoices_array.append({
                     'invoice': f"Invoice #: {split_invoice_code}",
@@ -110,10 +107,10 @@ def GetAllInvoicesView(request, outlet):
 
 
 @api_view(['GET'])  
-@permission_classes([IsAuthenticated])  
-def GetInvoiceProductsView(request, code):
+@permission_classes([IsAuthenticated, IsTransaction])  
+def GetInvoiceProductsView(request, invoice_code):
     cursor = connections['default'].cursor()
-    query = "select pr.sku, product_name, description || ' ' || color as items from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
+    query = "select pr.sku, product_name, description || ' ' || color as items from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ invoice_code +"'"
     cursor.execute(query)
     invoice_products = DistinctFetchAll(cursor)
     if len(invoice_products) > 0:
@@ -122,10 +119,10 @@ def GetInvoiceProductsView(request, code):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
-def GetProductDetailView(request, code, sku):
+@permission_classes([IsAuthenticated, IsTransaction])
+def GetProductDetailView(request, invoice_code, sku):
     cursor = connections['default'].cursor()
-    query = "select sku, quantity, rate, gross_total,per_discount, discounted_value, item_total from tbl_transaction_item where sku = '"+ sku +"' and invoice_code_id = '"+ code +"'"
+    query = "select sku, quantity, rate, gross_total,per_discount, discounted_value, item_total from tbl_transaction_item where sku = '"+ sku +"' and invoice_code_id = '"+ invoice_code +"'"
     cursor.execute(query)
     invoice_products = DistinctFetchAll(cursor)
     array = []
@@ -148,7 +145,7 @@ def GetProductDetailView(request, code, sku):
 
 ### DUE RECEIVABLE VIEWS
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsTransaction])
 def GetDueInvoicesView(request, outlet):
     transactions = Transaction.objects.filter(outlet_code_id=outlet, due_amount__gt=0).values('invoice_code').order_by('invoice_code')
     due_payment_array = []
@@ -167,7 +164,7 @@ def GetDueInvoicesView(request, outlet):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated])
+@permission_classes([IsAuthenticated, IsTransaction])
 def GetDueInvoiceAmountView(request, invoice_code):
     try:
         due_amount = Transaction.objects.get(invoice_code=invoice_code).due_amount

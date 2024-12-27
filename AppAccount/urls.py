@@ -3,7 +3,7 @@ from AppAccount.views import *
 from rest_framework.authtoken.views import obtain_auth_token
 
 urlpatterns = [
-    ## LOGINS URLs
+#     ## LOGINS URLs
     re_path(r'auth/', obtain_auth_token, name='auth'),
     re_path(r'login', LoginAPIView.as_view(), name='LoginView'),
     re_path(r'logout', LogoutView.as_view(), name='LogoutAPI'),
@@ -11,7 +11,7 @@ urlpatterns = [
     re_path(r'delete_user/(?P<user_id>.+)/', UserDeleteAPIView.as_view(), name='delete_user'),
     ## SYSTEM ROLE URLS
     re_path(r'add-system-role/', AddSystemRoleView.as_view(), name='AddSystemRole'),
-    # re_path(r'action-system-role', ActionSystemRoleView, name='ActionSystemRole'),
+    re_path(r'action-system-role/(?P<pk>.+)/', ActionSystemRoleView.as_view(), name='ActionSystemRole'),
 ]
 
 

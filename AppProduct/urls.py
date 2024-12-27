@@ -71,8 +71,9 @@ urlpatterns = [
 
 
 
-
-
 #### Return product and invoice code issue in reports
 #### How to View Returns Transaction
 #### Testing of profit report
+
+
+## Add pagination oin category and subcategory

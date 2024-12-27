@@ -3,5 +3,5 @@ from AppStock.views import *
 
 urlpatterns = [
     ### UPDATE STOCK URL 
-    re_path(r'add_stock/(?P<code>.+)/', AddStockView, name='AddStock'),
+    re_path(r'add_stock/(?P<product_name>.+)/', AddStockView, name='AddStock'),
 ]
