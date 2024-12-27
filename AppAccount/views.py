@@ -148,6 +148,14 @@ class UserDeleteAPIView(APIView):
 #     queryset = SystemRole.objects.all()
 #     serializer_class = SystemRoleSerializer
 #     pagination_class = None
+
+    
+@api_view(['GET'])
+def GetPermissionsView(request):
+        permission = CustomPermissions.objects.all()
+        serializer = PermissionSerializer(permission, many=True)
+        return Response(serializer.data)
+
     
 @api_view(['GET', 'POST'])
 def AddSystemRoleView(request):
