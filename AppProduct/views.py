@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from .serializer import *
 from django.http import Http404
@@ -23,6 +23,7 @@ from AppCustomer.utils import DistinctFetchAll
 from django.db.models import Prefetch
 from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
+from .permissions import*
 # def DistinctFetchAll(cursor):
 #     "Returns all rows from a cursor as a dict"
 #     desc = cursor.description
@@ -45,19 +46,21 @@ class MyLimitOffsetPagination(LimitOffsetPagination):
 
 ### OUTLET VIEW
 class AddOutletView(generics.ListCreateAPIView):
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAdminUser]
     queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
-    pagination_class = None
+    pagination_class = MyLimitOffsetPagination
 
 
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
+    permission_classes = [IsAdminUser]
     queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
-    pagination_class = None
+
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def FetchOutletView(request):
     outlets = Outlet.objects.all()
     if outlets.exists():
@@ -68,18 +71,20 @@ def FetchOutletView(request):
 
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
-    # permission_classes = [IsAuthenticated]
     queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
+    permission_classes = [IsAuthenticated, IsProduct]
     pagination_class = MyLimitOffsetPagination
 
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
+    permission_classes = [IsAuthenticated, IsProduct]
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def SearchBrandView(request, code):
     brand_name = code
     brand = Brand.objects.filter(brand_name__icontains=brand_name).order_by(
@@ -98,13 +103,14 @@ def SearchBrandView(request, code):
 class AddAttributeTypeView(generics.ListCreateAPIView):
     queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
+    pagination_class = MyLimitOffsetPagination
 
 
 class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
 
 
 # ### ATTRIBUTES VIEW
@@ -155,26 +161,28 @@ class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
 class AddHeadCategoryView(generics.ListCreateAPIView):
     queryset = HeadCategory.objects.all().order_by("id")
     serializer_class = HeadCategorySerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
+    pagination_class = MyLimitOffsetPagination
 
 
 class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = HeadCategory.objects.all().order_by("id")
     serializer_class = HeadCategorySerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
 
 
 ### PARENT CATEGORY VIEW
 class AddParentCategoryView(generics.ListCreateAPIView):
     queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
+    pagination_class = MyLimitOffsetPagination
 
 
 class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
 
 
 ### CATEGORY VIEW
@@ -208,15 +216,18 @@ class AddTemporaryProductView(generics.ListCreateAPIView):
     # parser_classes = [MultiPartParser, FormParser]
     queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
+    permission_classes = [IsAuthenticated, IsProduct]
     pagination_class = None
 
 
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
+
     
 @api_view(["DELETE"])
+@permission_classes([IsAuthenticated])
 def DeleteTemporaryProductView(request):
     try:
         # Delete all rows
@@ -229,13 +240,14 @@ def DeleteTemporaryProductView(request):
 class AddProduct(generics.ListCreateAPIView):
     queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
-    pagination_class = None
+    pagination_class = MyLimitOffsetPagination
+    permission_classes = [IsAuthenticated, IsProduct]
 
 
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
-    pagination_class = None
+    permission_classes = [IsAuthenticated, IsProduct]
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -246,7 +258,8 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response(status="200")
     
-@api_view(['GET'])    
+@api_view(['GET'])
+@permission_classes([IsAuthenticated, IsProduct])
 def ShowAllProductView(request, outlet):
     try:
         get_outlet = Outlet.objects.get(id=outlet)
@@ -257,6 +270,7 @@ def ShowAllProductView(request, outlet):
     return Response(serializer.data)
 
 @api_view(['GET']) 
+@permission_classes([IsAuthenticated, IsProduct])
 def ShowAllProductDetailView(request, product_id):
     try:
         ### Retrieve the product and its name
@@ -305,6 +319,7 @@ def ShowAllProductDetailView(request, product_id):
 
 
 @api_view(['GET']) 
+@permission_classes([IsAuthenticated, IsProduct])
 def BarcodeDataView(request, sku):
     try:
         get_product = Product.objects.get(sku=sku)
@@ -314,10 +329,9 @@ def BarcodeDataView(request, sku):
     
     return Response(serializer.data)
    
-
-
 ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES VIEW
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchAllAttributeTypeView(request):
     cursor = connections["default"].cursor()
     query = "SELECT att_type from tbl_attribute_type"
@@ -327,6 +341,7 @@ def FetchAllAttributeTypeView(request):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchAttributeView(request, code):
     cursor = connections["default"].cursor()
     query = (
@@ -338,6 +353,7 @@ def FetchAttributeView(request, code):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchVariationView(request, code):
     cursor = connections["default"].cursor()
     query_employee = (
@@ -352,6 +368,7 @@ def FetchVariationView(request, code):
 
 ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK VIEW
 @api_view(["GET"])
+@permission_classes([IsAuthenticated])
 def GetAllProductView(request):
     cursor = connections["default"].cursor()
     # query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_name_id = ot.outlet_name "
@@ -363,6 +380,7 @@ def GetAllProductView(request):
 
 ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK VIEW
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchParentCategoryView(request, code):
     p_category = ParentCategory.objects.filter(hc_name_id=code)
     serializer = ParentCategorySerializer(p_category, many=True)
@@ -370,6 +388,7 @@ def FetchParentCategoryView(request, code):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchCategoryView(request, code):
     category = Category.objects.filter(pc_name_id=code)
     category_array = []
@@ -387,6 +406,7 @@ def FetchCategoryView(request, code):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchSubCategoryView(request, code):
     sub_category = SubCategory.objects.filter(category_id=code)
     sub_category_array = []
@@ -404,6 +424,7 @@ def FetchSubCategoryView(request, code):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated, IsProduct])
 def AddVariationGroupView(request):
     if request.method == "GET":
         array = []
@@ -440,16 +461,17 @@ def AddVariationGroupView(request):
                         Dict["variation"] = None
                         array.append(Dict)
         return Response(array)
-    if request.method == "POST":
+    if request.method == "POST":    
         data = request.data
         for i in range(len(data)):
-            serializer = VariationGroupSerializer(data=request.data[i])
+            serializer = VariationGroupSerializer(data=request.data[i], context={'request': request})
             if serializer.is_valid():
                 serializer.save()
         return Response(data, status="200")
 
 
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated, IsProduct])
 def GetVariationGroupView(request, att_id):
     if request.method == "GET":
         array = []
@@ -493,12 +515,16 @@ def GetVariationGroupView(request, att_id):
 
         attribute.attribute_name = data["attribute_name"]
         attribute.att_type_id = data["att_type"]
+        attribute.updated_at =  datetime.datetime.now()
+        attribute.updated_by = request.user.username
         attribute.save()
 
         variation = Variation.objects.filter(attribute_name=att_id)
         if len(variation) == len(data["variation_name"]):
             for i in range(len(variation)):
                 variation[i].variation_name = data["variation_name"][i]
+                variation[i].updated_at =  datetime.datetime.now()
+                variation[i].updated_by = request.user.username
                 variation[i].save()
         elif len(variation) != len(data["variation_name"]):
             if len(variation) > 0:
@@ -509,7 +535,8 @@ def GetVariationGroupView(request, att_id):
                     variation.variation_name = data["variation_name"][y]
                     variation.attribute_name_id = data["att_id"]
                     variation.status = "active"
-                    variation.created_at = datetime.datetime.now()
+                    variation.updated_at =  datetime.datetime.now()
+                    variation.updated_by = request.user.username
                     variation.save()
             else:
                 for y in range(len(data["variation_name"])):
@@ -517,7 +544,8 @@ def GetVariationGroupView(request, att_id):
                     variation.variation_name = data["variation_name"][y]
                     variation.attribute_name_id = data["att_id"]
                     variation.status = "active"
-                    variation.created_at = datetime.datetime.now()
+                    variation.updated_at =  datetime.datetime.now()
+                    variation.updated_by = request.user.username
                     variation.save()
         return Response(data)
     elif request.method == "DELETE":
@@ -534,6 +562,7 @@ def GetVariationGroupView(request, att_id):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchVariationGroupView(request, att_typ_id):
     if request.method == "GET":
         att_id = att_typ_id
@@ -574,6 +603,7 @@ def FetchVariationGroupView(request, att_typ_id):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated, IsProduct])
 def AddCategoriesView(request):
     if request.method == "GET":
         cursor = connections["default"].cursor()
@@ -608,7 +638,7 @@ def AddCategoriesView(request):
         return Response(variation_array)
 
     elif request.method == "POST":
-        serializer = CategorySerializer(data=request.data)
+        serializer = CategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             category_array = []
@@ -638,6 +668,7 @@ def AddCategoriesView(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated, IsProduct])
 def GetCategoriesView(request, id):
     try:
         category = Category.objects.get(id=id)
@@ -698,7 +729,7 @@ def GetCategoriesView(request, id):
         return Response(variation_dict)
 
     elif request.method == "PUT":
-        serializer = CategorySerializer(category, data=request.data)
+        serializer = CategorySerializer(category, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.initial_data)
@@ -708,6 +739,7 @@ def GetCategoriesView(request, id):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchCategoriesView(request, id):
     if request.method == "GET":
         try:
@@ -741,6 +773,7 @@ def FetchCategoriesView(request, id):
 
 
 @api_view(["GET", "POST"])
+@permission_classes([IsAuthenticated, IsProduct])
 def AddSubCategoriesView(request):
     if request.method == "GET":
         sub_category = SubCategory.objects.all()
@@ -775,7 +808,7 @@ def AddSubCategoriesView(request):
                 sub_category_array.append(sub_category_dict)
         return Response(sub_category_array)
     elif request.method == "POST":
-        serializer = SubCategorySerializer(data=request.data)
+        serializer = SubCategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             sub_category_array = []
@@ -805,6 +838,7 @@ def AddSubCategoriesView(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
+@permission_classes([IsAuthenticated, IsProduct])
 def GetSubCategoriesView(request, id):
     try:
         sub_category = SubCategory.objects.select_related("category").get(id=id)
@@ -845,7 +879,7 @@ def GetSubCategoriesView(request, id):
         return Response(sub_category_dict, status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
-        serializer = SubCategorySerializer(sub_category, data=request.data)
+        serializer = SubCategorySerializer(sub_category, data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.initial_data)
@@ -856,6 +890,7 @@ def GetSubCategoriesView(request, id):
 
 
 @api_view(["GET"])
+@permission_classes([IsAuthenticated, IsProduct])
 def FetchSubCategoriesView(request, id):
     try:
         # Fetch the subcategory by ID

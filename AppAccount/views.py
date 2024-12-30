@@ -138,7 +138,9 @@ class UserDeleteAPIView(APIView):
         try:
             user = User.objects.get(id=user_id)
             username = User.username
+            username = User.username
             user.delete()
+            return Response(f"User {username} deleted successfully.", status=status.HTTP_204_NO_CONTENT)
             return Response(f"User {username} deleted successfully.", status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
             return Response("User not found.", status=status.HTTP_404_NOT_FOUND)

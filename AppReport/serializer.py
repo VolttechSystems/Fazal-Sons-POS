@@ -10,4 +10,9 @@ class TransactionSerializer(ModelSerializer):
 class SalesmanSerializer(ModelSerializer):
      class Meta:
         model = Salesman
+<<<<<<< HEAD
         fields = ['salesman_name', 'salesman_code']   
+=======
+        fields = ['salesman_name', 'salesman_code']   
+         
+>>>>>>> server

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # from django.shortcuts import render
 # from rest_framework.views import APIView
 # from rest_framework.generics import *
@@ -135,6 +136,8 @@
 #     return Response(profit_report)
   
 
+=======
+>>>>>>> server
 from rest_framework.generics import *
 from rest_framework.decorators import api_view, permission_classes
 from django.db import connections
@@ -144,7 +147,11 @@ from AppCustomer.utils import DistinctFetchAll
 from rest_framework.status import *
 from django.db.models.functions import TruncDate
 from rest_framework.permissions import IsAuthenticated
+<<<<<<< HEAD
 # from .permissions import * 
+=======
+from .permissions import * 
+>>>>>>> server
 from .serializer import *
 from datetime import datetime
 from django.db.models import Sum, OuterRef, Subquery
@@ -166,7 +173,11 @@ from django.db.models import F
 
 
 @api_view(['GET'])
+<<<<<<< HEAD
 # @permission_classes([IsAuthenticated, IsReportUser])
+=======
+@permission_classes([IsAuthenticated, IsReportUser])
+>>>>>>> server
 def GetAllOutletDateView(request, outlet):
     try:
         outlet = Outlet.objects.get(id=outlet)
@@ -183,7 +194,11 @@ def GetAllOutletDateView(request, outlet):
 
 
 @api_view(['GET'])
+<<<<<<< HEAD
 # @permission_classes([IsAuthenticated, IsReportUser])
+=======
+@permission_classes([IsAuthenticated, IsReportUser])
+>>>>>>> server
 def DailySaleView(request, outlet, date):
     try:
         cursor = connections['default'].cursor()
@@ -196,7 +211,11 @@ def DailySaleView(request, outlet, date):
              return Response({"error": str(e)}, status=500)
 
 @api_view(['GET'])
+<<<<<<< HEAD
 # @permission_classes([IsAuthenticated, IsReportUser])
+=======
+@permission_classes([IsAuthenticated, IsReportUser])
+>>>>>>> server
 def DailySaleDetailView(request, invoice_code):
     # cursor = connections['default'].cursor()
     # query = "select invoice_code, quantity, gross_total, discounted_value, items_discount, grand_total, payment_type, tr.status, customer_type_id , tr.created_at::date from tbl_transaction tr INNER JOIN tbl_customer cus on cus.cust_code = tr.cust_code_id  where invoice_code = '" + invoice_code + "'"
@@ -257,6 +276,7 @@ from django.db.models.functions import Cast, TruncDate
 from django.db.models import IntegerField
 
 @api_view(['GET'])
+<<<<<<< HEAD
 # @permission_classes([IsAuthenticated, IsReportUser])
 def SalesReportView(request,outlet, start_date, end_date):
    
@@ -277,6 +297,20 @@ def SalesReportView(request,outlet, start_date, end_date):
     .annotate(total_sale=Sum('grand_total_casted'))
     .order_by('-till_date')
 )
+=======
+@permission_classes([IsAuthenticated, IsReportUser])
+def SalesReportView(request, start_date, end_date):
+   
+    parsed_start_date = datetime.strptime(start_date, "%d-%m-%Y").date()
+    parsed_end_date = datetime.strptime(end_date, "%d-%m-%Y").date()
+    transactions = (
+    Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date])
+    .annotate(till_date=TruncDate('created_at'))
+    .values('till_date')
+    .annotate(total_sale=Sum(F('grand_total')))
+    .order_by('-till_date')
+    )
+>>>>>>> server
     return Response(transactions)
 
 
@@ -312,7 +346,11 @@ def ProfitReportView(request, outlet, date):
     return Response(profit_report)
   
 @api_view(['GET'])
+<<<<<<< HEAD
 # @permission_classes([IsAuthenticated, IsReportUser])
+=======
+@permission_classes([IsAuthenticated, IsReportUser])
+>>>>>>> server
 def OutletWiseSalesmanView(request, outlet): 
     ## CHECK THAT OUTLET EXISTS
     try:
@@ -325,7 +363,11 @@ def OutletWiseSalesmanView(request, outlet):
   
   
 @api_view(['GET'])
+<<<<<<< HEAD
 # @permission_classes([IsAuthenticated, IsReportUser])  
+=======
+@permission_classes([IsAuthenticated, IsReportUser])  
+>>>>>>> server
 def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date):
     ## CHECK THAT OUTLET EXISTS
     try:
@@ -340,12 +382,21 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
     
     ## VALIDATE DATE RANGE
     try:
+<<<<<<< HEAD
         get_start_date = datetime.strptime(start_date, '%Y-%m-%d')
         get_end_date =  datetime.strptime(end_date, '%Y-%m-%d')
         if start_date > end_date:
             return Response("Invalid date range", status=HTTP_400_BAD_REQUEST)
     except ValueError:
           return Response("Invalid date format", status=HTTP_400_BAD_REQUEST) 
+=======
+        get_start_date = datetime.strptime(start_date, "%d-%m-%Y").date()
+        get_end_date =  datetime.strptime(end_date, "%d-%m-%Y").date()
+        if start_date > end_date:
+            return Response("Invalid date range", status=HTTP_400_BAD_REQUEST)
+    except ValueError:
+          return Response("Invalid date format. Use YYYY-MM-DD.", status=HTTP_400_BAD_REQUEST) 
+>>>>>>> server
     transaction_items = TransactionItem.objects.filter(invoice_code__outlet_code_id=outlet, invoice_code__salesman_code_id=salesman,
                                                         created_at__date__range=(get_start_date, get_end_date)).order_by('invoice_item_code')
     

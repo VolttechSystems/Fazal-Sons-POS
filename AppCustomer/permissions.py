@@ -1,26 +1,24 @@
 from rest_framework.permissions import BasePermission
 
-class IsTransaction(BasePermission):
-    """
-    Allows access only to users with the 'Cashier' role.
-    """
+class IsCustomer(BasePermission):
     def has_permission(self, request, view):
-        # Check if the user is authenticated
+         ## Check if the user is authenticated
         if not request.user or not request.user.is_authenticated:
             return False
-        # # Check if the user has the 'TransactionAdmin' role
+           
+        ## Check if the user has the 'Customer' role
         if hasattr(request.user, 'userprofile') and request.user.userprofile.system_roles.filter(
-            permissions__permission_name='TransactionAdmin'
+            permissions__permission_name='CustomerAdmin'
         ).exists():
-            # TransactionAdmin have full access, including DELETE
             return True
-
-        # Check if the user has the required 'Transaction' permission via their role
+        
+        
+           # Check if the user has the required 'CustomerAdmin' permission via their role
         if hasattr(request.user, 'userprofile'):
-            has_transaction_permission = request.user.userprofile.system_roles.filter(
-                permissions__permission_name='Transaction'
+            has_customer_permission = request.user.userprofile.system_roles.filter(
+                permissions__permission_name='Customer'
             ).exists()
-            if not has_transaction_permission:
+            if not has_customer_permission:
                 return False
         else:
             # Deny access if userprofile is missing
@@ -33,7 +31,4 @@ class IsTransaction(BasePermission):
         # Explicitly deny DELETE requests
         if request.method == 'DELETE':
             return False
-
-        # Deny access for any other methods not explicitly allowed
         return False
-    

@@ -37,12 +37,18 @@ class OutletSerializer(serializers.ModelSerializer):
         outlet = super().create(validated_data)
         outlet.updated_at = None
         outlet.created_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     outlet.created_by = request.user.username
         outlet.save()
         return outlet
 
     def update(self, instance, validated_data):
         outlet = super().update(instance, validated_data)
         outlet.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     outlet.updated_by = request.user.username
         outlet.save()
         return outlet
 
@@ -58,12 +64,18 @@ class BrandSerializer(serializers.ModelSerializer):
         brand = super().create(validated_data)
         brand.updated_at = None
         brand.created_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     brand.created_by = request.user.username
         brand.save()
         return brand
 
     def update(self, instance, validated_data):
         brand = super().update(instance, validated_data)
         brand.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     brand.updated_by = request.user.username
         brand.save()
         return brand
 
@@ -78,62 +90,21 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
         attr_type = super().create(validated_data)
         attr_type.updated_at = None
         attr_type.created_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     attr_type.created_by = request.user.username
         attr_type.save()
         return attr_type
 
     def update(self, instance, validated_data):
         attr_type = super().update(instance, validated_data)
         attr_type.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     attr_type.updated_by = request.user.username
         attr_type.save()
         return attr_type
-
-
-# ### ATTRIBUTE SERIALIZER
-# class AttributeSerializer(serializers.ModelSerializer):
-#     attribute_name = serializers.ListField(child=serializers.CharField())
-#
-#     class Meta:
-#         model = Attribute
-#         fields = ['id', 'attribute_name', 'symbol', 'description', 'status', 'att_type']
-#
-#     def create(self, validated_data):
-#         attribute_names = validated_data.get('attribute_name')
-#         # print(attribute_name)
-#         attribute = super().create(validated_data)
-#         attribute.updated_at = None
-#         attribute.created_at = DateTime
-#         attribute.save()
-#         return attribute
-#
-#     def update(self, instance, validated_data):
-#         attribute = super().update(instance, validated_data)
-#         attribute.updated_at = DateTime
-#         attribute.save()
-#         return attribute
-
-
-# ### VARIATION SERIALIZER
-# class VariationSerializer(serializers.ModelSerializer):
-#     # attribute_name = AttributeSerializer('id')
-#     class Meta:
-#         model = Variation
-#         # fields = ['id','variation_name','symbol', 'description', 'status', 'attribute_name']
-#         fields = '__all__'
-#
-#     def create(self, validated_data):
-#         variation = super().create(validated_data)
-#         variation.updated_at = None
-#         variation.created_at = DateTime
-#         variation.save()
-#         return variation
-#
-#     def update(self, instance, validated_data):
-#         variation = super().update(instance, validated_data)
-#         variation.updated_at = DateTime
-#         variation.save()
-#         return variation
-
-
+    
 ### HEAD CATEGORY SERIALIZER
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
@@ -144,12 +115,18 @@ class HeadCategorySerializer(serializers.ModelSerializer):
         h_category = super().create(validated_data)
         h_category.created_at = DateTime
         h_category.updated_at = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     h_category.created_by = request.user.username
         h_category.save()
         return h_category
 
     def update(self, instance, validated_data):
         h_category = super().update(instance, validated_data)
         h_category.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     h_category.updated_by = request.user.username
         h_category.save()
         return h_category
 
@@ -164,17 +141,23 @@ class ParentCategorySerializer(serializers.ModelSerializer):
         p_category = super().create(validated_data)
         p_category.created_at = DateTime
         p_category.updated_at = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     p_category.created_by = request.user.username
         p_category.save()
         return p_category
 
     def update(self, instance, validated_data):
         p_category = super().update(instance, validated_data)
         p_category.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     p_category.updated_by = request.user.username
         p_category.save()
         return p_category
 
 
-## CATEGORY SERIALIZER
+### CATEGORY SERIALIZER
 class CategorySerializer(serializers.ModelSerializer):
     attribute_group = serializers.ListField(child=serializers.CharField())
 
@@ -188,6 +171,9 @@ class CategorySerializer(serializers.ModelSerializer):
             validated_data['attribute_group'] = []
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                    validated_data['created_by'] = request.user.username
         category = super().create(validated_data)
         return category
 
@@ -196,11 +182,14 @@ class CategorySerializer(serializers.ModelSerializer):
         if get_subcategory_option == 'True':
             validated_data['attribute_group'] = []
         validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                    validated_data['updated_by'] = request.user.username
         category = super().update(instance, validated_data)
         return category
 
 
-## SUB CATEGORY SERIALIZER
+### SUB CATEGORY SERIALIZER
 class SubCategorySerializer(serializers.ModelSerializer):
     attribute_group = serializers.ListField(child=serializers.CharField())
 
@@ -211,12 +200,17 @@ class SubCategorySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                    validated_data['created_by'] = request.user.username
         subcategory = super().create(validated_data)
         return subcategory
 
     def update(self, instance, validated_data):
-        validated_data['created_at'] = DateTime
-        validated_data['updated_at'] = None
+        validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                    validated_data['updated_by'] = request.user.username
         sub_category = super().update(instance, validated_data)
         return sub_category
 
@@ -272,6 +266,9 @@ class TempProductSerializer(serializers.ModelSerializer):
         get_variations = ast.literal_eval(get_variations)
         outlet = validated_data.get('outlet')
         brand = validated_data.get('brand')
+        request = self.context.get('request')
+        
+
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))
@@ -300,6 +297,8 @@ class TempProductSerializer(serializers.ModelSerializer):
                             validated_data['color'] = get_color[color]
                             validated_data['description'] = specs
                             validated_data['created_at'] = DateTime
+                            if request and hasattr(request, 'user'):
+                                validated_data['created_by'] = request.user.username
                             parent = super().create(validated_data)
             else:
                 for variation in initial_variations:
@@ -310,12 +309,16 @@ class TempProductSerializer(serializers.ModelSerializer):
                     specs = "-".join(map(str, all_variation))
                     validated_data['description'] = specs
                     validated_data['created_at'] = DateTime
+                    if request and hasattr(request, 'user'):
+                                validated_data['created_by'] = request.user.username
                     parent = super().create(validated_data)
 
         return parent
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
+        if request and hasattr(request, 'user'):
+                                validated_data['updated_by'] = request.user.username
         parent = super().update(instance, validated_data)
         return parent
 
@@ -372,6 +375,9 @@ class ProductSerializer(serializers.ModelSerializer):
             validated_data['retail_price'] = tem_product[x].retail_price
             validated_data['token_price'] = tem_product[x].token_price
             validated_data['created_at'] = DateTime
+            request = self.context.get('request')
+            if request and hasattr(request, 'user'):
+                    validated_data['created_by'] = request.user.username
             # Add Stock
             add_stock = Stock(
                 product_name=tem_product[x].product_name,
@@ -379,7 +385,8 @@ class ProductSerializer(serializers.ModelSerializer):
                 color=tem_product[x].color,
                 # size=tem_product[x].size,
                 avail_quantity=0,
-                created_at=DateTime
+                created_at=DateTime,
+                created_by=request.user.username
             )
             parent = super().create(validated_data)
             add_stock.save()
@@ -389,7 +396,9 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
-        print(validated_data['sku'])
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                    validated_data['updated_by'] = request.user.username
         Update_stock = Stock.objects.get(sku=validated_data['sku'])
         Update_stock.product_name = validated_data['product_name'] 
         Update_stock.save()
@@ -414,6 +423,10 @@ class VariationGroupSerializer(serializers.Serializer):
         get_attribute_name = validated_data.get('attribute_name')
         get_variations = validated_data.get('variation')
         get_att_type = validated_data.get('att_type')
+        get_username = ''
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                    get_username = request.user.username
         try:
             att_type = AttributeType.objects.get(id=get_att_type)
             get_attribute_type_id = att_type.id
@@ -429,6 +442,7 @@ class VariationGroupSerializer(serializers.Serializer):
                 att_type_id=get_attribute_type_id,
                 status="active",
                 created_at=DateTime,
+                created_by=get_username,
             )
             attribute.save()
         get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
@@ -445,6 +459,7 @@ class VariationGroupSerializer(serializers.Serializer):
                         attribute_name_id=get_attribute_id,
                         status="active",
                         created_at=DateTime,
+                        created_by=get_username,
                     )
                     variation.save()
         return validated_data
