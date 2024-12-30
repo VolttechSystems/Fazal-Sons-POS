@@ -70,10 +70,5 @@ urlpatterns = [
 
 ]
 
-## Outlet ki alag alag products add ho gi means 1 outlet ki product second outlet mai show ho gi ya ni 
-## stock minus krna jab transaction ho 
-## stock update krna jab koi return ho
-## stock 0 ho tu transaction mai show na ho ya error show ho 
-## Update product ho tu stock b update ho
 ## Product Edit 
 

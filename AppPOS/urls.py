@@ -8,7 +8,10 @@ urlpatterns = [
         re_path(r'action_additional_fee/(?P<pk>.+)/', GetAdditionalFeeView.as_view(), name='GetAdditionalFee'),
         ### SALESMAN URL
         re_path(r'add_salesman', AddSalesmanView.as_view(), name='AddSalesman'),
-        re_path(r'action_salesman/(?P<pk>.+)/', GetSalesmanView.as_view(), name='GetSalesman'),
+        re_path(r'action_salesman/(?P<pk>.+)/', GetSalesmanView.as_view(), name='GetSalesman'),        
+        ### PAYMENT METHOD URL
+        re_path(r'add_payment', AddPaymentView.as_view(), name='AddPayment'),
+        re_path(r'action_payment/(?P<pk>.+)/', GetPaymentView.as_view(), name='GetPayment'),
         ### TRANSACTION URL
         re_path(r'all_product', AllProductView, name='AllProduct'),
         re_path(r'products_detail/(?P<code>.+)/', ProductDetailView, name='ProductDetail'),
@@ -26,5 +29,3 @@ urlpatterns = [
         re_path(r'today_sale_report/(?P<outlet_id>.+)', TodaySaleReportView, name='TodaySaleReport'),   
 ]
 
-
-# Generate salesman not found error in transaction

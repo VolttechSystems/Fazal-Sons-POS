@@ -272,7 +272,6 @@ class TempProductSerializer(serializers.ModelSerializer):
         get_variations = ast.literal_eval(get_variations)
         outlet = validated_data.get('outlet')
         brand = validated_data.get('brand')
-
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))
@@ -289,24 +288,26 @@ class TempProductSerializer(serializers.ModelSerializer):
                         else:
                             brand_code = get_first_three_of_first_word(brand.brand_name)
             sku_code = outlet_code + "-" + brand_code
+            if len(get_color) > 0:
 
-            for color in range(len(get_color)):
-                    for variation in initial_variations:
-                        all_variation = list(variation)
-                        specs = "-".join(map(str, all_variation))
-                        auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
-                        validated_data['sku'] = auto_sku_code
-                        validated_data['color'] = get_color[color]
-                        validated_data['description'] = specs
-                        validated_data['created_at'] = DateTime
-                        parent = super().create(validated_data)
-        else:
+                for color in range(len(get_color)):
+                        for variation in initial_variations:
+                            all_variation = list(variation)
+                            specs = "-".join(map(str, all_variation))
+                            
+                            auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
+                            validated_data['sku'] = auto_sku_code
+                            validated_data['color'] = get_color[color]
+                            validated_data['description'] = specs
+                            validated_data['created_at'] = DateTime
+                            parent = super().create(validated_data)
+            else:
                 for variation in initial_variations:
                     auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
                     validated_data['sku'] = auto_sku_code
-                    validated_data['color'] = "FYP"
+                    validated_data['color'] = ""
                     all_variation = list(variation)
-                    specs = ", ".join(map(str, all_variation))
+                    specs = "-".join(map(str, all_variation))
                     validated_data['description'] = specs
                     validated_data['created_at'] = DateTime
                     parent = super().create(validated_data)

@@ -38,6 +38,8 @@ class TransactionItemSerializer(serializers.ModelSerializer):
     outlet_code = serializers.CharField(required=False)
     fee_code = serializers.ListField(child=serializers.CharField(), required=False)
     fee_amount = serializers.ListField(child=serializers.CharField(), required=False)
+    pm_method = serializers.ListField(child=serializers.CharField(), required=False)
+    pm_amount = serializers.ListField(child=serializers.CharField(), required=False)
     advanced_payment = serializers.CharField(required=False, allow_blank=True)
     sku = serializers.ListField(child=serializers.CharField())
     quantity = serializers.ListField(child=serializers.CharField())
@@ -46,11 +48,19 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TransactionItem
-        fields = ['cust_code', 'saleman_code', 'overall_discount', 'outlet_code','advanced_payment', 'sku', 'quantity', 'rate', 'item_discount', 'fee_code', 'fee_amount']
+        fields = ['cust_code', 'saleman_code', 'overall_discount', 'outlet_code','advanced_payment', 'sku', 'quantity', 'rate', 'item_discount', 'fee_code', 'fee_amount', 'pm_method', 'pm_amount']
         
     def validate(self, validated_data):
         get_sku = validated_data.get('sku')
+        get_rate = validated_data.get('rate')
         get_quantity = validated_data.get('quantity')
+        get_additional_fee = validated_data.get('fee_amount')
+        get_pm_amount = validated_data.get('pm_amount')
+        get_overall_discount = validated_data.get('overall_discount')
+        get_item_discount = validated_data.get('item_discount')
+        get_advanced_payment = validated_data.get('advanced_payment')
+        print(get_advanced_payment)
+        
         len_sku = len(get_sku)
         if len_sku == 0:
             raise serializers.ValidationError("please select one product")
@@ -69,10 +79,37 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 raise serializers.ValidationError(
                     f"The stock quantity for SKU {sku} is {available_quantity}, but {requested_quantity} was requested."
                 )
+        if get_advanced_payment == '0':
+            ## PAYMENT METHOD
+            total_pay = 0
+            for payment in get_pm_amount:
+                total_pay += int(payment)
+        
+            ## ADDITIONAL FEE
+            total_fee = 0
+            for fee in get_additional_fee:
+                total_fee += int(fee)
+        
+            ## GRAND TOTAL CALCULATION
+            total, Gross_total, item_wise_discount, discount_amount, total_discount = 0,0,0,0,0
+            for item in range(len_sku):
+                    quantity = int(get_quantity[item])
+                    rate = int(get_rate[item])
+                    item_gross_total = quantity * rate
+                    item_discount_per = int(get_item_discount[item].strip())
+                    item_discount = int(item_discount_per * item_gross_total / 100)
+                    item_total = item_gross_total - item_discount
+                    Gross_total += int(item_gross_total)
+                    
+            if get_overall_discount != 0:
+                    discount_amount = int(int(get_overall_discount) * int(Gross_total) / 100)
+            total = Gross_total - discount_amount
+            Grand_total = total + total_fee
+            if total_pay != Grand_total:
+                raise serializers.ValidationError(f"Payable Amount is {Grand_total} and you add {total_pay} in the Payment Method")        
         return validated_data
 
-        
-      
+  
     def create(self, validated_data):
         get_sku = validated_data.get('sku')
         get_quantity = validated_data.get('quantity')
@@ -85,12 +122,20 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_additional_fee_code = validated_data.get('fee_code')
         get_additional_fee = validated_data.get('fee_amount')
         get_advanced_payment = validated_data.get('advanced_payment')
+        get_pm_method = validated_data.get('pm_method')
+        get_pm_amount = validated_data.get('pm_amount')
     
-        
         len_sku = len(get_sku)
+        ## CHECK ADDITIONAL FEE CODE
         len_additional_fee_code = 0
         if get_additional_fee_code != []:
             len_additional_fee_code = len(get_additional_fee_code)
+        ## CHECK PAYMENT METHOD
+        len_pm_method = 0
+        if get_pm_method != []:
+            len_pm_method = len(get_pm_method)
+             
+        
         if len_sku > 0:
             invoice_auto_code = AutoGenerateCodeForModel(Transaction, 'invoice_code', 'INV-')
             ### ADD TRANSACTION 
@@ -150,7 +195,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
             transaction.discounted_value = total_discount
             transaction.items_discount = item_wise_discount
             transaction.payment_type = "Cash"
-            ## ADD ADDITIONAL FEE
+            ## ADD ADDITIONAL FEE IF EXIST
             total_additional_fee = 0
             if len_additional_fee_code > 0:
             
@@ -165,7 +210,20 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     )
                     transaction_additional_fee.save()
                     total_additional_fee += int(get_additional_fee[x])
-
+            ## ADD PAYMENT METHOD IF EXIST
+            total_pay = 0
+            if len_pm_method > 0:
+                for x in range(len_pm_method):
+                    pm_method = get_pm_method[x].strip()
+                    payment_method = PaymentMethod.objects.get(id=pm_method)
+                    transaction_payment_method = TransactionPayment(
+                        payment_id=payment_method.id,
+                        transaction_id=transaction.id,
+                        amount=get_pm_amount[x],
+                    )
+                    transaction_payment_method.save()
+                    total_pay += int(get_pm_amount[x])
+        
             grand_total_with_fee = Grand_total + total_additional_fee
             transaction.additional_fees = total_additional_fee
             transaction.grand_total = grand_total_with_fee
@@ -174,10 +232,12 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 due_amount = int(grand_total_with_fee) - int(get_advanced_payment)
                 transaction.advanced_payment = get_advanced_payment
                 transaction.due_amount = due_amount
+                transaction.total_pay = total_pay
                 transaction.status = "unpaid"
             else:
                 transaction.advanced_payment = 0
                 transaction.due_amount = 0
+                transaction.total_pay = total_pay
                 transaction.status = "paid"
             transaction.save()
         return validated_data
@@ -208,6 +268,28 @@ class AddSalesmanSerializer(serializers.ModelSerializer):
         salesman = super().update(instance, validated_data)
         return validated_data
 
+
+### PAYMENT METHOD SERIALIZER
+class AddPaymentMethodSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = PaymentMethod
+        fields = ['id', 'pm_name']
+        
+    def create(self, validated_data):
+        validated_data['created_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['created_by'] = request.user.username
+        Payment = super().create(validated_data)
+        return Payment
+    
+    def update(self, instance, validated_data):
+        validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            validated_data['updated_by'] = request.user.username
+        Payment = super().update(instance, validated_data)
+        return Payment
 
 ### TRANSACTION RETURN SERIALIZER
 class TransactionReturnSerializer(serializers.ModelSerializer):

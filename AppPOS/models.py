@@ -39,6 +39,19 @@ class AdditionalFee(models.Model):
     def __str__(self):
         return self.fee_name
 
+class PaymentMethod(models.Model):
+    pm_name = models.CharField(max_length=15, blank=True, null=True, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    created_by = models.CharField(max_length=200, null=True, blank=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    updated_by = models.CharField(max_length=200, null=True, blank=True)
+
+    class Meta:
+        db_table = "tbl_payment_method"
+
+    def __str__(self):
+        return self.pm_name
+    
 
 class Transaction(models.Model):
     invoice_code = models.CharField(max_length=100, null=True, unique=True)  # auto generated
@@ -46,6 +59,7 @@ class Transaction(models.Model):
                                     blank=True)
     cust_code = models.ForeignKey(Customer, to_field='cust_code', on_delete=models.CASCADE, null=True,
                                   blank=True)
+    payment = models.ManyToManyField(PaymentMethod, through='TransactionPayment')
     additional_fee = models.ManyToManyField(AdditionalFee, through='FeeRecord')
     salesman_code = models.ForeignKey(Salesman, to_field='salesman_code', on_delete=models.CASCADE, null=True,
                                     blank=True)
@@ -60,7 +74,7 @@ class Transaction(models.Model):
     due_amount = models.CharField(null=True,
                                   blank=True)  # If the customer makes a partial payment, the system will calculate the due amount to be paid later.
     additional_fees = models.CharField(null=True, blank=True)
-    payment_type = models.CharField(null=True, blank=True)
+    total_pay = models.CharField(null=True, blank=True)
     status = models.CharField(null=True, blank=True)  # Paid, Unpaid
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
@@ -108,6 +122,17 @@ class FeeRecord(models.Model):
     def __str__(self):
         return self.transaction_id
     
+class TransactionPayment(models.Model):
+    payment = models.ForeignKey(PaymentMethod, on_delete=models.CASCADE)
+    transaction = models.ForeignKey(Transaction, on_delete=models.CASCADE)
+    amount = models.CharField(null=True, blank=True)
+
+    class Meta:
+        db_table = 'tbl_transaction_payment'
+
+    def __str__(self):
+        return self.transaction
+    
     
     
 class TransactionReturn(models.Model):
@@ -126,3 +151,5 @@ class TransactionReturn(models.Model):
 
     def __str__(self):
         return self.invoice_code
+    
+    

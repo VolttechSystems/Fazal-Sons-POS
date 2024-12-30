@@ -70,6 +70,18 @@ class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
     pagination_class = None
     
     
+
+### PAYMENT VIEW
+class AddPaymentView(generics.ListCreateAPIView):
+    queryset = PaymentMethod.objects.all()
+    serializer_class = AddPaymentMethodSerializer
+    pagination_class = None
+
+class GetPaymentView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = PaymentMethod.objects.all()
+    serializer_class = AddPaymentMethodSerializer
+
+
 ### TRANSACTION RETURN VIEW
 class TransactionReturnView(generics.CreateAPIView):
     queryset = TransactionReturn.objects.all()
@@ -172,6 +184,7 @@ def ReceiveDueInvoiceView(request, invoice_code):
     if due_amount < 0:
          return Response("Due Amount Cannot Be Negative" ,status=HTTP_400_BAD_REQUEST)
     due = int(transaction.due_amount) - due_amount
+    total_pay = int(transaction.total_pay) + due_amount 
     if due == 0:
         advance = 0
         status = "paid"
@@ -180,6 +193,7 @@ def ReceiveDueInvoiceView(request, invoice_code):
         status = "unpaid" 
     transaction.due_amount = due
     transaction.advanced_payment = advance
+    transaction.total_pay = total_pay
     transaction.status = status
     transaction.save()
     return Response("Due Amount Update")
