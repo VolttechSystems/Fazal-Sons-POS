@@ -24,11 +24,6 @@ from django.db.models import Prefetch
 from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
 from .permissions import*
-# def DistinctFetchAll(cursor):
-#     "Returns all rows from a cursor as a dict"
-#     desc = cursor.description
-#     return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
-
 
 
 ### FUNCTION THAT CREATE TOKEN WHEN USER IS CREATED
@@ -635,7 +630,10 @@ def AddCategoriesView(request):
                         attribute_group_array.append(attribute)
                 variation_dict["attribute_group"] = attribute_group_array
                 variation_array.append(variation_dict)
-        return Response(variation_array)
+        paginator = MyLimitOffsetPagination()
+        paginated_variation = paginator.paginate_queryset(variation_array, request)
+        return paginator.get_paginated_response(paginated_variation)
+        # return Response(variation_array)
 
     elif request.method == "POST":
         serializer = CategorySerializer(data=request.data, context={'request': request})
@@ -806,7 +804,10 @@ def AddSubCategoriesView(request):
                         attribute_group_array.append(attribute)
                 sub_category_dict["attribute_group"] = attribute_group_array
                 sub_category_array.append(sub_category_dict)
-        return Response(sub_category_array)
+        paginator = MyLimitOffsetPagination()
+        paginated_variation = paginator.paginate_queryset(sub_category_array, request)
+        return paginator.get_paginated_response(paginated_variation)
+        # return Response(sub_category_array)
     elif request.method == "POST":
         serializer = SubCategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():

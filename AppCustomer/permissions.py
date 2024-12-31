@@ -8,7 +8,7 @@ class IsCustomer(BasePermission):
            
         ## Check if the user has the 'Customer' role
         if hasattr(request.user, 'userprofile') and request.user.userprofile.system_roles.filter(
-            permissions__permission_name='CustomerAdmin'
+            permissions__permission_name='Admin'
         ).exists():
             return True
         

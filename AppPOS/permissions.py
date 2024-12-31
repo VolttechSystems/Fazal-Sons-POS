@@ -10,7 +10,7 @@ class IsTransaction(BasePermission):
             return False
         # # Check if the user has the 'TransactionAdmin' role
         if hasattr(request.user, 'userprofile') and request.user.userprofile.system_roles.filter(
-            permissions__permission_name='TransactionAdmin'
+            permissions__permission_name='Admin'
         ).exists():
             # TransactionAdmin have full access, including DELETE
             return True
