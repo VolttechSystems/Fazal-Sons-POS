@@ -291,7 +291,6 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         ## CHECK ADDITIONAL FEE CODE
         len_additional_fee_code = 0
         if get_additional_fee_code != []:
-        if get_additional_fee_code != []:
             len_additional_fee_code = len(get_additional_fee_code)
         ## CHECK PAYMENT METHOD
         len_pm_method = 0
