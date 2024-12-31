@@ -66,6 +66,4 @@ urlpatterns = [
 ## Product Edit 
 ## Remove edi button from add temp product 
 #### Return product and invoice code issue in reports
-#### How to View Returns Transaction
 #### Testing of profit report
-## Add pagination in category and subcategory

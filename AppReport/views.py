@@ -1,5 +1,3 @@
-
-
 from rest_framework.generics import *
 from rest_framework.decorators import api_view, permission_classes
 from django.db import connections
@@ -12,22 +10,10 @@ from rest_framework.permissions import IsAuthenticated
 from .serializer import *
 from .permissions import IsReportUser
 from datetime import datetime
-from django.db.models import Sum, OuterRef, Subquery
+from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.db.models import F
 
-
-# @api_view(['GET'])
-# def GetAllOutletDateView(request, outlet):
-#     try:
-#         outlet = Outlet.objects.get(id=outlet)
-#     except Outlet.DoesNotExist:
-#         return Response(status=HTTP_404_NOT_FOUND)
-#     cursor = connections['default'].cursor()
-#     query = "select distinct created_at::date from tbl_transaction where outlet_code_id = '" + outlet + "'"
-#     cursor.execute(query)
-#     daily_report = DistinctFetchAll(cursor)
-#     return Response(daily_report)
 
 
 @api_view(['GET'])
@@ -48,11 +34,10 @@ def GetAllOutletDateView(request, outlet):
 
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsReportUser])
+# @permission_classes([IsAuthenticated, IsReportUser])
 def DailySaleView(request, outlet, date):
     try:
         cursor = connections['default'].cursor()
-        # query = "select invoice_code , trans.created_at , ol.outlet_name , cus.customer_type_id as customer_type, sum(grand_total::INTEGER) as total from tbl_transaction as trans INNER JOIN tbl_customer as cus on cus.cust_code = trans.cust_code_id INNER JOIN tbl_outlet as ol on ol.id = trans.outlet_code_id where trans.created_at::date = '" + date + "' and ol.id = '" + outlet_code + "' GROUP BY  invoice_code , trans.created_at ,  ol.outlet_name,  cus.customer_type_id"
         query = "SELECT trans.invoice_code, trans.created_at::date, ol.outlet_name, cus.customer_type_id AS customer_type, SUM(trans.grand_total::INTEGER) AS total_amount, COALESCE(ret.total_return, 0) AS return_amount , SUM(trans.grand_total::INTEGER) - COALESCE(ret.total_return, 0) as total  FROM tbl_transaction AS trans INNER JOIN tbl_customer AS cus ON cus.cust_code = trans.cust_code_id INNER JOIN tbl_outlet AS ol ON ol.id = trans.outlet_code_id LEFT JOIN (SELECT invoice_code_id, SUM(total_amount::INTEGER) AS total_return FROM tbl_transaction_return GROUP BY invoice_code_id ) AS ret ON trans.invoice_code = ret.invoice_code_id WHERE trans.created_at::date = '"+ date +"' AND ol.id = '"+ outlet +"'GROUP BY trans.invoice_code, trans.created_at, ol.outlet_name, cus.customer_type_id, ret.total_return;"
         cursor.execute(query)
         daily_report = DistinctFetchAll(cursor)
@@ -61,16 +46,8 @@ def DailySaleView(request, outlet, date):
              return Response({"error": str(e)}, status=500)
 
 @api_view(['GET'])
-@permission_classes([IsAuthenticated, IsReportUser])
+# @permission_classes([IsAuthenticated, IsReportUser])
 def DailySaleDetailView(request, invoice_code):
-    # cursor = connections['default'].cursor()
-    # query = "select invoice_code, quantity, gross_total, discounted_value, items_discount, grand_total, payment_type, tr.status, customer_type_id , tr.created_at::date from tbl_transaction tr INNER JOIN tbl_customer cus on cus.cust_code = tr.cust_code_id  where invoice_code = '" + invoice_code + "'"
-    # cursor.execute(query)
-    # transaction = DistinctFetchAll(cursor)
-    
-    # query_item = "select tr_item.quantity, rate as per_rate, tr_item.gross_total, tr_item.discounted_value, item_total  from tbl_transaction tr INNER JOIN tbl_transaction_item tr_item on tr.invoice_code = tr_item.invoice_code_id  where invoice_code = '" + invoice_code + "'"
-    # cursor.execute(query_item)
-    # transaction_item = DistinctFetchAll(cursor)
     try:
         transaction = Transaction.objects.select_related('cust_code__customer_type').get(invoice_code=invoice_code)
     except Transaction.DoesNotExist:
@@ -87,6 +64,13 @@ def DailySaleDetailView(request, invoice_code):
     data_dict["status"] = transaction.status
     data_dict["items"] = []
     data_dict["returns"] = []
+    data_dict["Payment"] = []
+    transaction_payment = TransactionPayment.objects.filter(transaction_id=transaction.id)
+    for payment in transaction_payment:
+        data_dict["Payment"].append({
+            "payment_method": payment.payment.pm_name if payment.payment else None,
+            "amount": payment.amount,
+        })
     ## CREATE A MAP OF SKU THAT USE IN BELOW BOTH LOOPS
     product_map = {
         product.sku : product for product in Product.objects.filter(sku__in=[item.sku for item in transaction_items])
@@ -117,9 +101,6 @@ def DailySaleDetailView(request, invoice_code):
     return Response(data_dict)
  
 
-from django.db.models import Sum, F
-from django.db.models.functions import Cast, TruncDate
-from django.db.models import IntegerField
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsReportUser])
@@ -138,7 +119,7 @@ def SalesReportView(request, start_date, end_date):
 
 
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated, IsReportUser])
+@permission_classes([IsAuthenticated, IsReportUser])
 def ProfitReportView(request, outlet, date):
     cursor = connections['default'].cursor()
     query = "select invoice_code, tr_item.sku as sku, product_name,tr.created_at, outlet_code_id, tr_item.quantity, cost_price,  tr_item.quantity::INTEGER*cost_price::INTEGER as total_cost , selling_price, tr_item.quantity::INTEGER*selling_price::INTEGER as total ,tr_item.quantity::INTEGER*selling_price::INTEGER -  tr_item.quantity::INTEGER*cost_price::INTEGER as profit, COALESCE(rtn.rate,0) as return_rate, COALESCE(rtn.quantity,0) as return_quantity, COALESCE(rtn.total_amount,0) as return_total from tbl_transaction_item tr_item  INNER JOIN tbl_product pr on tr_item.sku = pr.sku inner join tbl_transaction tr on tr_item.invoice_code_id = tr.invoice_code left JOIN tbl_transaction_return rtn on rtn.invoice_code_id = tr.invoice_code and rtn.sku = tr_item.sku where outlet_code_id ='"+ outlet +"' and tr.created_at::date = '"+ date +"' order by invoice_code"
