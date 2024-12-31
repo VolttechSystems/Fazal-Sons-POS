@@ -222,6 +222,13 @@ def DailySaleDetailView(request, invoice_code):
     data_dict["status"] = transaction.status
     data_dict["items"] = []
     data_dict["returns"] = []
+    data_dict["Payment"] = []
+    transaction_payment = TransactionPayment.objects.filter(transaction_id=transaction.id).select_related('payment')
+    for payment in transaction_payment:
+        data_dict["Payment"].append({
+            "payment_method": payment.payment.pm_name if payment.payment else None,
+            "amount": payment.amount,
+        })
     ## CREATE A MAP OF SKU THAT USE IN BELOW BOTH LOOPS
     product_map = {
         product.sku : product for product in Product.objects.filter(sku__in=[item.sku for item in transaction_items])
