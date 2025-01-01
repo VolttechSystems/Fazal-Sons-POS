@@ -137,9 +137,8 @@ class UserDeleteAPIView(APIView):
             return Response("You cannot delete your own account.", status=status.HTTP_400_BAD_REQUEST)
         try:
             user = User.objects.get(id=user_id)
-            username = User.username
             user.delete()
-            return Response(f"User {username} deleted successfully.", status=status.HTTP_204_NO_CONTENT)
+            return Response("User deleted successfully.", status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
             return Response("User not found.", status=status.HTTP_404_NOT_FOUND)
         
