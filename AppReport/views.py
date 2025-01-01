@@ -32,9 +32,8 @@ def GetAllOutletDateView(request, outlet):
     return Response({"dates": list(daily_report)})
 
 
-
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated, IsReportUser])
+@permission_classes([IsAuthenticated, IsReportUser])
 def DailySaleView(request, outlet, date):
     try:
         cursor = connections['default'].cursor()
@@ -46,7 +45,7 @@ def DailySaleView(request, outlet, date):
              return Response({"error": str(e)}, status=500)
 
 @api_view(['GET'])
-# @permission_classes([IsAuthenticated, IsReportUser])
+@permission_classes([IsAuthenticated, IsReportUser])
 def DailySaleDetailView(request, invoice_code):
     try:
         transaction = Transaction.objects.select_related('cust_code__customer_type').get(invoice_code=invoice_code)
@@ -65,7 +64,7 @@ def DailySaleDetailView(request, invoice_code):
     data_dict["items"] = []
     data_dict["returns"] = []
     data_dict["Payment"] = []
-    transaction_payment = TransactionPayment.objects.filter(transaction_id=transaction.id)
+    transaction_payment = TransactionPayment.objects.filter(transaction_id=transaction.id).select_related('payment')
     for payment in transaction_payment:
         data_dict["Payment"].append({
             "payment_method": payment.payment.pm_name if payment.payment else None,
