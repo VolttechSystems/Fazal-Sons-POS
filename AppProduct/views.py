@@ -682,6 +682,7 @@ def GetCategoriesView(request, id):
             for attribute in attributes:
                 # Add to attribute group array
                 attribute_group_array.append({
+                    "att_type": attribute.att_type_id,
                     "id": attribute.id,
                     "name": attribute.attribute_name,
                 })
