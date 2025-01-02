@@ -67,3 +67,4 @@ urlpatterns = [
 ## Remove edi button from add temp product 
 #### Return product and invoice code issue in reports
 #### Testing of profit report
+#### Send System Role in login API with token 

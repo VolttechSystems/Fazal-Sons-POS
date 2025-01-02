@@ -13,6 +13,7 @@ from datetime import datetime
 from django.db.models import Sum
 from django.db.models.functions import Coalesce
 from django.db.models import F
+from AppProduct.views import MyLimitOffsetPagination
 
 
 
@@ -40,7 +41,9 @@ def DailySaleView(request, outlet, date):
         query = "SELECT trans.invoice_code, trans.created_at::date, ol.outlet_name, cus.customer_type_id AS customer_type, SUM(trans.grand_total::INTEGER) AS total_amount, COALESCE(ret.total_return, 0) AS return_amount , SUM(trans.grand_total::INTEGER) - COALESCE(ret.total_return, 0) as total  FROM tbl_transaction AS trans INNER JOIN tbl_customer AS cus ON cus.cust_code = trans.cust_code_id INNER JOIN tbl_outlet AS ol ON ol.id = trans.outlet_code_id LEFT JOIN (SELECT invoice_code_id, SUM(total_amount::INTEGER) AS total_return FROM tbl_transaction_return GROUP BY invoice_code_id ) AS ret ON trans.invoice_code = ret.invoice_code_id WHERE trans.created_at::date = '"+ date +"' AND ol.id = '"+ outlet +"'GROUP BY trans.invoice_code, trans.created_at, ol.outlet_name, cus.customer_type_id, ret.total_return;"
         cursor.execute(query)
         daily_report = DistinctFetchAll(cursor)
-        return Response(daily_report if daily_report else [])
+        paginator = MyLimitOffsetPagination()
+        paginated_result = paginator.paginate_queryset(daily_report if daily_report else [], request)
+        return paginator.get_paginated_response(paginated_result)
     except Exception as e:
              return Response({"error": str(e)}, status=500)
 
@@ -98,15 +101,28 @@ def DailySaleDetailView(request, invoice_code):
             "item_total": returns.total_amount,
         })
     return Response(data_dict)
- 
 
+# @api_view(['GET'])
+# # @permission_classes([IsAuthenticated, IsReportUser])
+# def SalesReportView(request, start_date, end_date):
+   
+#     parsed_start_date = datetime.strptime(start_date, "%d-%m-%Y").date()
+#     parsed_end_date = datetime.strptime(end_date, "%d-%m-%Y").date()
+#     transactions = (
+#     Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date])
+#     .annotate(till_date=TruncDate('created_at'))
+#     .values('till_date')
+#     .annotate(total_sale=Sum(F('grand_total')))
+#     .order_by('-till_date')
+#     )
+#     return Response(transactions)
 
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsReportUser])
-def SalesReportView(request, start_date, end_date):
+def SalesReportView(request,outlet, start_date, end_date):
    
-    parsed_start_date = datetime.strptime(start_date, "%d-%m-%Y").date()
-    parsed_end_date = datetime.strptime(end_date, "%d-%m-%Y").date()
+    parsed_start_date = datetime.strptime(start_date, '%Y-%m-%d')
+    parsed_end_date = datetime.strptime(end_date, '%Y-%m-%d')
     transactions = (
     Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date])
     .annotate(till_date=TruncDate('created_at'))
@@ -114,7 +130,9 @@ def SalesReportView(request, start_date, end_date):
     .annotate(total_sale=Sum(F('grand_total')))
     .order_by('-till_date')
     )
-    return Response(transactions)
+    paginator = MyLimitOffsetPagination()
+    paginated_result = paginator.paginate_queryset(transactions, request)
+    return paginator.get_paginated_response(paginated_result)
 
 
 @api_view(['GET'])
@@ -126,10 +144,6 @@ def ProfitReportView(request, outlet, date):
     report = DistinctFetchAll(cursor)
 
     profit_report = []
-    TotalQuantity = 0
-    TotalCost = 0
-    Total = 0
-    Profit = 0
     if len(report) > 0:
         for x in range(len(report)):
             data_dict = dict()
@@ -146,7 +160,9 @@ def ProfitReportView(request, outlet, date):
             data_dict["return_quantity"] = int(report[x]["return_quantity"])
             data_dict["return_total"] = report[x]["return_total"]
             profit_report.append(data_dict)
-    return Response(profit_report)
+    paginator = MyLimitOffsetPagination()
+    paginated_result = paginator.paginate_queryset(profit_report, request)
+    return paginator.get_paginated_response(paginated_result)
   
 @api_view(['GET'])
 @permission_classes([IsAuthenticated, IsReportUser])
@@ -174,7 +190,6 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
        get_salesman_commission = Salesman.objects.get(salesman_code=salesman)
     except Salesman.DoesNotExist:
         return Response("Salesman Not Found", status=HTTP_404_NOT_FOUND)
-    
     ## VALIDATE DATE RANGE
     try:
         get_start_date = datetime.strptime(start_date, '%Y-%m-%d')
@@ -185,7 +200,6 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
           return Response("Invalid date format", status=HTTP_400_BAD_REQUEST) 
     transaction_items = TransactionItem.objects.filter(invoice_code__outlet_code_id=outlet, invoice_code__salesman_code_id=salesman,
                                                         created_at__date__range=(get_start_date, get_end_date)).order_by('invoice_item_code')
-    
     ## CREATE A MAP OF SKU THAT USE IN BELOW LOOP
     product_map = {
     product.sku: product for product in Product.objects.filter(sku__in=[item.sku for item in transaction_items])
@@ -210,4 +224,6 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
             "Per(%)": salesman_per,
             "Commission": total_commission,
         })
-    return Response(report_array)
+    paginator = MyLimitOffsetPagination()
+    paginated_result = paginator.paginate_queryset(report_array, request)
+    return paginator.get_paginated_response(paginated_result)

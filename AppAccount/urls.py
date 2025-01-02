@@ -9,6 +9,7 @@ urlpatterns = [
     re_path(r'logout', LogoutView.as_view(), name='LogoutAPI'),
     re_path(r'register_user', CreateUserView.as_view(), name='create_user'),
     re_path(r'delete_user/(?P<user_id>.+)/', UserDeleteAPIView.as_view(), name='delete_user'),
+    re_path(r'admin-change-password/', AdminChangePasswordView.as_view(), name='admin-change-password'),
     ## SYSTEM ROLE URLS
     re_path(r'get-all-permissions', GetPermissionsView, name='GetPermissions'),
     re_path(r'add-system-role/', AddSystemRoleView, name='AddSystemRole'),

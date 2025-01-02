@@ -666,7 +666,7 @@ def AddCategoriesView(request):
 
 
 @api_view(["GET", "PUT", "DELETE"])
-@permission_classes([IsAuthenticated, IsProduct])
+# @permission_classes([IsAuthenticated, IsProduct])
 def GetCategoriesView(request, id):
     try:
         category = Category.objects.get(id=id)
@@ -702,6 +702,7 @@ def GetCategoriesView(request, id):
         attribute_group_array = []
         attribute_type_array = []
 
+
         if category_attribute:
             # Fetch all attribute IDs in a single query
             attribute_ids = [item.attribute_id for item in category_attribute]
@@ -721,7 +722,7 @@ def GetCategoriesView(request, id):
                         "name": attribute.att_type.att_type,
                 
               })
-
+                
         variation_dict["attribute_group"] = attribute_group_array
         variation_dict["att_type"] = attribute_type_array
         return Response(variation_dict)
@@ -843,9 +844,7 @@ def AddSubCategoriesView(request):
 def GetSubCategoriesView(request, id):
     try:
         sub_category = SubCategory.objects.select_related("category").get(id=id)
-        # print(sub_category.category.pc_name.id)
         
-        # sub_category = SubCategory.objects.get(id=id)
     except SubCategory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == "GET":

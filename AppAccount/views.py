@@ -66,9 +66,35 @@ class UserDeleteAPIView(APIView):
             username = User.username
             user.delete()
             return Response(f"User {username} deleted successfully.", status=status.HTTP_204_NO_CONTENT)
-            return Response(f"User {username} deleted successfully.", status=status.HTTP_204_NO_CONTENT)
         except User.DoesNotExist:
             return Response("User not found.", status=status.HTTP_404_NOT_FOUND)
+        
+
+class AdminChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Ensure the requesting user is an admin
+        if not request.user.is_staff:
+            return Response(
+                {"error": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = AdminChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            # Fetch the user
+            user_id = serializer.validated_data['user_id']
+            new_password = serializer.validated_data['new_password']
+            user = User.objects.get(id=user_id)
+
+            user.set_password(new_password)
+            user.save()
+
+            return Response({"message": f"Password for user ID {user_id} has been changed successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
         
 ### FOR PERMISSIONS
 @api_view(['GET'])
