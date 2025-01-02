@@ -10,7 +10,6 @@ from rest_framework.authentication import (
     BaseAuthentication,
 )
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -23,12 +22,6 @@ from AppCustomer.utils import DistinctFetchAll
 from django.db.models import Prefetch
 from rest_framework.exceptions import NotFound
 from django.shortcuts import get_object_or_404
-# def DistinctFetchAll(cursor):
-#     "Returns all rows from a cursor as a dict"
-#     desc = cursor.description
-#     return [dict(zip([col[0] for col in desc], row)) for row in cursor.fetchall()]
-
-
 
 ### FUNCTION THAT CREATE TOKEN WHEN USER IS CREATED
 @receiver(post_save, sender=settings.AUTH_USER_MODEL)
@@ -42,7 +35,6 @@ class MyLimitOffsetPagination(LimitOffsetPagination):
     limit_query_param = "limit"
     offset_query_param = "Starting"
 
-
 ### OUTLET VIEW
 class AddOutletView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
@@ -50,12 +42,10 @@ class AddOutletView(generics.ListCreateAPIView):
     serializer_class = OutletSerializer
     pagination_class = None
 
-
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
     pagination_class = None
-
 
 @api_view(["GET"])
 def FetchOutletView(request):
@@ -65,7 +55,6 @@ def FetchOutletView(request):
         return Response(serializer.data,status=status.HTTP_200_OK)
     return Response(status=status.HTTP_200_OK)
 
-
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
@@ -73,11 +62,9 @@ class AddBrandView(generics.ListCreateAPIView):
     serializer_class = BrandSerializer
     pagination_class = MyLimitOffsetPagination
 
-
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
-
 
 @api_view(["GET"])
 def SearchBrandView(request, code):
@@ -100,12 +87,10 @@ class AddAttributeTypeView(generics.ListCreateAPIView):
     serializer_class = AttributeTypeSerializer
     pagination_class = None
 
-
 class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
     pagination_class = None
-
 
 # ### ATTRIBUTES VIEW
 # class AddAttributeView(generics.ListCreateAPIView):
@@ -157,19 +142,16 @@ class AddHeadCategoryView(generics.ListCreateAPIView):
     serializer_class = HeadCategorySerializer
     pagination_class = None
 
-
 class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = HeadCategory.objects.all().order_by("id")
     serializer_class = HeadCategorySerializer
     pagination_class = None
-
 
 ### PARENT CATEGORY VIEW
 class AddParentCategoryView(generics.ListCreateAPIView):
     queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
     pagination_class = None
-
 
 class ParentCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = ParentCategory.objects.all().order_by("id")
@@ -210,7 +192,6 @@ class AddTemporaryProductView(generics.ListCreateAPIView):
     serializer_class = TempProductSerializer
     pagination_class = None
 
-
 class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
@@ -230,7 +211,7 @@ class AddProduct(generics.ListCreateAPIView):
     queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
     pagination_class = None
-
+    
 
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().order_by("id")
@@ -246,6 +227,7 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
         self.perform_destroy(instance)
         return Response(status="200")
     
+    
 @api_view(['GET'])    
 def ShowAllProductView(request, outlet):
     try:
@@ -255,6 +237,7 @@ def ShowAllProductView(request, outlet):
     products = Product.objects.filter(outlet_id=outlet).distinct('product_name').select_related('outlet', 'brand')
     serializer = ShowAllProductSerializer(products, many=True)
     return Response(serializer.data)
+
 
 @api_view(['GET']) 
 def ShowAllProductDetailView(request, product_id):
@@ -300,7 +283,6 @@ def ShowAllProductDetailView(request, product_id):
             "header_array": product_header_array,
             "detail_array": product_detail_array,
         }
-        
     return Response(param)
 
 
@@ -311,10 +293,8 @@ def BarcodeDataView(request, sku):
     except Outlet.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = ProductSerializer(get_product)
-    
     return Response(serializer.data)
    
-
 
 ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES VIEW
 @api_view(["GET"])
@@ -354,7 +334,6 @@ def FetchVariationView(request, code):
 @api_view(["GET"])
 def GetAllProductView(request):
     cursor = connections["default"].cursor()
-    # query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_name_id = ot.outlet_name "
     query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_id = ot.id"
     cursor.execute(query_employee)
     product_name = DistinctFetchAll(cursor)
@@ -440,6 +419,7 @@ def AddVariationGroupView(request):
                         Dict["variation"] = None
                         array.append(Dict)
         return Response(array)
+    
     if request.method == "POST":
         data = request.data
         for i in range(len(data)):
@@ -482,8 +462,8 @@ def GetVariationGroupView(request, att_id):
             Dict["variation_name"] = None
             array.append(Dict)
         return Response(array)
+    
     elif request.method == "PUT":
-
         data = request.data
         id = data["att_id"]
         try:
@@ -810,9 +790,6 @@ def AddSubCategoriesView(request):
 def GetSubCategoriesView(request, id):
     try:
         sub_category = SubCategory.objects.select_related("category").get(id=id)
-        # print(sub_category.category.pc_name.id)
-        
-        # sub_category = SubCategory.objects.get(id=id)
     except SubCategory.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     if request.method == "GET":
@@ -853,14 +830,9 @@ def GetSubCategoriesView(request, id):
                     attribute_type_array.append({
                         "id": attribute.att_type_id,
                         "name": attribute.att_type.att_type,
-                
               })
-
-                # attribute_group_array.append(attribute.attribute_name)
-                # attribute_type_array.append(attribute.att_type_id)
         sub_category_dict["attribute_group"] = attribute_group_array
         sub_category_dict["att_type"] = attribute_type_array
-        
         return Response(sub_category_dict, status=status.HTTP_200_OK)
 
     elif request.method == "PUT":
@@ -877,7 +849,6 @@ def GetSubCategoriesView(request, id):
 @api_view(["GET"])
 def FetchSubCategoriesView(request, id):
     try:
-        # Fetch the subcategory by ID
         sub_category = SubCategory.objects.get(id=id)
     except SubCategory.DoesNotExist:
         return Response(
@@ -891,9 +862,7 @@ def FetchSubCategoriesView(request, id):
         attribute = sub_cat_attr.attribute
         if not attribute:
             continue
-        # Fetch all variations for the attribute
         variations = Variation.objects.filter(attribute_name_id=attribute.id).values_list('variation_name', flat=True)
-        # Prepare the response dictionary
         response_data.append({
             "id": sub_category.id,
             "sub_category": sub_category.sub_category_name,

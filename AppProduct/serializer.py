@@ -10,17 +10,12 @@ from itertools import product
 import ast
 import json
 
-
-
 DateTime = datetime.datetime.now()
-
 
 ### GET FIRST CHARACTER OF EACH WORD
 def get_initials(name):
     name = "".join([word[0] for word in name.split()])
     return name.upper()
-
-
 ### GET FIRST THREE CHARACTER OF WORD
 def get_first_three_of_first_word(name):  # Check if the string contains spaces
     name = name.split()[0][:3]  # Get the first word and slice the first three characters
@@ -51,7 +46,6 @@ class OutletSerializer(serializers.ModelSerializer):
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        # fields = '__all__'
         fields = ['id','brand_name', 'symbol', 'description', 'status']
 
     def create(self, validated_data):
@@ -86,53 +80,6 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
         attr_type.updated_at = DateTime
         attr_type.save()
         return attr_type
-
-
-# ### ATTRIBUTE SERIALIZER
-# class AttributeSerializer(serializers.ModelSerializer):
-#     attribute_name = serializers.ListField(child=serializers.CharField())
-#
-#     class Meta:
-#         model = Attribute
-#         fields = ['id', 'attribute_name', 'symbol', 'description', 'status', 'att_type']
-#
-#     def create(self, validated_data):
-#         attribute_names = validated_data.get('attribute_name')
-#         # print(attribute_name)
-#         attribute = super().create(validated_data)
-#         attribute.updated_at = None
-#         attribute.created_at = DateTime
-#         attribute.save()
-#         return attribute
-#
-#     def update(self, instance, validated_data):
-#         attribute = super().update(instance, validated_data)
-#         attribute.updated_at = DateTime
-#         attribute.save()
-#         return attribute
-
-
-# ### VARIATION SERIALIZER
-# class VariationSerializer(serializers.ModelSerializer):
-#     # attribute_name = AttributeSerializer('id')
-#     class Meta:
-#         model = Variation
-#         # fields = ['id','variation_name','symbol', 'description', 'status', 'attribute_name']
-#         fields = '__all__'
-#
-#     def create(self, validated_data):
-#         variation = super().create(validated_data)
-#         variation.updated_at = None
-#         variation.created_at = DateTime
-#         variation.save()
-#         return variation
-#
-#     def update(self, instance, validated_data):
-#         variation = super().update(instance, validated_data)
-#         variation.updated_at = DateTime
-#         variation.save()
-#         return variation
-
 
 ### HEAD CATEGORY SERIALIZER
 class HeadCategorySerializer(serializers.ModelSerializer):
@@ -172,7 +119,6 @@ class ParentCategorySerializer(serializers.ModelSerializer):
         p_category.updated_at = DateTime
         p_category.save()
         return p_category
-
 
 ## CATEGORY SERIALIZER
 class CategorySerializer(serializers.ModelSerializer):
@@ -220,22 +166,8 @@ class SubCategorySerializer(serializers.ModelSerializer):
         sub_category = super().update(instance, validated_data)
         return sub_category
 
-
-# class VariationSerializers(serializers.Serializer):
-#     color = serializers.CharField(max_length=100)
-#     size = serializers.CharField(max_length=100)
-
-
-# def is_spec_already_added(specs):
-#     exists = TemporaryProduct.objects.filter(description__icontains=specs).exists()
-#     if exists:
-#            return Response("status=status.HTTP_200_OK")
-#     return False
-
-
 ### TEMPORARY PRODUCT SERIALIZER
 class TempProductSerializer(serializers.ModelSerializer):
-    # color = serializers.ListField(child=serializers.CharField())
     color = serializers.CharField(required=False)
     variations = serializers.CharField(required=False)
 
@@ -259,15 +191,12 @@ class TempProductSerializer(serializers.ModelSerializer):
             for color in parsed_color:
                 if TemporaryProduct.objects.filter(description__iexact=specs, color__iexact=color).exists():
                     raise serializers.ValidationError("The specification " + specs + "-" + color + " is already added.")
-            # if Product.objects.filter(description__iexact=specs).exists():
-            #     raise serializers.ValidationError("The specification " + specs + " is already added in the Product.")
         return data
 
     def create(self, validated_data):
         parent = ''
         get_color = validated_data.get('color')
         get_color = ast.literal_eval(get_color)
-        # get_attribute = validated_data.get('attribute')
         get_variations = validated_data.pop('variations', None)
         get_variations = ast.literal_eval(get_variations)
         outlet = validated_data.get('outlet')
@@ -294,7 +223,6 @@ class TempProductSerializer(serializers.ModelSerializer):
                         for variation in initial_variations:
                             all_variation = list(variation)
                             specs = "-".join(map(str, all_variation))
-                            
                             auto_sku_code = AutoGenerateCodeForModel(TemporaryProduct, 'sku', sku_code + '-')
                             validated_data['sku'] = auto_sku_code
                             validated_data['color'] = get_color[color]
@@ -311,7 +239,6 @@ class TempProductSerializer(serializers.ModelSerializer):
                     validated_data['description'] = specs
                     validated_data['created_at'] = DateTime
                     parent = super().create(validated_data)
-
         return parent
 
     def update(self, instance, validated_data):
@@ -363,7 +290,6 @@ class ProductSerializer(serializers.ModelSerializer):
             validated_data['description'] = tem_product[x].description
             validated_data['notes'] = tem_product[x].notes
             validated_data['color'] = tem_product[x].color
-            # validated_data['size'] = tem_product[x].size
             validated_data['image'] = tem_product[x].image
             validated_data['cost_price'] = tem_product[x].cost_price
             validated_data['selling_price'] = tem_product[x].selling_price
@@ -377,7 +303,6 @@ class ProductSerializer(serializers.ModelSerializer):
                 product_name=tem_product[x].product_name,
                 sku=auto_sku_code,
                 color=tem_product[x].color,
-                # size=tem_product[x].size,
                 avail_quantity=0,
                 created_at=DateTime
             )
@@ -448,57 +373,3 @@ class VariationGroupSerializer(serializers.Serializer):
                     )
                     variation.save()
         return validated_data
-
-# class VariationGroupSerializer(serializers.Serializer):
-#     att_type = serializers.CharField(required=False)
-#     attribute_name = serializers.CharField(required=False)
-#     variation = serializers.ListField(child=serializers.CharField())
-
-#     def create(self, validated_data):
-
-#         get_attribute_name = validated_data.get('attribute_name')
-#         get_variations = validated_data.get('variation')
-#         get_att_type = validated_data.get('att_type')
-#         try:
-#             get_all_att_type = AttributeType.objects.get(att_type=get_att_type)
-#             if get_att_type in get_all_att_type.att_type:
-#                 get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
-#         except:
-
-#             attribute_type = AttributeType(
-#                 att_type=get_att_type,
-#                 status="active",
-#                 created_at=DateTime,
-#             )
-#             attribute_type.save()
-
-#         get_attribute_type_id = AttributeType.objects.get(att_type=get_att_type).id
-#         try:
-#             get_all_attribute = Attribute.objects.get(attribute_name=get_attribute_name)
-#             if get_attribute_name in get_all_attribute.attribute_name:
-#                 get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
-#         except:
-#             attribute = Attribute(
-#                 attribute_name=get_attribute_name,
-#                 att_type_id=get_attribute_type_id,
-#                 status="active",
-#                 created_at=DateTime,
-#             )
-#             attribute.save()
-#         get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
-#         if len(get_variations) > 0:
-#             for variations in range(len(get_variations)):
-#                 variation = Variation(
-#                     variation_name=get_variations[variations],
-#                     attribute_name_id=get_attribute_id,
-#                     status="active",
-#                     created_at=DateTime,
-#                 )
-#                 variation.save()
-#         return validated_data
-
-
-# class ImageModelSerializer(serializers.ModelSerializer):
-#     class Meta:
-#         model = ImageModel
-#         fields = ['id', 'title', 'image', 'uploaded_at']

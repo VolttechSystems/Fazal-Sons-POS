@@ -127,7 +127,6 @@ def GetProductDetailView(request, code, sku):
     invoice_products = DistinctFetchAll(cursor)
     array = []
     if len(invoice_products) > 0:
-        # return_dict = dict()
           for x in range(len(invoice_products)):
             return_dict = dict()
             return_dict["sku"] = invoice_products[x]["sku"]
