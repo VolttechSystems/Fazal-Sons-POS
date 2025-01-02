@@ -834,13 +834,30 @@ def GetSubCategoriesView(request, id):
         )
         attribute_group_array = []
         attribute_type_array = []
-        if len(sub_category_attribute) > 0:
-            for i in range(len(sub_category_attribute)):
-                attribute = Attribute.objects.get(
-                    id=sub_category_attribute[i].attribute_id
-                )
-                attribute_group_array.append(attribute.attribute_name)
-                attribute_type_array.append(attribute.att_type_id)
+        if sub_category_attribute:
+            # Fetch all attribute IDs in a single query
+            attribute_ids = [item.attribute_id for item in sub_category_attribute]
+            attributes = Attribute.objects.filter(id__in=attribute_ids).select_related('att_type')
+
+            # Iterate through fetched attributes
+            for attribute in attributes:
+                # Add to attribute group array
+                attribute_group_array.append({
+                    "att_type": attribute.att_type_id,
+                    "att_type_name": attribute.att_type.att_type,
+                    "id": attribute.id,
+                    "name": attribute.attribute_name,
+                })
+                # Add to attribute type array
+                if attribute.att_type:
+                    attribute_type_array.append({
+                        "id": attribute.att_type_id,
+                        "name": attribute.att_type.att_type,
+                
+              })
+
+                # attribute_group_array.append(attribute.attribute_name)
+                # attribute_type_array.append(attribute.att_type_id)
         sub_category_dict["attribute_group"] = attribute_group_array
         sub_category_dict["att_type"] = attribute_type_array
         
