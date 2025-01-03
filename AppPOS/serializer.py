@@ -71,14 +71,14 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         for sku, quantity in zip(get_sku, get_quantity):
             if sku not in stock_dict:
                 raise serializers.ValidationError(f"Stock not found for SKU: {sku}")
-            stock = stock_dict[sku]
-            available_quantity = int(stock.avail_quantity)
-            requested_quantity = int(quantity)
+            # stock = stock_dict[sku]
+            # available_quantity = int(stock.avail_quantity)
+            # requested_quantity = int(quantity)
 
-            if requested_quantity > available_quantity:
-                raise serializers.ValidationError(
-                    f"The stock quantity for SKU {sku} is {available_quantity}, but {requested_quantity} was requested."
-                )
+            # if requested_quantity > available_quantity:
+            #     raise serializers.ValidationError(
+            #         f"The stock quantity for SKU {sku} is {available_quantity}, but {requested_quantity} was requested."
+            #     )
         if get_advanced_payment == '0':
             ## PAYMENT METHOD
             total_pay = 0
