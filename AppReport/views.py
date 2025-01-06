@@ -392,41 +392,44 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
         })
     return Response(report_array)
 
+from collections import defaultdict
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated, IsReportUser])
 def PaymentMethodReportView(request, date): 
-    transaction = Transaction.objects.filter(created_at__date=date).prefetch_related('payment')
-    payment = PaymentMethod.objects.all()
-    payment_method = dict()
-    for pay in payment:
-        payment_method["id"] = pay.id
-        payment_method["pm_name"] = pay.pm_name
-        payment_method["amount"] = 0
-        
-    for tr in transaction:
-        transaction_payment = TransactionPayment.objects.filter(transaction_id=tr.id)
-        for pay in transaction_payment:
-            payment_method["amount"] += int(pay.amount)
-    return Response(payment_method)
-  
-  
-# @api_view(['GET'])
-# # @permission_classes([IsAuthenticated, IsReportUser])
-# def ProductWiseReturnView(request, outlet, date): 
-#     try:
-#         outlet = Outlet.objects.get(id=outlet)
-#     except Outlet.DoesNotExist:
-#         return Response(status=HTTP_404_NOT_FOUND)
-#     transaction = Transaction.objects.filter(created_at__date=date, quantity__lte=0, outlet_code_id=outlet)
-#     transaction_return = []
-#     for return_item in transaction:
-#         return_dict = dict()
-#         return_dict["invoice_code"] = return_item.invoice_code
-#         return_dict["quantity"] = return_item.quantity.replace("-", "")
-#         return_dict["grand_total"] = str(return_item.grand_total).replace("-", "")
-#         transaction_return.append(return_dict)
-#     return Response(transaction_return)
+
+# Step 1: Fetch all necessary data
+    transactions = Transaction.objects.filter(created_at__date=date).prefetch_related('payment')
+    payment_methods = PaymentMethod.objects.all()
+
+    # Step 2: Initialize payment_method dictionary
+    payment_method_data = [
+        {
+            'id': pay.id,
+            "payment_method": pay.pm_name,
+            "amount": 0,
+        }
+        for pay in payment_methods
+    ]
+
+    # Step 3: Create a mapping of payment IDs to payment_method_data indices for efficient updates
+    payment_id_to_index = {pay['id']: idx for idx, pay in enumerate(payment_method_data)}
+
+    # Step 4: Aggregate transaction payments
+    transaction_payments = TransactionPayment.objects.filter(transaction__in=transactions)
+
+    # Use a dictionary to group payment amounts
+    payment_totals = defaultdict(int)
+    for tp in transaction_payments:
+        payment_totals[tp.payment_id] += int(tp.amount)
+
+    # Step 5: Update the payment_method_data with aggregated amounts
+    for payment_id, total_amount in payment_totals.items():
+        if payment_id in payment_id_to_index:
+            payment_method_data[payment_id_to_index[payment_id]]["amount"] = total_amount
+    return Response(payment_method_data)
+    # payment_method_data now contains the updated amounts
+
 
 
 @api_view(['GET'])
