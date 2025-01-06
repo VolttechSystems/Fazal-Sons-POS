@@ -411,6 +411,24 @@ def PaymentMethodReportView(request, date):
     return Response(payment_method)
   
   
+# @api_view(['GET'])
+# # @permission_classes([IsAuthenticated, IsReportUser])
+# def ProductWiseReturnView(request, outlet, date): 
+#     try:
+#         outlet = Outlet.objects.get(id=outlet)
+#     except Outlet.DoesNotExist:
+#         return Response(status=HTTP_404_NOT_FOUND)
+#     transaction = Transaction.objects.filter(created_at__date=date, quantity__lte=0, outlet_code_id=outlet)
+#     transaction_return = []
+#     for return_item in transaction:
+#         return_dict = dict()
+#         return_dict["invoice_code"] = return_item.invoice_code
+#         return_dict["quantity"] = return_item.quantity.replace("-", "")
+#         return_dict["grand_total"] = str(return_item.grand_total).replace("-", "")
+#         transaction_return.append(return_dict)
+#     return Response(transaction_return)
+
+
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated, IsReportUser])
 def ProductWiseReturnView(request, outlet, date): 
@@ -418,15 +436,20 @@ def ProductWiseReturnView(request, outlet, date):
         outlet = Outlet.objects.get(id=outlet)
     except Outlet.DoesNotExist:
         return Response(status=HTTP_404_NOT_FOUND)
+    
     transaction = Transaction.objects.filter(created_at__date=date, quantity__lte=0, outlet_code_id=outlet)
     transaction_return = []
+
     for return_item in transaction:
-        return_dict = dict()
-        return_dict["invoice_code"] = return_item.invoice_code
-        return_dict["quantity"] = return_item.quantity.replace("-", "")
-        return_dict["grand_total"] = str(return_item.grand_total).replace("-", "")
+        return_dict = {
+            "invoice_code": return_item.invoice_code,
+            "quantity": str(return_item.quantity).replace("-", ""),  # Ensure it's a string before replacing
+            "grand_total": str(return_item.grand_total).replace("-", ""),  # Ensure it's a string before replacing
+        }
         transaction_return.append(return_dict)
+    
     return Response(transaction_return)
+
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated, IsReportUser])
