@@ -392,17 +392,19 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
         })
     return Response(report_array)
 
+
 from collections import defaultdict
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated, IsReportUser])
-def PaymentMethodReportView(request, date): 
-
-# Step 1: Fetch all necessary data
-    transactions = Transaction.objects.filter(created_at__date=date).prefetch_related('payment')
+def PaymentMethodReportView(request, outlet,date): 
+    try:
+        get_outlet = Outlet.objects.get(id=outlet)
+    except Outlet.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
+    transactions = Transaction.objects.filter(created_at__date=date, outlet_code_id=outlet).prefetch_related('payment')
     payment_methods = PaymentMethod.objects.all()
 
-    # Step 2: Initialize payment_method dictionary
     payment_method_data = [
         {
             'id': pay.id,
@@ -412,24 +414,22 @@ def PaymentMethodReportView(request, date):
         for pay in payment_methods
     ]
 
-    # Step 3: Create a mapping of payment IDs to payment_method_data indices for efficient updates
+    #### Create a mapping of payment IDs to payment_method_data indices for efficient updates
     payment_id_to_index = {pay['id']: idx for idx, pay in enumerate(payment_method_data)}
 
-    # Step 4: Aggregate transaction payments
+    #### Aggregate transaction payments
     transaction_payments = TransactionPayment.objects.filter(transaction__in=transactions)
 
-    # Use a dictionary to group payment amounts
+    #### Use a dictionary to group payment amounts
     payment_totals = defaultdict(int)
     for tp in transaction_payments:
         payment_totals[tp.payment_id] += int(tp.amount)
 
-    # Step 5: Update the payment_method_data with aggregated amounts
+
     for payment_id, total_amount in payment_totals.items():
         if payment_id in payment_id_to_index:
             payment_method_data[payment_id_to_index[payment_id]]["amount"] = total_amount
     return Response(payment_method_data)
-    # payment_method_data now contains the updated amounts
-
 
 
 @api_view(['GET'])
