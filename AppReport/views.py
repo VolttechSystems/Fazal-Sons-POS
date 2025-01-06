@@ -410,3 +410,43 @@ def PaymentMethodReportView(request, date):
             payment_method["amount"] += int(pay.amount)
     return Response(payment_method)
   
+  
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated, IsReportUser])
+def ProductWiseReturnView(request, outlet, date): 
+    transaction = Transaction.objects.filter(created_at__date=date, quantity__lt=0)
+    transaction_return = []
+    for return_item in transaction:
+        return_dict = dict()
+        return_dict["invoice_code"] = return_item.invoice_code
+        return_dict["quantity"] = return_item.quantity.replace("-", "")
+        return_dict["grand_total"] = str(return_item.grand_total).replace("-", "")
+        transaction_return.append(return_dict)
+    return Response(transaction_return)
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated, IsReportUser])
+def ProductWiseReturnDetailView(request, invoice_code): 
+    
+    transaction_return = TransactionItem.objects.filter(invoice_code_id=invoice_code)
+    product_map = {
+        product.sku : product for product in Product.objects.filter(sku__in=[item.sku for item in transaction_return])
+    }
+    
+    transaction_return_detail = []
+    for return_item in transaction_return:
+        
+        product = product_map.get(return_item.sku)
+        print(product.product_name)
+        quantity =  int(return_item.quantity.replace("-", ""))
+        product_dict = dict()
+        product_dict["product"] = product.product_name if product else None
+        product_dict["variation"] = product.description if product else None
+        product_dict["sku"] = return_item.sku
+        product_dict["quantity"] = quantity
+        product_dict["rate"] = int(return_item.rate)
+        product_dict["discount"] = int(return_item.discounted_value.replace("-", ""))
+        product_dict["total"] = int(return_item.rate) *  quantity + int(return_item.discounted_value)
+        transaction_return_detail.append(product_dict)
+
+    return Response(transaction_return_detail)

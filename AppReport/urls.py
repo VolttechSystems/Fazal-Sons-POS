@@ -11,4 +11,7 @@ urlpatterns = [
     re_path(r'/outlet_wise_salesman/(?P<outlet>.+)/', OutletWiseSalesmanView, name='OutletWiseSalesman'),        ## GET SALESMAN ACCORDING TO OUTLET
     re_path(r'/salesman_commission_report/(?P<outlet>.+)/(?P<salesman>.+)/(?P<start_date>.+)/(?P<end_date>.+)/', SalesmanCommissionReportView, name='SalesmanCommissionReport'),## SALESMAN COMMISSION REPORT
     re_path(r'/payment-method-report/(?P<date>.+)/', PaymentMethodReportView, name='PaymentMethodReport'),  
+    #### PRODUCT WISE RETURN REPORT 
+    re_path(r'product-wise-return/(?P<outlet>.+)/(?P<date>.+)', ProductWiseReturnView, name='ProductWiseReturn'),  
+    re_path(r'product-wise-return-detail/(?P<invoice_code>.+)/', ProductWiseReturnDetailView, name='ProductWiseReturnDetail'),  
 ]

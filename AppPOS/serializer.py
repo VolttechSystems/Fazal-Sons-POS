@@ -59,7 +59,6 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_overall_discount = validated_data.get('overall_discount')
         get_item_discount = validated_data.get('item_discount')
         get_advanced_payment = validated_data.get('advanced_payment')
-        print(get_advanced_payment)
         
         len_sku = len(get_sku)
         if len_sku == 0:
@@ -70,28 +69,9 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 
         for sku, quantity in zip(get_sku, get_quantity):
             if sku not in stock_dict:
-                raise serializers.ValidationError(f"Stock not found for SKU: {sku}")
-            # stock = stock_dict[sku]
-            # available_quantity = int(stock.avail_quantity)
-            # requested_quantity = int(quantity)
-
-            # if requested_quantity > available_quantity:
-            #     raise serializers.ValidationError(
-            #         f"The stock quantity for SKU {sku} is {available_quantity}, but {requested_quantity} was requested."
-            #     )
-        if get_advanced_payment == '0':
-            ## PAYMENT METHOD
-            total_pay = 0
-            for payment in get_pm_amount:
-                total_pay += int(payment)
-        
-            ## ADDITIONAL FEE
-            total_fee = 0
-            for fee in get_additional_fee:
-                total_fee += int(fee)
-        
+                raise serializers.ValidationError(f"Stock not found for SKU: {sku}")        
             ## GRAND TOTAL CALCULATION
-            total, Gross_total, item_wise_discount, discount_amount, total_discount = 0,0,0,0,0
+            total, Gross_total, item_wise_discount, discount_amount, total_discount,total_quantity = 0,0,0,0,0,0
             for item in range(len_sku):
                     quantity = int(get_quantity[item])
                     rate = int(get_rate[item])
@@ -99,14 +79,25 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     item_discount_per = int(get_item_discount[item].strip())
                     item_discount = int(item_discount_per * item_gross_total / 100)
                     item_total = item_gross_total - item_discount
-                    Gross_total += int(item_gross_total)
-                    
-            if get_overall_discount != 0:
-                    discount_amount = int(int(get_overall_discount) * int(Gross_total) / 100)
-            total = Gross_total - discount_amount
-            Grand_total = total + total_fee
-            if total_pay != Grand_total:
-                raise serializers.ValidationError(f"Payable Amount is {Grand_total} and you add {total_pay} in the Payment Method")        
+                    Gross_total += int(item_total)
+                    total_quantity += quantity
+            if total_quantity > 0:
+                if get_advanced_payment == '0':
+                    ## PAYMENT METHOD
+                    total_pay = 0
+                    for payment in get_pm_amount:
+                        total_pay += int(payment)
+                
+                    ## ADDITIONAL FEE
+                    total_fee = 0
+                    for fee in get_additional_fee:
+                        total_fee += int(fee)
+                if get_overall_discount != 0:
+                        discount_amount = int(int(get_overall_discount) * int(Gross_total) / 100)
+                total = Gross_total - discount_amount
+                Grand_total = total + total_fee
+                if total_pay != Grand_total:
+                    raise serializers.ValidationError(f"Payable Amount is {Grand_total} and you add {total_pay} in the Payment Method")        
         return validated_data
 
   
