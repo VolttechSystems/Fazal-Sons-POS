@@ -418,7 +418,7 @@ def ProductWiseReturnView(request, outlet, date):
         outlet = Outlet.objects.get(id=outlet)
     except Outlet.DoesNotExist:
         return Response(status=HTTP_404_NOT_FOUND)
-    transaction = Transaction.objects.filter(created_at__date=date, quantity__lt=0, outlet_code_id=outlet)
+    transaction = Transaction.objects.filter(created_at__date=date, quantity__lte=0, outlet_code_id=outlet)
     transaction_return = []
     for return_item in transaction:
         return_dict = dict()
