@@ -414,7 +414,11 @@ def PaymentMethodReportView(request, date):
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated, IsReportUser])
 def ProductWiseReturnView(request, outlet, date): 
-    transaction = Transaction.objects.filter(created_at__date=date, quantity__lt=0)
+    try:
+        outlet = Outlet.objects.get(id=outlet)
+    except Outlet.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
+    transaction = Transaction.objects.filter(created_at__date=date, quantity__lt=0, outlet_code_id=outlet)
     transaction_return = []
     for return_item in transaction:
         return_dict = dict()
