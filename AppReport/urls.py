@@ -13,6 +13,6 @@ urlpatterns = [
     re_path(r'/payment-method-report/(?P<date>.+)/', PaymentMethodReportView, name='PaymentMethodReport'),  
     #### PRODUCT WISE RETURN REPORT 
     # re_path(r'/product-wise-returns/(?P<outlet>.+)/(?P<date>.+)/', ProductWiseReturnView, name='ProductWiseReturn'),  
-    re_path(r'/product-wise-returns/', ProductWiseReturnView, name='ProductWiseReturn'),  
+    re_path(r'/product-wise-returns/(?P<outlet>.+)/(?P<date>.+)/', ProductWiseReturnView, name='ProductWiseReturn'),  
     re_path(r'/product-wise-return-detail/(?P<invoice_code>.+)/', ProductWiseReturnDetailView, name='ProductWiseReturnDetail'),  
 ]

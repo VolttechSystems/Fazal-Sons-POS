@@ -431,24 +431,25 @@ def PaymentMethodReportView(request, date):
 
 @api_view(['GET'])
 # @permission_classes([IsAuthenticated, IsReportUser])
-# def ProductWiseReturnView(request, outlet, date): 
-def ProductWiseReturnView(request): 
-    # try:
-    #     outlet = Outlet.objects.get(id=outlet)
-    # except Outlet.DoesNotExist:
-    #     return Response(status=HTTP_404_NOT_FOUND)
+def ProductWiseReturnView(request, outlet, date): 
+    try:
+        get_outlet = Outlet.objects.get(id=outlet)
+    except Outlet.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
     
-    transaction = Transaction.objects.filter(quantity__lte='0')
+    cursor = connections['default'].cursor()
+    query = "SELECT * FROM tbl_transaction where quantity::INTEGER < '0' and created_at::date = '"+ date +"' and outlet_code_id = '"+ outlet +"'"
+    cursor.execute(query)
+    transaction = DistinctFetchAll(cursor)
     transaction_return = []
 
     for return_item in transaction:
         return_dict = {
-            "invoice_code": return_item.invoice_code,
-            "quantity": str(return_item.quantity).replace("-", ""),  # Ensure it's a string before replacing
-            "grand_total": str(return_item.grand_total).replace("-", ""),  # Ensure it's a string before replacing
+            "invoice_code": return_item['invoice_code'],
+            "quantity": str(return_item['quantity']).replace("-", ""),  # Ensure it's a string before replacing
+            "grand_total": str(return_item['grand_total']).replace("-", ""),  # Ensure it's a string before replacing
         }
         transaction_return.append(return_dict)
-    
     return Response(transaction_return)
 
 
