@@ -222,6 +222,7 @@ def DailySaleDetailView(request, invoice_code):
     data_dict["status"] = transaction.status
     data_dict["items"] = []
     data_dict["returns"] = []
+    data_dict["additional_fee"] = []
     data_dict["Payment"] = []
     transaction_payment = TransactionPayment.objects.filter(transaction_id=transaction.id).select_related('payment')
     for payment in transaction_payment:
@@ -229,6 +230,15 @@ def DailySaleDetailView(request, invoice_code):
             "payment_method": payment.payment.pm_name if payment.payment else None,
             "amount": payment.amount,
         })
+        
+    ## ADDITIONAL FEE    
+    transaction_additional_fee = FeeRecord.objects.filter(transaction_id_id=transaction.id).select_related('fee_type')
+    for fee in transaction_additional_fee:
+        data_dict["additional_fee"].append({
+            "fee_method": fee.fee_type.fee_name if fee.fee_type else None,
+            "fee": fee.fee,
+        })
+    ## CREATE
     ## CREATE A MAP OF SKU THAT USE IN BELOW BOTH LOOPS
     product_map = {
         product.sku : product for product in Product.objects.filter(sku__in=[item.sku for item in transaction_items])
@@ -381,3 +391,22 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
             "Commission": total_commission,
         })
     return Response(report_array)
+
+
+@api_view(['GET'])
+# @permission_classes([IsAuthenticated, IsReportUser])
+def PaymentMethodReportView(request, date): 
+    transaction = Transaction.objects.filter(created_at__date=date).prefetch_related('payment')
+    payment = PaymentMethod.objects.all()
+    payment_method = dict()
+    for pay in payment:
+        payment_method["id"] = pay.id
+        payment_method["pm_name"] = pay.pm_name
+        payment_method["amount"] = 0
+        
+    for tr in transaction:
+        transaction_payment = TransactionPayment.objects.filter(transaction_id=tr.id)
+        for pay in transaction_payment:
+            payment_method["amount"] += int(pay.amount)
+    return Response(payment_method)
+  

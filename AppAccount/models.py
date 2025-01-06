@@ -41,7 +41,7 @@ class UserProfile(models.Model):
         db_table = "tbl_user_profile"
 
     def __str__(self):
-        return f"{self.user.username}'s Profile"
+        return self.user.username
     
     
 

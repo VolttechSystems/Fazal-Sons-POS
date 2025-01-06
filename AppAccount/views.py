@@ -31,7 +31,15 @@ class LoginAPIView(APIView):
         
         if user_obj.is_active:
             token, created = Token.objects.get_or_create(user=user_obj)
-            return Response({"token": token.key}, status=status.HTTP_200_OK)
+            user_profile = UserProfile.objects.get(user_id=user_obj.id)
+            system_role_names = user_profile.system_roles.values('id','sys_role_name')
+            system_role =[]
+            for role in system_role_names:
+                system_role.append({
+                    'id':role['id'],
+                    'sys_role_name':role['sys_role_name']
+                })
+            return Response({"token": token.key, "System_role": system_role}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST)
 
