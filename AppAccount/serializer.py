@@ -2,6 +2,8 @@ from rest_framework import serializers
 import datetime
 from django.contrib.auth import get_user_model
 from .models import *
+from django.contrib.auth.models import User
+from django.contrib.auth.password_validation import validate_password
 UserModel = get_user_model()
 DateTime = datetime.datetime.now()
 
@@ -82,3 +84,13 @@ class FetchSystemRoleSerializer(serializers.ModelSerializer):
         fields = ['id', 'sys_role_name']
 
     
+class AdminChangePasswordSerializer(serializers.Serializer):
+    user_id = serializers.IntegerField(required=True)
+    new_password = serializers.CharField(required=True, validators=[validate_password])
+
+    def validate_user_id(self, value):
+        try:
+            User.objects.get(id=value)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User does not exist.")
+        return value

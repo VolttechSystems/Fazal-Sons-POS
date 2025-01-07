@@ -82,6 +82,31 @@ def GetPermissionsView(request):
         serializer = PermissionSerializer(permission, many=True)
         return Response(serializer.data)
 
+class AdminChangePasswordView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        # Ensure the requesting user is an admin
+        if not request.user.is_staff:
+            return Response(
+                {"error": "You do not have permission to perform this action."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        serializer = AdminChangePasswordSerializer(data=request.data)
+        if serializer.is_valid():
+            # Fetch the user
+            user_id = serializer.validated_data['user_id']
+            new_password = serializer.validated_data['new_password']
+            user = User.objects.get(id=user_id)
+
+            user.set_password(new_password)
+            user.save()
+
+            return Response({"message": f"Password for user {user} has been changed successfully."}, status=status.HTTP_200_OK)
+
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
     
 @api_view(['GET', 'POST'])
 def AddSystemRoleView(request):
