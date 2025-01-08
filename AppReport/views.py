@@ -288,7 +288,7 @@ def SalesReportView(request,outlet, start_date, end_date):
 #     .order_by('-till_date')
 # )
     cursor = connections['default'].cursor()
-    transaction = "select created_at::date, sum(grand_total) from tbl_transaction where grand_total::INTEGER > 0 and outlet_code_id = '"+ outlet +"' and created_at::date BETWEEN '"+ str(parsed_start_date) +"' and '" + str(parsed_end_date) +"'  GROUP BY created_at::date"
+    transaction = "select created_at::date, sum(grand_total::INTEGER ) from tbl_transaction where grand_total::INTEGER > 0 and outlet_code_id = '"+ outlet +"' and created_at::date BETWEEN '"+ str(parsed_start_date) +"' and '" + str(parsed_end_date) +"'  GROUP BY created_at::date"
     cursor.execute(transaction)
     report = DistinctFetchAll(cursor)
     return Response(report)
