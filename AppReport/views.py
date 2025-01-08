@@ -361,7 +361,7 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
             return Response("Invalid date range", status=HTTP_400_BAD_REQUEST)
     except ValueError:
           return Response("Invalid date format", status=HTTP_400_BAD_REQUEST) 
-    transaction_items = TransactionItem.objects.filter(invoice_code__outlet_code_id=outlet, invoice_code__salesman_code_id=salesman,
+    transaction_items = TransactionItem.objects.filter(invoice_code__outlet_code_id=outlet, invoice_code__salesman_code_id=salesman,  quantity__gt=0,
                                                         created_at__date__range=(get_start_date, get_end_date)).order_by('invoice_item_code')
     
     ## CREATE A MAP OF SKU THAT USE IN BELOW LOOP
