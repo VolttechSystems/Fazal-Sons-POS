@@ -257,6 +257,7 @@ def ShowAllProductDetailView(request, product_id):
     if products.exists:
             product = products[0]  ### Fetch the first product
             product_dict = {
+             
                 "product_name": product.product_name,
                 "outlet": product.outlet.outlet_name if product.outlet else None,
                 "head_category": getattr(product.category.pc_name.hc_name, 'hc_name', None) if product.category else None,
@@ -268,6 +269,7 @@ def ShowAllProductDetailView(request, product_id):
     ### OTHER DETAIL
     for product in products:
         product_detail_array.append({
+            'id': product.id,
             "description": product.description,
             "color": product.color,
             "sku": product.sku,
