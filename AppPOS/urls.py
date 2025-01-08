@@ -30,3 +30,6 @@ urlpatterns = [
          
 ]
 
+
+##### outlet wise product list in transaction
+

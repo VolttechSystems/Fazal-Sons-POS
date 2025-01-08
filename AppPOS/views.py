@@ -91,7 +91,7 @@ class TransactionReturnView(generics.CreateAPIView):
 
 @api_view(['GET'])
 def GetAllInvoicesView(request, outlet):
-    Invoices = Transaction.objects.filter(outlet_code_id=outlet).values('invoice_code').order_by('invoice_code')
+    Invoices = Transaction.objects.filter(outlet_code_id=outlet, quantity__gt=0).values('invoice_code').order_by('invoice_code')
     invoices_array = []
     for invoice in Invoices:
             try:
