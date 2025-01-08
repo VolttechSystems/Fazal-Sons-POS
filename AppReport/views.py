@@ -364,7 +364,7 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
     # transaction_items = TransactionItem.objects.filter(invoice_code__outlet_code_id=outlet, invoice_code__salesman_code_id=salesman,  quantity__gt=0,
     #                                                     created_at__date__range=(get_start_date, get_end_date)).order_by('invoice_item_code')
     cursor = connections['default'].cursor()
-    query = "SELECT * FROM tbl_transaction_item ti INNER JOIN tbl_transaction t ON ti.invoice_code_id = t.invoice_code WHERE t.outlet_code_id = '"+ outlet +"' AND t.salesman_code_id = '"+ salesman +"' AND ti.quantity::INTEGER > 0 AND ti.created_at::date BETWEEN '"+ str(get_start_date) +"' AND '"+ str(get_end_date) +"' ORDER BY ti.invoice_item_code;"
+    query = "SELECT *, ti.created_at::date FROM tbl_transaction_item ti INNER JOIN tbl_transaction t ON ti.invoice_code_id = t.invoice_code WHERE t.outlet_code_id = '"+ outlet +"' AND t.salesman_code_id = '"+ salesman +"' AND ti.quantity::INTEGER > 0 AND ti.created_at::date BETWEEN '"+ str(get_start_date) +"' AND '"+ str(get_end_date) +"' ORDER BY ti.invoice_item_code;"
     cursor.execute(query)
     transaction_items = DistinctFetchAll(cursor)
     
