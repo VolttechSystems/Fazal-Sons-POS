@@ -279,16 +279,16 @@ def SalesReportView(request,outlet, start_date, end_date):
    
     parsed_start_date = datetime.strptime(start_date, '%Y-%m-%d')
     parsed_end_date = datetime.strptime(end_date, '%Y-%m-%d')
-#     transactions = (
-#     Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date], outlet_code_id=outlet, quantity__gt=0)
-#     .annotate(till_date=TruncDate('created_at'))
-#     .annotate(grand_total_casted=Cast(F('grand_total'), output_field=IntegerField()))
-#     .values('till_date')
-#     .annotate(total_sale=Sum('grand_total_casted'))
-#     .order_by('-till_date')
+    # transactions = (
+    # Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date], outlet_code_id=outlet, quantity__gt=0)
+    # .annotate(till_date=TruncDate('created_at'))
+    # .annotate(grand_total_casted=Cast(F('grand_total'), output_field=IntegerField()))
+    # .values('till_date')
+    # .annotate(total_sale=Sum('grand_total_casted'))
+    # .order_by('-till_date')
 # )
     cursor = connections['default'].cursor()
-    transaction = "select created_at::date, sum(grand_total::INTEGER ) from tbl_transaction where grand_total::INTEGER > 0 and outlet_code_id = '"+ outlet +"' and created_at::date BETWEEN '"+ str(parsed_start_date) +"' and '" + str(parsed_end_date) +"'  GROUP BY created_at::date"
+    transaction = "select created_at::date as till_date, sum(grand_total::INTEGER)  as total_sale from tbl_transaction where grand_total::INTEGER > 0 and outlet_code_id = '"+ outlet +"' and created_at::date BETWEEN '"+ str(parsed_start_date) +"' and '" + str(parsed_end_date) +"'  GROUP BY created_at::date"
     cursor.execute(transaction)
     report = DistinctFetchAll(cursor)
     return Response(report)
