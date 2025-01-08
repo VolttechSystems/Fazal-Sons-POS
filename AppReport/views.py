@@ -344,7 +344,7 @@ def OutletWiseSalesmanView(request, outlet):
 def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date):
     ## CHECK THAT OUTLET EXISTS
     try:
-        outlet =Outlet.objects.get(id=outlet)
+        get_outlet =Outlet.objects.get(id=outlet)
     except Outlet.DoesNotExist:
         return Response("Outlet Not Found", status=HTTP_404_NOT_FOUND)
     ## CHECK THAT SALESMAN EXISTS
@@ -361,33 +361,58 @@ def SalesmanCommissionReportView(request, outlet, salesman, start_date, end_date
             return Response("Invalid date range", status=HTTP_400_BAD_REQUEST)
     except ValueError:
           return Response("Invalid date format", status=HTTP_400_BAD_REQUEST) 
-    transaction_items = TransactionItem.objects.filter(invoice_code__outlet_code_id=outlet, invoice_code__salesman_code_id=salesman,  quantity__gt=0,
-                                                        created_at__date__range=(get_start_date, get_end_date)).order_by('invoice_item_code')
+    # transaction_items = TransactionItem.objects.filter(invoice_code__outlet_code_id=outlet, invoice_code__salesman_code_id=salesman,  quantity__gt=0,
+    #                                                     created_at__date__range=(get_start_date, get_end_date)).order_by('invoice_item_code')
+    cursor = connections['default'].cursor()
+    query = "SELECT * FROM tbl_transaction_item ti INNER JOIN tbl_transaction t ON ti.invoice_code_id = t.invoice_code WHERE t.outlet_code_id = '"+ outlet +"' AND t.salesman_code_id = '"+ salesman +"' AND ti.quantity::INTEGER > 0 AND ti.created_at::date BETWEEN '"+ str(get_start_date) +"' AND '"+ str(get_end_date) +"' ORDER BY ti.invoice_item_code;"
+    cursor.execute(query)
+    transaction_items = DistinctFetchAll(cursor)
+    
+    
     
     ## CREATE A MAP OF SKU THAT USE IN BELOW LOOP
     product_map = {
-    product.sku: product for product in Product.objects.filter(sku__in=[item.sku for item in transaction_items])
+    product.sku: product for product in Product.objects.filter(sku__in=[item["sku"] for item in transaction_items])
     }
+    # product_map = {
+    # product.sku: product for product in Product.objects.filter(sku__in=[item.sku for item in transaction_items])
+    # }
     
     report_array = []
     for items in transaction_items:
-   
-        product = product_map.get(items.sku)
+        product = product_map.get(items["sku"])
         salesman_per = int(get_salesman_commission.retail_commission)
-        total_commission =  int(int(items.item_total) / 100 * salesman_per)
+        total_commission =  int(int(items["item_total"]) / 100 * salesman_per)
         report_array.append({
-            "till_date": items.created_at.date(),
-            "invoice": items.invoice_code_id,
-            "sku": items.sku,
+            "till_date": items['created_at'],
+            "invoice": items["invoice_code_id"],
+            "sku": items["sku"],
             "product": product.product_name if product else None,
-            "quantity": items.quantity,
-            "Price": items.rate,
-            "gross_total": items.gross_total,
-            "discount": items.discounted_value,
-            "total": items.item_total,
+            "quantity": items["quantity"],
+            "Price": items["rate"],
+            "gross_total": items['gross_total'],
+            "discount": items['discounted_value'],
+            "total": items['item_total'],
             "Per(%)": salesman_per,
             "Commission": total_commission,
         })
+   
+        # product = product_map.get(items.sku)
+        # salesman_per = int(get_salesman_commission.retail_commission)
+        # total_commission =  int(int(items.item_total) / 100 * salesman_per)
+        # report_array.append({
+        #     "till_date": items.created_at.date(),
+        #     "invoice": items.invoice_code_id,
+        #     "sku": items.sku,
+        #     "product": product.product_name if product else None,
+        #     "quantity": items.quantity,
+        #     "Price": items.rate,
+        #     "gross_total": items.gross_total,
+        #     "discount": items.discounted_value,
+        #     "total": items.item_total,
+        #     "Per(%)": salesman_per,
+        #     "Commission": total_commission,
+        # })
     return Response(report_array)
 
 
