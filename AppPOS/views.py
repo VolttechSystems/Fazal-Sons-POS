@@ -10,6 +10,7 @@ from django.db.models.functions import Coalesce
 from AppProduct.models import *
 from .permissions import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from django.db.models import Value, FloatField
 from django.db.models.functions import Cast
 
 @api_view(['GET'])
