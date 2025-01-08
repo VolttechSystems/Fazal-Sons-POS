@@ -10,7 +10,7 @@ from django.db.models.functions import Coalesce
 from AppProduct.models import *
 from .permissions import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
-
+from django.db.models.functions import Cast
 
 @api_view(['GET'])
 def AllProductView(request):
@@ -91,7 +91,15 @@ class TransactionReturnView(generics.CreateAPIView):
 
 @api_view(['GET'])
 def GetAllInvoicesView(request, outlet):
-    Invoices = Transaction.objects.filter(outlet_code_id=outlet, quantity__gt=0).values('invoice_code').order_by('invoice_code')
+    # Invoices = Transaction.objects.filter(outlet_code_id=outlet, quantity__gt=0).values('invoice_code').order_by('invoice_code')
+    Invoices = (
+    Transaction.objects.annotate(
+        quantity_as_float=Cast('quantity', FloatField())
+    )
+    .filter(outlet_code_id=outlet, quantity_as_float__gt=0)
+    .values('invoice_code')
+    .order_by('invoice_code')
+)
     invoices_array = []
     for invoice in Invoices:
             try:
