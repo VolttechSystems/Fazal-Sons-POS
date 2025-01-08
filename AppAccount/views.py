@@ -37,7 +37,8 @@ class LoginAPIView(APIView):
             for role in system_role_names:
                 system_role.append({
                     'id':role['id'],
-                    'sys_role_name':role['sys_role_name']
+                    'sys_role_name':role['sys_role_name'],
+                    'permissions':user_profile.system_roles.get(id=role['id']).permissions.values('id','permission_name')
                 })
             return Response({"token": token.key, "System_role": system_role}, status=status.HTTP_200_OK)
         else:
