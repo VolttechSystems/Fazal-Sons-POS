@@ -1,7 +1,6 @@
 from django.urls import re_path
 from .views import*
 
-
 urlpatterns = [
         ### ADDITIONAL FEE URL
         re_path(r'add_additional_fee', AddAdditionalFeeView.as_view(), name='AddAdditionalFee'),
