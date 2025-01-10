@@ -14,8 +14,12 @@ from django.db.models import Value, FloatField
 from django.db.models.functions import Cast
 
 @api_view(['GET'])
-def AllProductView(request):
-    product = Product.objects.all()
+def AllProductView(request, outlet):
+    try:
+        get_outlet = Outlet.objects.get(id=outlet)
+    except Outlet.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
+    product = Product.objects.filter(outlet_id=outlet)
     array = []
     if product.exists():
         for i in range(len(product)):
