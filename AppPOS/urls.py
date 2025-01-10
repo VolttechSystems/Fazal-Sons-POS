@@ -12,7 +12,8 @@ urlpatterns = [
         re_path(r'add_payment', AddPaymentView.as_view(), name='AddPayment'),
         re_path(r'action_payment/(?P<pk>.+)/', GetPaymentView.as_view(), name='GetPayment'),
         ### TRANSACTION URL
-        re_path(r'all_product/(?P<outlet>.+)/', AllProductView, name='AllProduct'),
+        # re_path(r'all_product/(?P<outlet>.+)/', AllProductView, name='AllProduct'),
+        re_path(r'all_product', AllProductView, name='AllProduct'),
         re_path(r'products_detail/(?P<code>.+)/', ProductDetailView, name='ProductDetail'),
         re_path(r'add_transaction', AddTransactionView.as_view(), name='AddTransaction'),
         ### TRANSACTION RETURN URL
