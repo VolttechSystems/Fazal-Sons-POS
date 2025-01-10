@@ -7,7 +7,6 @@ from django.contrib.auth.password_validation import validate_password
 UserModel = get_user_model()
 DateTime = datetime.datetime.now()
 
-
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     phone_number = serializers.CharField(required=False, allow_blank=True)
