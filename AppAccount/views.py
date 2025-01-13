@@ -14,9 +14,10 @@ from .serializer import *
 
 ## Login View 
 class LoginAPIView(APIView):
+    permission_classes = [AllowAny] 
 
     def post(self, request):
-        permission_classes = [AllowAny] 
+        
         data = request.data
         serializer = LoginSerializers(data=data)
         if not serializer.is_valid():
