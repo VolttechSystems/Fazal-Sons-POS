@@ -234,8 +234,16 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         return validated_data
 
 
+class OutletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Outlet
+        fields = ['id', 'outlet_name', 'outlet_code']
+        
+
+
 ### SALESMAN SERIALIZER
 class AddSalesmanSerializer(serializers.ModelSerializer):
+    outlet = OutletSerializer(many=True, read_only=True)
     class Meta:
         model = Salesman
         fields = ['id', 'salesman_code','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission', 'outlet']

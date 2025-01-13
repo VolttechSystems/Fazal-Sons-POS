@@ -8,7 +8,8 @@ from AppProduct.models import *
 class Salesman(models.Model):
     salesman_code = models.CharField(max_length=100, null=True, unique=True) # SL-1
     salesman_name = models.CharField(max_length=100, null=True, blank=True)
-    outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
+    # outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
+    outlet = models.ManyToManyField(Outlet, through='SalesmanOutlet')
     wholesale_commission = models.CharField(max_length=100, null=True, blank=True)
     retail_commission = models.CharField(max_length=100, null=True, blank=True)
     token_commission = models.CharField(max_length=100, null=True, blank=True)
@@ -23,6 +24,15 @@ class Salesman(models.Model):
 
     def __str__(self):
         return self.salesman_code
+    
+class SalesmanOutlet(models.Model):
+    salesman = models.ForeignKey(Salesman, on_delete=models.CASCADE)
+    outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE)
+    class Meta:
+        db_table = 'tbl_salesman_outlet'
+
+    def __str__(self):
+        return self.salesman
 
 
 class AdditionalFee(models.Model):

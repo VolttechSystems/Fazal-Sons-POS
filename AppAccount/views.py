@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, login, logout
 from rest_framework import status
 from rest_framework import generics
 from django.contrib.auth.models import User
-from rest_framework.permissions import IsAuthenticated, IsAdminUser
+from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view
 from .models import *
 from .serializer import *
@@ -16,6 +16,7 @@ from .serializer import *
 class LoginAPIView(APIView):
 
     def post(self, request):
+        permission_classes = [AllowAny] 
         data = request.data
         serializer = LoginSerializers(data=data)
         if not serializer.is_valid():
