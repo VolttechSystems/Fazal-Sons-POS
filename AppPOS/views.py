@@ -87,7 +87,7 @@ def AddSalesmanView(request):
 
 class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Salesman.objects.all()
-    serializer_class = AddSalesmanSerializer
+    serializer_class = PostSalesmanSerializer
     pagination_class = None
     
 @api_view(['GET'])
