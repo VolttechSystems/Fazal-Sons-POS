@@ -259,9 +259,20 @@ class PostSalesmanSerializer(serializers.ModelSerializer):
         return salesman
 
     def update(self, instance, validated_data):
-        validated_data['updated_at'] = DateTime
+        get_checkBox_value = self.context['request'].data['CheckBoxValue']
+        
+        if get_checkBox_value == 'true':
+            get_salesman_commision = salesman_commission
+            validated_data['wholesale_commission'] = str(get_salesman_commision['wholesale_commission'])
+            validated_data['retail_commission'] = str(get_salesman_commision['retail_commission'])
+            validated_data['token_commission'] = str(get_salesman_commision['token_commission'])
+        validated_data['updated_at'] = None
+        validated_data['created_at'] = DateTime
         salesman = super().update(instance, validated_data)
-        return validated_data
+        return salesman
+        # validated_data['updated_at'] = DateTime
+        # salesman = super().update(instance, validated_data)
+        # return validated_data
 
 class OutletSerializer(serializers.ModelSerializer):
     class Meta:
