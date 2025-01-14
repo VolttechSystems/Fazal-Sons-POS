@@ -359,7 +359,7 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id','product_name', 'sku','cost_price', 'selling_price', 'description']
+        fields = ['id','product_name', 'sku','cost_price', 'selling_price', 'discount_price', 'description']
         
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:
