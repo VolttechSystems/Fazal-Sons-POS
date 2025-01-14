@@ -63,12 +63,27 @@ class GetAdditionalFeeView(generics.RetrieveUpdateDestroyAPIView):
     pagination_class = None
 
 
-### SALESMAN VIEW
-class AddSalesmanView(generics.ListCreateAPIView):
-    queryset = Salesman.objects.all()
-    serializer_class = AddSalesmanSerializer
-    pagination_class = None
-
+# ### SALESMAN VIEW
+# class AddSalesmanView(generics.ListCreateAPIView):
+#     queryset = Salesman.objects.all()
+#     serializer_class = AddSalesmanSerializer
+#     pagination_class = None
+@api_view(['POST', 'GET'])
+def AddSalesmanView(request):
+    if request.method == 'POST':
+        serializer = PostSalesmanSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=HTTP_201_CREATED)
+            except Exception as e:
+                # Log or return detailed exception information
+                return Response({"error": str(e)}, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        salesman = Salesman.objects.all()
+        serializer = AddSalesmanSerializer(salesman, many=True) 
+        return Response(serializer.data, status=HTTP_200_OK)
 
 class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Salesman.objects.all()
