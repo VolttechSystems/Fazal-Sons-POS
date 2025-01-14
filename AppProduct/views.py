@@ -149,6 +149,7 @@ class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
 
 ### PARENT CATEGORY VIEW
 class AddParentCategoryView(generics.ListCreateAPIView):
+    permission_classes = [AllowAny]
     queryset = ParentCategory.objects.all().order_by("id")
     serializer_class = ParentCategorySerializer
     pagination_class = None
