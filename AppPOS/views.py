@@ -15,11 +15,10 @@ from django.db.models.functions import Cast
 
 @api_view(['GET'])
 def AllProductView(request, outlet_id):
-    # try:
-    #     get_outlet = Outlet.objects.get(id=outlet)
-    # except Outlet.DoesNotExist:
-    #     return Response(status=HTTP_404_NOT_FOUND)
-    # product = Product.objects.filter(outlet_id=outlet)
+    try:
+        get_outlet = Outlet.objects.get(id=outlet_id)
+    except Outlet.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
     product = Product.objects.filter(outlet_id=outlet_id)
     array = []
     if product.exists():
