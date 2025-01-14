@@ -36,14 +36,24 @@ class LoginAPIView(APIView):
             token, created = Token.objects.get_or_create(user=user_obj)
             user_profile = UserProfile.objects.get(user_id=user_obj.id)
             system_role_names = user_profile.system_roles.values('id','sys_role_name')
+            outlets = user_profile.outlet.values('id','outlet_name')
             system_role =[]
+            user_outlets =[]
             for role in system_role_names:
                 system_role.append({
                     'id':role['id'],
                     'sys_role_name':role['sys_role_name'],
                     'permissions':user_profile.system_roles.get(id=role['id']).permissions.values('id','permission_name')
                 })
-            return Response({"token": token.key, "System_role": system_role}, status=status.HTTP_200_OK)
+                
+            for outlet in outlets:
+                user_outlets.append({
+                    'id':outlet['id'],
+                    'outlet_name':outlet['outlet_name']
+                })
+                
+            
+            return Response({"token": token.key, "outlet": user_outlets, "System_role": system_role,}, status=status.HTTP_200_OK)
         else:
             return Response({"error": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST)
 
