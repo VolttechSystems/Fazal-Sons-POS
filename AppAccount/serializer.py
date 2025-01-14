@@ -100,3 +100,22 @@ class AdminChangePasswordSerializer(serializers.Serializer):
         except User.DoesNotExist:
             raise serializers.ValidationError("User does not exist.")
         return value
+    
+
+class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+    email = serializers.EmailField(source='user.email')
+    is_staff = serializers.BooleanField(source='user.is_staff')
+    is_active = serializers.BooleanField(source='user.is_active')
+    system_roles = serializers.SerializerMethodField()
+    outlet = serializers.SerializerMethodField()
+
+    class Meta:
+        model = UserProfile
+        fields = ['id', 'username', 'email', 'phone_number', 'is_staff', 'is_active', 'system_roles', 'outlet']
+
+    def get_system_roles(self, obj):
+        return obj.system_roles.values('id', 'sys_role_name')
+
+    def get_outlet(self, obj):
+        return obj.outlet.values('id', 'outlet_name')

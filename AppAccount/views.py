@@ -67,12 +67,40 @@ class LogoutView(APIView):
             # Handle unauthenticated users
             return Response({"detail": "User is not authenticated."}, status=status.HTTP_200_OK)
 
-class CreateUserView(generics.ListCreateAPIView):
-    model = get_user_model()
-    # authentication_classes = [SessionAuthentication]
-    # permission_classes = [IsAdminUser]
-    queryset = User.objects.all()
-    serializer_class = UserSerializer
+# class CreateUserView(generics.ListCreateAPIView):
+#     model = get_user_model()
+#     # authentication_classes = [SessionAuthentication]
+#     # permission_classes = [IsAdminUser]
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+@api_view(['GET', 'POST'])
+def CreateUserView(request):
+    if request.method == 'POST':
+        serializer = UserSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        users = UserProfile.objects.all().select_related('user').prefetch_related('system_roles', 'outlet')
+        serializer = UserProfileSerializer(users, many=True)
+        return Response(serializer.data)
+        # users = UserProfile.objects.all().select_related('user')
+        # user_data = []
+        # for user in users:
+        #     user_data.append({
+        #         'id':user.id,
+        #         'username':user.user.username,
+        #         'email':user.user.email,
+        #         'phone_number':user.phone_number,
+        #         'is_staff':user.user.is_staff,
+        #         'is_active':user.user.is_active,
+        #         'system_roles':user.system_roles.values('id','sys_role_name'),
+        #         'outlet':user.outlet.values('id','outlet_name')
+        #     })
+        
+        
+        # return Response(user_data)
     
         
 ### FOR DELETE USERS
