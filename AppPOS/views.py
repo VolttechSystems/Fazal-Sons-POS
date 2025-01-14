@@ -90,6 +90,18 @@ class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = AddSalesmanSerializer
     pagination_class = None
     
+@api_view(['GET'])
+def GetOutletWiseSalesmanView(request, outlet_id):
+    try:
+        get_outlet = Outlet.objects.get(id=outlet_id)
+    except Outlet.DoesNotExist: 
+        return Response(status=HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        salesmen = Salesman.objects.filter(salesmanoutlet__outlet_id=outlet_id).prefetch_related('salesmanoutlet')
+        salesman_names = salesmen.values('salesman_code','salesman_name')
+        return Response(salesman_names, status=HTTP_200_OK)
+    
+    
     
 
 ### PAYMENT VIEW
