@@ -10,19 +10,24 @@ DateTime = datetime.datetime.now()
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     phone_number = serializers.CharField(required=False, allow_blank=True)
-    # email = serializers.CharField(required=False)
     system_roles = serializers.PrimaryKeyRelatedField(
         queryset=SystemRole.objects.all(), 
         many=True, 
         required=False  # Make it optional for creation
     )
+    outlet = serializers.PrimaryKeyRelatedField(
+        queryset=Outlet.objects.all(), 
+        many=True, 
+        required=False  # Make it optional for creation
+    )
     class Meta:
         model = UserModel
-        fields = ['id','username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'password', 'phone_number', 'system_roles']
+        fields = ['id','username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'password', 'phone_number', 'system_roles', 'outlet']
 
 
     def create(self, validated_data):
         system_roles_data = validated_data.pop('system_roles', [])
+        outlet_data = validated_data.pop('outlet', [])
         phone_number = validated_data.pop('phone_number', None)
         user = UserModel.objects.create_user(
             username=validated_data['username'],
@@ -38,6 +43,8 @@ class UserSerializer(serializers.ModelSerializer):
         # Assign system roles to the UserProfile
         if system_roles_data:
             user_profile.system_roles.set(system_roles_data)  # Set the many-to-many relationships
+        if outlet_data:
+            user_profile.outlet.set(outlet_data)  # Set outlets to the users
 
         return user
 

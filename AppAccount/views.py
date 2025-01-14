@@ -59,7 +59,6 @@ class LogoutView(APIView):
 
 class CreateUserView(generics.ListCreateAPIView):
     model = get_user_model()
-    # authentication_classes = [SessionAuthentication]
     # permission_classes = [IsAdminUser]
     queryset = User.objects.all()
     serializer_class = UserSerializer
