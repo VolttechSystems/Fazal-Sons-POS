@@ -57,7 +57,7 @@ def FetchOutletView(request):
 
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
-    permission_classes = [IsAuthenticated]
+    permission_classes = [AllowAny]
     queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
     pagination_class = MyLimitOffsetPagination

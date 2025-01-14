@@ -32,4 +32,5 @@ urlpatterns = [
 
 
 ##### outlet wise product list in transaction
+###### outlet wise salesman in transaction
 
