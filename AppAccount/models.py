@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
-
 from django.contrib.auth.models import AbstractUser, Group, Permission
+from AppProduct.models import Outlet
 
 
 
@@ -36,6 +36,8 @@ class UserProfile(models.Model):
     phone_number = models.CharField(max_length=15, blank=True, null=True)
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     system_roles = models.ManyToManyField(SystemRole, related_name='users')
+    outlet = models.ManyToManyField(Outlet, related_name='outlet_users')
+
 
     class Meta:
         db_table = "tbl_user_profile"
