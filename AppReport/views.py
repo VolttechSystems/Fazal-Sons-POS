@@ -279,17 +279,9 @@ def SalesReportView(request,outlet, start_date, end_date):
    
     parsed_start_date = datetime.strptime(start_date, '%Y-%m-%d')
     parsed_end_date = datetime.strptime(end_date, '%Y-%m-%d')
-    # transactions = (
-    # Transaction.objects.filter(created_at__date__range=[parsed_start_date, parsed_end_date], outlet_code_id=outlet, quantity__gt=0)
-    # .annotate(till_date=TruncDate('created_at'))
-    # .annotate(grand_total_casted=Cast(F('grand_total'), output_field=IntegerField()))
-    # .values('till_date')
-    # .annotate(total_sale=Sum('grand_total_casted'))
-    # .order_by('-till_date')
-# )
     cursor = connections['default'].cursor()
-    # transaction = "select created_at::date as till_date, sum(grand_total::INTEGER)  as total_sale from tbl_transaction where grand_total::INTEGER > 0 and outlet_code_id = '"+ outlet +"' and created_at::date BETWEEN '"+ str(parsed_start_date) +"' and '" + str(parsed_end_date) +"'  GROUP BY created_at::date"
-    transaction = "SELECT tr.created_at::date AS till_date, SUM(tr.grand_total::INTEGER) - COALESCE(SUM(returns.total_return), 0) AS total_sale FROM tbl_transaction tr LEFT JOIN ( SELECT invoice_code_id,  SUM(total_amount) AS total_return FROM tbl_transaction_return GROUP BY invoice_code_id) returns ON tr.invoice_code = returns.invoice_code_id WHERE tr.grand_total::INTEGER > 0 AND tr.outlet_code_id = '"+ outlet +"' AND tr.created_at::date BETWEEN '"+ str(parsed_start_date) +"' AND '"+ str(parsed_end_date) +"' GROUP BY tr.created_at::date ORDER BY till_date	;"
+    # transaction = "SELECT tr.created_at::date AS till_date, SUM(tr.grand_total::INTEGER) - COALESCE(SUM(returns.total_return), 0) AS total_sale FROM tbl_transaction tr LEFT JOIN ( SELECT invoice_code_id,  SUM(total_amount) AS total_return FROM tbl_transaction_return GROUP BY invoice_code_id) returns ON tr.invoice_code = returns.invoice_code_id WHERE tr.grand_total::INTEGER > 0 AND tr.outlet_code_id = '"+ outlet +"' AND tr.created_at::date BETWEEN '"+ str(parsed_start_date) +"' AND '"+ str(parsed_end_date) +"' GROUP BY tr.created_at::date ORDER BY till_date	;"
+    transaction = "WITH sales AS (SELECT tr.created_at::date AS sale_date, SUM(tr.grand_total::INTEGER) AS total_sale FROM tbl_transaction tr WHERE tr.grand_total::INTEGER > 0 AND tr.outlet_code_id =  '"+ outlet +"' AND tr.created_at::date BETWEEN  '"+ str(parsed_start_date) +"' AND  '"+ str(parsed_end_date) +"' GROUP BY tr.created_at::date),returns AS (SELECT  tr_return.created_at::date AS return_date, SUM(tr_return.total_amount) AS total_return FROM tbl_transaction_return tr_return WHERE tr_return.created_at::date BETWEEN  '"+ str(parsed_start_date) +"' AND  '"+ str(parsed_end_date) +"' GROUP BY tr_return.created_at::date)SELECT COALESCE(sales.sale_date, returns.return_date) AS till_date, COALESCE(sales.total_sale, 0) AS total_sale, COALESCE(returns.total_return, 0) AS total_return, COALESCE(sales.total_sale, 0) - COALESCE(returns.total_return, 0) AS net_sale FROM sales FULL OUTER JOIN  returns ON sales.sale_date = returns.return_date ORDER BY till_date;"
     cursor.execute(transaction)
     report = DistinctFetchAll(cursor)
     return Response(report)
