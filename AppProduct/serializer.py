@@ -59,12 +59,18 @@ class BrandSerializer(serializers.ModelSerializer):
         brand = super().create(validated_data)
         brand.updated_at = None
         brand.created_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     brand.created_by = request.user.username
         brand.save()
         return brand
 
     def update(self, instance, validated_data):
         brand = super().update(instance, validated_data)
         brand.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     brand.updated_by = request.user.username
         brand.save()
         return brand
 
