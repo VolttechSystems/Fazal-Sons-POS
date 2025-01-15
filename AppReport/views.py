@@ -334,7 +334,7 @@ def OutletWiseSalesmanView(request, outlet):
         outlet =Outlet.objects.get(id=outlet)
     except Outlet.DoesNotExist:
         return Response("Outlet Not Found", status=HTTP_404_NOT_FOUND)
-    salesman = Salesman.objects.filter(outlet_id=outlet)
+    salesman = Salesman.objects.filter(salesmanoutlet__outlet_id=outlet)
     serializer = SalesmanSerializer(salesman, many=True)
     return Response(serializer.data)
   
