@@ -32,12 +32,19 @@ class OutletSerializer(serializers.ModelSerializer):
         outlet = super().create(validated_data)
         outlet.updated_at = None
         outlet.created_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     outlet.created_by = request.user.username
+
         outlet.save()
         return outlet
 
     def update(self, instance, validated_data):
         outlet = super().update(instance, validated_data)
         outlet.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     outlet.updated_by = request.user.username
         outlet.save()
         return outlet
 
