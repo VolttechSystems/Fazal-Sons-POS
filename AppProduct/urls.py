@@ -8,6 +8,7 @@ urlpatterns = [
     re_path(r'add_outlet', AddOutletView.as_view(), name='AddOutlet'),
     re_path(r'action_outlet/(?P<pk>.+)/', OutletGetView.as_view(), name='GetOutlet'),
     re_path(r'fetch_all_outlet/', FetchOutletView, name='FetchOutlet'),
+    re_path(r'sync-outlets/', SyncOutlets, name='sync_outlets'),
     ### BRAND URL
     re_path(r'add_brand', AddBrandView.as_view(), name='AddBrand'),
     re_path(r'action_brand/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),

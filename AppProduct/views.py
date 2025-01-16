@@ -55,6 +55,22 @@ def FetchOutletView(request):
         return Response(serializer.data,status=status.HTTP_200_OK)
     return Response(status=status.HTTP_200_OK)
 
+
+@api_view(['POST'])
+def SyncOutlets(request):
+    outlets = request.data
+    try:
+        for outlet in outlets:
+            # Insert or update each outlet
+            Outlet.objects.update_or_create(
+                outlet_code=outlet['outlet_code'],
+                defaults={'outlet_name': outlet['outlet_name']}
+            )
+        return Response({'message': 'Data synced successfully'}, status=status.HTTP_200_OK)
+    except Exception as e:
+        print(f"Error syncing outlets: {e}")
+        return Response({'error': 'Error syncing outlets'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
+
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
