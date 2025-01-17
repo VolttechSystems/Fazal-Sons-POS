@@ -22,7 +22,7 @@ class UserSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = UserModel
-        fields = ['id','username', 'first_name', 'last_name', 'email', 'is_staff', 'is_active', 'password', 'phone_number', 'system_roles', 'outlet']
+        fields = ['id','username', 'first_name', 'last_name', 'email', 'is_staff', 'is_superuser', 'is_active', 'password', 'phone_number', 'system_roles', 'outlet']
 
 
     def create(self, validated_data):
@@ -37,6 +37,7 @@ class UserSerializer(serializers.ModelSerializer):
             email=validated_data['email'],
             is_staff=validated_data['is_staff'],
             is_active=validated_data['is_active'],
+            is_superuser=validated_data['is_superuser'],
         )
         
         user_profile = UserProfile.objects.create(user=user,  phone_number=phone_number)
