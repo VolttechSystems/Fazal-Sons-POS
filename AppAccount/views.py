@@ -122,13 +122,27 @@ class LoginAPIView(APIView):
                 'permissions': admin_role.permissions.values('id', 'permission_name')
             }]
         else:
+            # system_role =[]
+#             user_outlets =[]
+#             for role in system_role_names:
+#                 system_role.append({
+#                     'id':role['id'],
+#                     'sys_role_name':role['sys_role_name'],
+#                     'permissions':user_profile.system_roles.get(id=role['id']).permissions.values('id','permission_name')
+#                 })
+                
+#             for outlet in outlets:
+#                 user_outlets.append({
+#                     'id':outlet['id'],
+#                     'outlet_name':outlet['outlet_name']
+#                 })
             # Non-superusers get their specific outlets and roles
             user_profile = UserProfile.objects.get(user_id=user_obj.id)
             outlets = user_profile.outlet.values('id', 'outlet_name')
             user_outlets = [{'id': outlet['id'], 'outlet_name': outlet['outlet_name']} for outlet in outlets]
 
             # Fetch active system roles and permissions
-            system_role_names = user_profile.system_roles.filter(status='Active').values('id', 'sys_role_name')
+            system_role_names = user_profile.system_roles.all().values('id', 'sys_role_name')
             system_role = [
                 {
                     'id': role['id'],
