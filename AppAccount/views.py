@@ -10,54 +10,6 @@ from rest_framework.decorators import api_view
 from .models import *
 from .serializer import *
 
-
-
-## Login View 
-# class LoginAPIView(APIView):
-#     permission_classes = [AllowAny] 
-
-#     def post(self, request):
-        
-#         data = request.data
-#         serializer = LoginSerializers(data=data)
-#         if not serializer.is_valid():
-#             return Response({
-#                 "status": False,
-#                 "data": serializer.data
-#             })
-#         username = serializer.data['username']
-#         password = serializer.data['password']
-
-#         user_obj = authenticate(username=username, password=password)
-#         if user_obj is None:
-#             return Response({"error": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
-
-        
-#         if user_obj.is_active:
-#             token, created = Token.objects.get_or_create(user=user_obj)
-#             user_profile = UserProfile.objects.get(user_id=user_obj.id)
-#             system_role_names = user_profile.system_roles.values('id','sys_role_name')
-#             outlets = user_profile.outlet.values('id','outlet_name')
-#             system_role =[]
-#             user_outlets =[]
-#             for role in system_role_names:
-#                 system_role.append({
-#                     'id':role['id'],
-#                     'sys_role_name':role['sys_role_name'],
-#                     'permissions':user_profile.system_roles.get(id=role['id']).permissions.values('id','permission_name')
-#                 })
-                
-#             for outlet in outlets:
-#                 user_outlets.append({
-#                     'id':outlet['id'],
-#                     'outlet_name':outlet['outlet_name']
-#                 })
-                
-            
-#             return Response({"token": token.key, "outlet": user_outlets, "System_role": system_role,}, status=status.HTTP_200_OK)
-#         else:
-#             return Response({"error": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST)
-        
 ## Login View
 class LoginAPIView(APIView):
     permission_classes = [AllowAny]
@@ -99,7 +51,6 @@ class LoginAPIView(APIView):
             # Assign all permissions to the Admin role if it was just created
             if created:
                 all_permissions = CustomPermissions.objects.all()
-                print(all_permissions)
                 admin_role.permissions.set(all_permissions)
 
             # Ensure the role is active
@@ -122,20 +73,6 @@ class LoginAPIView(APIView):
                 'permissions': admin_role.permissions.values('id', 'permission_name')
             }]
         else:
-            # system_role =[]
-#             user_outlets =[]
-#             for role in system_role_names:
-#                 system_role.append({
-#                     'id':role['id'],
-#                     'sys_role_name':role['sys_role_name'],
-#                     'permissions':user_profile.system_roles.get(id=role['id']).permissions.values('id','permission_name')
-#                 })
-                
-#             for outlet in outlets:
-#                 user_outlets.append({
-#                     'id':outlet['id'],
-#                     'outlet_name':outlet['outlet_name']
-#                 })
             # Non-superusers get their specific outlets and roles
             user_profile = UserProfile.objects.get(user_id=user_obj.id)
             outlets = user_profile.outlet.values('id', 'outlet_name')
@@ -153,90 +90,13 @@ class LoginAPIView(APIView):
             ]
 
         return Response({
+            "username": user_obj.username,
             "token": token.key,
             "outlet": user_outlets,
             "System_role": system_role
         }, status=status.HTTP_200_OK)
 
         
-# ## Login View
-# class LoginAPIView(APIView):
-#     permission_classes = [AllowAny]
-
-#     def post(self, request):
-#         data = request.data
-#         serializer = LoginSerializers(data=data)
-
-#         if not serializer.is_valid():
-#             return Response({
-#                 "status": False,
-#                 "errors": serializer.errors
-#             }, status=status.HTTP_400_BAD_REQUEST)
-
-#         username = serializer.data['username']
-#         password = serializer.data['password']
-
-#         user_obj = authenticate(username=username, password=password)
-#         if user_obj is None:
-#             return Response({"error": "Invalid username or password"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         if not user_obj.is_active:
-#             return Response({"error": "User is inactive"}, status=status.HTTP_400_BAD_REQUEST)
-
-#         # Generate token
-#         token, created = Token.objects.get_or_create(user=user_obj)
-
-#         # Check if the user is a superuser
-#         if user_obj.is_superuser:
-#             # Ensure Super_Super_Admin role exists
-#             admin_role, created = SystemRole.objects.get_or_create(
-#                 sys_role_name='Super_Super_Admin'
-#             )
-
-#             # Assign all permissions to the Admin role if it was just created
-#             if created:
-#                 all_permissions = CustomPermissions.objects.all()
-#                 admin_role.roles.set(all_permissions)
-
-#             # Assign Admin role to the superuser
-#             user_profile, _ = UserProfile.objects.get_or_create(user=user_obj)
-#             user_profile.system_roles.add(admin_role)
-
-#             # Superuser gets all outlets
-#             all_outlets = Outlet.objects.values('id', 'outlet_name')
-#             user_outlets = [{'id': outlet['id'], 'outlet_name': outlet['outlet_name']} for outlet in all_outlets]
-
-#             # Include Admin role with all permissions
-#             system_role = [{
-#                 'id': admin_role.id,
-#                 'sys_role_name': admin_role.sys_role_name,
-#                 'permissions': admin_role.permissions.values('id', 'permission_name')
-#             }]
-#         else:
-#             # Non-superusers get their specific outlets and roles
-#             user_profile = UserProfile.objects.get(user_id=user_obj.id)
-#             outlets = user_profile.outlet.values('id', 'outlet_name')
-#             user_outlets = [{'id': outlet['id'], 'outlet_name': outlet['outlet_name']} for outlet in outlets]
-
-#             # Fetch system roles and permissions
-#             system_role_names = user_profile.system_roles.values('id', 'sys_role_name')
-#             system_role = [
-#                 {
-#                     'id': role['id'],
-#                     'sys_role_name': role['sys_role_name'],
-#                     'permissions': user_profile.system_roles.get(id=role['id']).permissions.values('id', 'permission_name')
-#                 }
-#                 for role in system_role_names
-#             ]
-
-#         return Response({
-#             "token": token.key,
-#             "outlet": user_outlets,
-#             "System_role": system_role
-#         }, status=status.HTTP_200_OK)
-
-
-
 
 class LogoutView(APIView):
     def post(self, request):
