@@ -59,7 +59,7 @@ class Customer(models.Model):
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     display_name = models.CharField(max_length=100, null=True, blank=True)
-    gender = models.CharField(max_length=20, choices=Gender, default='Male')
+    gender = models.CharField(max_length=20, choices=Gender, default='')
     company_name = models.CharField(max_length=100, null=True, blank=True)
     email = models.EmailField(max_length=100, null=True, blank=True)
     mobile_no = models.CharField(max_length=100, null=True, blank=True)

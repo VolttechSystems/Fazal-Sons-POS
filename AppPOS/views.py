@@ -100,6 +100,9 @@ def GetOutletWiseSalesmanView(request, outlet_id):
         salesman_names = salesmen.values('salesman_code','salesman_name')
         return Response(salesman_names, status=HTTP_200_OK)
     
+class AddCustomerInPOSView(generics.ListCreateAPIView):
+    queryset = Customer.objects.all()
+    serializer_class = AddCustomerInPOSSerializer
     
     
 

@@ -9,7 +9,8 @@ urlpatterns = [
         re_path(r'add_salesman', AddSalesmanView, name='AddSalesman'),
         re_path(r'action_salesman/(?P<pk>.+)/', GetSalesmanView.as_view(), name='GetSalesman'),
         re_path(r'outlet-wise-salesman/(?P<outlet_id>.+)/', GetOutletWiseSalesmanView, name='GetOutletWiseSalesmanView'),
-                
+        ### CUSTOMER URL IN POS
+        re_path(r'add-customer-in-pos', AddCustomerInPOSView.as_view(), name='AddCustomer'),
         ### PAYMENT METHOD URL
         re_path(r'add_payment', AddPaymentView.as_view(), name='AddPayment'),
         re_path(r'action_payment/(?P<pk>.+)/', GetPaymentView.as_view(), name='GetPayment'),

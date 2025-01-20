@@ -270,9 +270,59 @@ class PostSalesmanSerializer(serializers.ModelSerializer):
         validated_data['created_at'] = DateTime
         salesman = super().update(instance, validated_data)
         return salesman
-        # validated_data['updated_at'] = DateTime
-        # salesman = super().update(instance, validated_data)
-        # return validated_data
+
+class AddCustomerInPOSSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Customer
+        fields = ['id', 'cust_code', 'display_name', 'mobile_no', 'address']
+        
+    def create(self, validated_data):
+        validated_data['cust_code'] = AutoGenerateCodeForModel(Customer, 'cust_code', 'CUST-')
+        validated_data['updated_at'] = None
+        validated_data['created_at'] = DateTime
+        ### ADD CUSTOMER CHANNEL IF NOT EXISTS CUSTOMER CHANNEL
+        try:
+            customer_channel = CustomerChannel.objects.get(customer_channel__icontains='POS')
+            print(customer_channel.customer_channel)
+        except CustomerChannel.DoesNotExist:
+            customer_channel = CustomerChannel.objects.create(
+                cus_ch_code=AutoGenerateCodeForModel(CustomerChannel, 'cus_ch_code', 'CCH-'),
+                customer_channel='POS',
+                created_at=DateTime,
+                created_by='System')
+        ### ADD CUSTOMER TYPE IF NOT EXISTS CUSTOMER TYPE
+        try:
+            customer_type = CustomerType.objects.get(customer_type__icontains='Walking')
+        except CustomerType.DoesNotExist:
+            customer_type = CustomerType.objects.create(
+                cus_type_code=AutoGenerateCodeForModel(CustomerType, 'cus_type_code', 'CTP-'),
+                customer_type='Walking',
+                created_at=DateTime,
+                created_by='System')
+        
+        validated_data['customer_channel_id'] = customer_channel.customer_channel
+        validated_data['customer_type_id'] = customer_type.customer_type
+        ## split display name
+        display_name = validated_data.get('display_name')
+        split_name = display_name.split(' ')
+        first_name = split_name[0]
+        last_name = split_name[1] if len(split_name) > 1 else ''  
+        
+        validated_data['first_name'] = first_name
+        validated_data['last_name'] = last_name
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['created_by'] = request.user.username
+        customer = super().create(validated_data)
+        return customer
+
+    def update(self, instance, validated_data):
+        validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['created_by'] = request.user.username
+        customer = super().update(instance, validated_data)
+        return customer
 
 class OutletSerializer(serializers.ModelSerializer):
     class Meta:
