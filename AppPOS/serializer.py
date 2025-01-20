@@ -82,15 +82,15 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     Gross_total += int(item_total)
                     total_quantity += quantity
             total_fee = 0
+            total_pay = 0
             if total_quantity > 0:
                 if get_advanced_payment == '0':
                     ## PAYMENT METHOD
-                    total_pay = 0
+                    
                     for payment in get_pm_amount:
                         total_pay += int(payment)
                 
                     ## ADDITIONAL FEE
-                   
                     for fee in get_additional_fee:
                         total_fee += int(fee)
                 if get_overall_discount != 0:
