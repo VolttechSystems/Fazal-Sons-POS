@@ -15,6 +15,7 @@ STATUS = (
 
 
 # Create your models here.
+
 class Outlet(models.Model):
     outlet_code = models.CharField(max_length=100, null=True, unique=True)
     outlet_name = models.CharField(max_length=100, null=True, unique=True, blank=True)
