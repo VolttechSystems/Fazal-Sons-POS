@@ -41,6 +41,13 @@
         "fields":  {
             "permission_name": "stock"
           }
+      },
+      {
+        "model": "AppAccount.CustomPermissions",
+        "pk": 7,
+        "fields":  {
+            "permission_name": "supseruser"
+          }
       }
  
   ]
