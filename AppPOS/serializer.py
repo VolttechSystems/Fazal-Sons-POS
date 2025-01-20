@@ -81,24 +81,23 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     item_total = item_gross_total - item_discount
                     Gross_total += int(item_total)
                     total_quantity += quantity
-            total_fee = 0
-            total_pay = 0
+           
             if total_quantity > 0:
+                total_fee = 0
+                total_pay = 0
                 if get_advanced_payment == '0':
                     ## PAYMENT METHOD
-                    
                     for payment in get_pm_amount:
                         total_pay += int(payment)
-                
                     ## ADDITIONAL FEE
                     for fee in get_additional_fee:
                         total_fee += int(fee)
-                if get_overall_discount != 0:
-                        discount_amount = int(int(get_overall_discount) * int(Gross_total) / 100)
-                total = Gross_total - discount_amount
-                Grand_total = total + total_fee
-                if total_pay != Grand_total:
-                    raise serializers.ValidationError(f"Payable Amount is {Grand_total} and you add {total_pay} in the Payment Method")        
+                    if get_overall_discount != 0:
+                            discount_amount = int(int(get_overall_discount) * int(Gross_total) / 100)
+                    total = Gross_total - discount_amount
+                    Grand_total = total + total_fee
+                    if total_pay != Grand_total:
+                        raise serializers.ValidationError(f"Payable Amount is {Grand_total} and you add {total_pay} in the Payment Method")        
         return validated_data
 
   
