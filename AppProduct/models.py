@@ -18,6 +18,10 @@ STATUS = (
 class Outlet(models.Model):
     outlet_code = models.CharField(max_length=100, null=True, unique=True)
     outlet_name = models.CharField(max_length=100, null=True, unique=True, blank=True)
+    address = models.CharField(max_length=100, null=True, blank=True)
+    outlet_mobile = models.CharField(max_length=100, null=True, blank=True)
+    manager_name = models.CharField(max_length=100, null=True, blank=True)
+    contact_number = models.CharField(max_length=100, null=True, blank=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
     updated_at = models.DateTimeField(null=True)
