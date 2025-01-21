@@ -6,6 +6,7 @@ from rest_framework.permissions import IsAdminUser
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.decorators import permission_classes
 
 
 class AddShopView(generics.ListCreateAPIView):
@@ -19,6 +20,7 @@ class ActionShopView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = ShopOwnerSerializer
     
 @api_view(['GET', 'POST'])
+@permission_classes([IsAdminUser])
 def ShopAdminUserView(request):
     if request.method == 'POST':
         serializer = ShopAdminSerializer(data=request.data)
@@ -30,4 +32,3 @@ def ShopAdminUserView(request):
         users = UserProfile.objects.filter(user__is_superuser=False, user__is_staff=True).select_related('user')
         serializer = UserProfileSerializer(users, many=True)
         return Response(serializer.data)
-        # return Response(None)
