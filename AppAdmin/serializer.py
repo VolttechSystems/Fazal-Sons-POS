@@ -19,14 +19,9 @@ class ShopOwnerSerializer(serializers.ModelSerializer):
 class ShopAdminSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
     phone_number = serializers.CharField(required=False, allow_blank=True)
-    # system_roles = serializers.PrimaryKeyRelatedField(
-    #     queryset=SystemRole.objects.all(), 
-    #     many=True, 
-    #     required=False  # Make it optional for creation
-    # )
     shop = serializers.PrimaryKeyRelatedField(
         queryset=Shop.objects.all(), 
-        required=False  # Make it optional for creation
+        required=False 
     )
     class Meta:
         model = UserModel
@@ -35,15 +30,8 @@ class ShopAdminSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         get_shop = validated_data.pop('shop', None)
-        print(get_shop)
         phone_number = validated_data.pop('phone_number', None)
         
-        # if shop:
-        #     existing_profile = UserProfile.objects.filter(shop=shop, user__username=validated_data['username']).first()
-        #     if existing_profile:
-        #         raise serializers.ValidationError({
-        #             'username': f"A user with username '{validated_data['username']}' already exists for this shop."
-        #         })
         user = UserModel.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
@@ -57,3 +45,13 @@ class ShopAdminSerializer(serializers.ModelSerializer):
         user_profile = UserProfile.objects.create(user=user,  phone_number=phone_number, shop=get_shop)
 
         return user
+    
+class UserProfileSerializer(serializers.ModelSerializer):
+    username = serializers.CharField(source='user.username')
+    email = serializers.EmailField(source='user.email')
+    is_staff = serializers.BooleanField(source='user.is_staff')
+    is_active = serializers.BooleanField(source='user.is_active')
+
+    class Meta:
+        model = UserProfile 
+        fields = ['id', 'username', 'email', 'phone_number', 'is_staff', 'is_active']
