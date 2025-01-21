@@ -50,7 +50,7 @@ class LoginAPIView(APIView):
 
             # Assign all permissions to the Admin role if it was just created
             if created:
-                all_permissions = CustomPermissions.objects.all()
+                all_permissions = CustomPermissions.objects.filter(permission_name='SuperAdmin')
                 admin_role.permissions.set(all_permissions)
 
             # Ensure the role is active
