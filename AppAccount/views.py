@@ -72,6 +72,11 @@ class LoginAPIView(APIView):
                 'sys_role_name': admin_role.sys_role_name,
                 'permissions': admin_role.permissions.values('id', 'permission_name')
             }]
+            return Response({
+            "username": user_obj.username,
+            "token": token.key,
+            "outlet": user_outlets,
+            "System_role": system_role}, status=status.HTTP_200_OK)
         else:
             # Non-superusers get their specific outlets and roles
             user_profile = UserProfile.objects.get(user_id=user_obj.id)
@@ -90,6 +95,7 @@ class LoginAPIView(APIView):
             ]
 
         return Response({
+            "shop": user_profile.shop.name,
             "username": user_obj.username,
             "token": token.key,
             "outlet": user_outlets,

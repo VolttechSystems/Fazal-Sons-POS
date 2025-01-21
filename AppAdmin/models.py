@@ -22,12 +22,12 @@ from django.db import models
 #     def __str__(self):
 #         return self.salesman_code
 
-class ShopOwner(models.Model):
+class Shop(models.Model):
     name = models.CharField(max_length=100, null=True)
     status = models.CharField(max_length=100, null=True)
     no_of_outlets = models.IntegerField(null=True)
     no_of_registered_outlets = models.IntegerField(null=True)
     class Meta:
-        db_table = 'tbl_shop_owner'
+        db_table = 'tbl_shops'
     def __str__(self):
         return self.name
