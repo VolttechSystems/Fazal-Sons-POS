@@ -114,6 +114,7 @@ class LoginAPIView(APIView):
             }]
             return Response({
             "shop": user_profile.shop.name,
+            "shop_id": user_profile.shop.id,
             "username": user_obj.username,
             "token": token.key,
             "outlet": user_outlets,
@@ -138,6 +139,7 @@ class LoginAPIView(APIView):
 
         return Response({
             "shop": user_profile.shop.name,
+            "shop_id": user_profile.shop.id,
             "username": user_obj.username,
             "token": token.key,
             "outlet": user_outlets,
