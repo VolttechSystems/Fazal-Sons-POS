@@ -77,8 +77,49 @@ class LoginAPIView(APIView):
             "token": token.key,
             "outlet": user_outlets,
             "System_role": system_role}, status=status.HTTP_200_OK)
+        if not user_obj.is_superuser and user_obj.is_staff:
+            # Ensure Super_Super_Admin role exists
+            admin_role, created = SystemRole.objects.get_or_create(
+                sys_role_name='Admin',
+                defaults={
+                    'status': 'Active',
+                    'created_by': 'System',  # Default creator
+                }
+            )
+
+            # Assign all permissions to the Admin role if it was just created
+            if created:
+                all_permissions = CustomPermissions.objects.exclude(permission_name='SuperAdmin')
+                admin_role.permissions.set(all_permissions)
+
+            # Ensure the role is active
+            if admin_role.status != 'Active':
+                admin_role.status = 'Active'
+                admin_role.save()
+
+            # Assign Admin role to the superuser
+            user_profile, _ = UserProfile.objects.get_or_create(user=user_obj)
+            user_profile.system_roles.add(admin_role)
+
+            # Superuser gets all outlets
+            all_outlets = Outlet.objects.values('id', 'outlet_name')
+            user_outlets = [{'id': outlet['id'], 'outlet_name': outlet['outlet_name']} for outlet in all_outlets]
+
+            # Include Admin role with all permissions
+            system_role = [{
+                'id': admin_role.id,
+                'sys_role_name': admin_role.sys_role_name,
+                'permissions': admin_role.permissions.values('id', 'permission_name')
+            }]
+            return Response({
+            "shop": user_profile.shop.name,
+            "username": user_obj.username,
+            "token": token.key,
+            "outlet": user_outlets,
+            "System_role": system_role}, status=status.HTTP_200_OK)
+ 
         else:
-            # Non-superusers get their specific outlets and roles
+            # Non-superusers and Non-staff get their specific outlets and roles
             user_profile = UserProfile.objects.get(user_id=user_obj.id)
             outlets = user_profile.outlet.values('id', 'outlet_name')
             user_outlets = [{'id': outlet['id'], 'outlet_name': outlet['outlet_name']} for outlet in outlets]

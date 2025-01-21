@@ -19,6 +19,7 @@ class ActionShopView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Shop.objects.all() 
     serializer_class = ShopOwnerSerializer
     
+    
 @api_view(['GET', 'POST'])
 @permission_classes([IsAdminUser])
 def ShopAdminUserView(request):
