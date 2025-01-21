@@ -21,7 +21,7 @@ def ShopAdminUserView(request):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-    elif request.method == 'GET':
-        users = UserProfile.objects.all().select_related('user').prefetch_related('system_roles', 'outlet')
-        serializer = UserProfileSerializer(users, many=True)
-        return Response(serializer.data)
+    # elif request.method == 'GET':
+    #     users = UserProfile.objects.all().select_related('user').prefetch_related('system_roles', 'outlet')
+    #     serializer = UserProfileSerializer(users, many=True)
+    #     return Response(serializer.data)
