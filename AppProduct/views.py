@@ -38,18 +38,27 @@ class MyLimitOffsetPagination(LimitOffsetPagination):
 ### OUTLET VIEW
 class AddOutletView(generics.ListCreateAPIView):
     # permission_classes = [IsAuthenticated]
-    queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
     pagination_class = None
-
+    
+    def get_queryset(self):
+        # Access the 'shop' parameter from the URL
+        shop_id = self.kwargs.get('shop')
+        return Outlet.objects.filter(shop_id=shop_id).order_by("id")
+        
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
     pagination_class = None
+    def get_queryset(self):
+        shop_id = self.kwargs.get('shop')
+        return Outlet.objects.filter(shop_id=shop_id).order_by("id")
+        
+    
 
 @api_view(["GET"])
-def FetchOutletView(request):
-    outlets = Outlet.objects.all()
+def FetchOutletView(request, shop):
+    outlets = Outlet.objects.filter(shop_id=shop)
     if outlets.exists():
         serializer = OutletSerializer(outlets, many=True)
         return Response(serializer.data,status=status.HTTP_200_OK)

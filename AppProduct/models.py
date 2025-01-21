@@ -19,8 +19,8 @@ STATUS = (
 
 class Outlet(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
-    outlet_code = models.CharField(max_length=100, null=True, unique=True)
-    outlet_name = models.CharField(max_length=100, null=True, unique=True, blank=True)
+    outlet_code = models.CharField(max_length=100, null=True)
+    outlet_name = models.CharField(max_length=100, null=True, blank=True)
     address = models.CharField(max_length=100, null=True, blank=True)
     outlet_mobile = models.CharField(max_length=100, null=True, blank=True)
     manager_name = models.CharField(max_length=100, null=True, blank=True)

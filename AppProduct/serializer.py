@@ -26,7 +26,7 @@ def get_first_three_of_first_word(name):  # Check if the string contains spaces
 class OutletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Outlet
-        fields = ['id', 'outlet_code', 'outlet_name', 'address', 'outlet_mobile', 'manager_name', 'contact_number']
+        fields = ['id', 'outlet_code', 'outlet_name', 'address', 'outlet_mobile', 'manager_name', 'contact_number', 'shop']
 
     def create(self, validated_data):
         outlet = super().create(validated_data)
