@@ -51,7 +51,10 @@ class UserProfileSerializer(serializers.ModelSerializer):
     email = serializers.EmailField(source='user.email')
     is_staff = serializers.BooleanField(source='user.is_staff')
     is_active = serializers.BooleanField(source='user.is_active')
+    shop = serializers.CharField(source='shop.name', read_only=True)
+   
+
 
     class Meta:
         model = UserProfile 
-        fields = ['id', 'username', 'email', 'phone_number', 'is_staff', 'is_active']
+        fields = ['id', 'username', 'email', 'phone_number', 'is_staff',  'is_active','shop']

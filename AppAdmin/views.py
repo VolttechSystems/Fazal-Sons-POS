@@ -21,7 +21,7 @@ class ActionShopView(generics.RetrieveUpdateDestroyAPIView):
     
     
 @api_view(['GET', 'POST'])
-@permission_classes([IsAdminUser])
+# @permission_classes([IsAdminUser])
 def ShopAdminUserView(request):
     if request.method == 'POST':
         serializer = ShopAdminSerializer(data=request.data)
