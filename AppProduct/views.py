@@ -83,18 +83,27 @@ def SyncOutlets(request):
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
-    queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
     pagination_class = MyLimitOffsetPagination
+    def get_queryset(self):
+        shop_id = self.kwargs.get('shop')
+        brand = Brand.objects.filter(shop_id=shop_id)
+        return brand
+        
+        
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Brand.objects.all().order_by("id")
     serializer_class = BrandSerializer
+    def get_queryset(self):
+        shop_id = self.kwargs.get('shop')
+        brand = Brand.objects.filter(shop_id=shop_id)
+        return brand
+    
 
 @api_view(["GET"])
-def SearchBrandView(request, code):
+def SearchBrandView(request, shop, code):
     brand_name = code
-    brand = Brand.objects.filter(brand_name__icontains=brand_name).order_by(
+    brand = Brand.objects.filter(shop_id=shop, brand_name__icontains=brand_name).order_by(
         "id"
     )
     if len(brand) > 0:

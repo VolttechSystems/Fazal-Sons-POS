@@ -53,7 +53,7 @@ class OutletSerializer(serializers.ModelSerializer):
 class BrandSerializer(serializers.ModelSerializer):
     class Meta:
         model = Brand
-        fields = ['id','brand_name', 'symbol', 'description', 'status']
+        fields = ['id','brand_name', 'symbol', 'description', 'status', 'shop']
 
     def create(self, validated_data):
         brand = super().create(validated_data)

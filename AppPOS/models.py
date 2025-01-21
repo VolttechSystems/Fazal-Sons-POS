@@ -50,7 +50,8 @@ class AdditionalFee(models.Model):
         return self.fee_name
 
 class PaymentMethod(models.Model):
-    pm_name = models.CharField(max_length=15, blank=True, null=True, unique=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+    pm_name = models.CharField(max_length=15, blank=True, null=True)
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -58,6 +59,7 @@ class PaymentMethod(models.Model):
 
     class Meta:
         db_table = "tbl_payment_method"
+        unique_together = ('shop', 'pm_name')
 
     def __str__(self):
         return self.pm_name

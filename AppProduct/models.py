@@ -39,7 +39,8 @@ class Outlet(models.Model):
 
 
 class Brand(models.Model):
-    brand_name = models.CharField(max_length=100, null=True, unique=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+    brand_name = models.CharField(max_length=100, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
@@ -50,6 +51,7 @@ class Brand(models.Model):
 
     class Meta:
         db_table = 'tbl_brand'
+        unique_together = ('shop', 'brand_name')
 
     def __str__(self):
         return self.brand_name

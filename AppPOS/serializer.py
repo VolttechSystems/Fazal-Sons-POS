@@ -362,7 +362,7 @@ class AddSalesmanSerializer(serializers.ModelSerializer):
 class AddPaymentMethodSerializer(serializers.ModelSerializer):
     class Meta:
         model = PaymentMethod
-        fields = ['id', 'pm_name']
+        fields = ['id', 'pm_name', 'shop']
         
     def create(self, validated_data):
         validated_data['created_at'] = DateTime

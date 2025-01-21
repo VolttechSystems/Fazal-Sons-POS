@@ -108,13 +108,20 @@ class AddCustomerInPOSView(generics.ListCreateAPIView):
 
 ### PAYMENT VIEW
 class AddPaymentView(generics.ListCreateAPIView):
-    queryset = PaymentMethod.objects.all()
     serializer_class = AddPaymentMethodSerializer
     pagination_class = None
+    def get_queryset(self):
+        shop_id = self.kwargs.get('shop')
+        payment_method = PaymentMethod.objects.filter(shop_id=shop_id)
+        return payment_method
+    
 
 class GetPaymentView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = PaymentMethod.objects.all()
     serializer_class = AddPaymentMethodSerializer
+    def get_queryset(self):
+        shop_id = self.kwargs.get('shop')
+        payment_method = PaymentMethod.objects.filter(shop_id=shop_id)
+        return payment_method
 
 
 ### TRANSACTION RETURN VIEW

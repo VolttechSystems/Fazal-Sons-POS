@@ -12,8 +12,8 @@ urlpatterns = [
         ### CUSTOMER URL IN POS
         re_path(r'add-customer-in-pos', AddCustomerInPOSView.as_view(), name='AddCustomer'),
         ### PAYMENT METHOD URL
-        re_path(r'add_payment', AddPaymentView.as_view(), name='AddPayment'),
-        re_path(r'action_payment/(?P<pk>.+)/', GetPaymentView.as_view(), name='GetPayment'),
+        re_path(r'add_payment/(?P<shop>.+)/', AddPaymentView.as_view(), name='AddPayment'),
+        re_path(r'action_payment/(?P<shop>.+)/(?P<pk>.+)/', GetPaymentView.as_view(), name='GetPayment'),
         ### TRANSACTION URL
         # re_path(r'all_product/(?P<outlet>.+)/', AllProductView, name='AllProduct'),
         re_path(r'all_product/(?P<outlet_id>.+)/', AllProductView, name='AllProduct'),

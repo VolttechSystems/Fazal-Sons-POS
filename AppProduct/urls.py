@@ -10,9 +10,9 @@ urlpatterns = [
     re_path(r'fetch_all_outlet/(?P<shop>.+)/', FetchOutletView, name='FetchOutlet'),
     re_path(r'sync-outlets/', SyncOutlets, name='sync_outlets'),
     ### BRAND URL
-    re_path(r'add_brand', AddBrandView.as_view(), name='AddBrand'),
-    re_path(r'action_brand/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),
-    re_path(r'search_brand/(?P<code>.+)/', SearchBrandView, name='SearchBrand'),
+    re_path(r'add_brand/(?P<shop>.+)/', AddBrandView.as_view(), name='AddBrand'),
+    re_path(r'action_brand/(?P<shop>.+)/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),
+    re_path(r'search_brand/(?P<shop>.+)/(?P<code>.+)/', SearchBrandView, name='SearchBrand'),
     ### ATTRIBUTES TYPE URL
     re_path(r'add_attribute_type', AddAttributeTypeView.as_view(), name='AddAttributeType'),
     re_path(r'action_attribute_type/(?P<pk>.+)/', AttributeTypeGetView.as_view(), name='GetAttributeType'),
