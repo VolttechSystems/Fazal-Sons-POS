@@ -1,4 +1,5 @@
 from django.db import models
+from AppAdmin.models import Shop
 
 # SEASONS_CHOICES = (
 #     ('Spring', 'Spring'),
@@ -17,6 +18,7 @@ STATUS = (
 # Create your models here.
 
 class Outlet(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     outlet_code = models.CharField(max_length=100, null=True, unique=True)
     outlet_name = models.CharField(max_length=100, null=True, unique=True, blank=True)
     address = models.CharField(max_length=100, null=True, blank=True)
@@ -30,6 +32,7 @@ class Outlet(models.Model):
 
     class Meta:
         db_table = 'tbl_outlet'
+        unique_together = ('shop', 'outlet_name')
 
     def __str__(self):
         return self.outlet_name

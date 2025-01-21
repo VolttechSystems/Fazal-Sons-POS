@@ -73,6 +73,7 @@ class LoginAPIView(APIView):
                 'permissions': admin_role.permissions.values('id', 'permission_name')
             }]
             return Response({
+            "shop": "Volttech",
             "username": user_obj.username,
             "token": token.key,
             "outlet": user_outlets,
