@@ -229,6 +229,10 @@ class AdminChangePasswordView(APIView):
     
 @api_view(['GET', 'POST'])
 def AddSystemRoleView(request, shop):
+    try:
+        check_shop = Shop.objects.get(id=shop)
+    except Shop.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
    
     if request.method == 'GET':
         system_role = SystemRole.objects.filter(shop_id=shop)
@@ -255,6 +259,11 @@ class ActionSystemRoleView(generics.RetrieveUpdateDestroyAPIView):
     
 @api_view(["GET"])
 def FetchSystemRoleView(request, shop):
+    try:
+        check_shop = Shop.objects.get(id=shop)
+    except Shop.DoesNotExist:
+        return Response(status=status.HTTP_404_NOT_FOUND)
+   
     if request.method == 'GET':
         system_role = SystemRole.objects.filter(shop_id=shop)
         serializer = FetchSystemRoleSerializer(system_role, many=True)
