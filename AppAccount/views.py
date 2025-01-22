@@ -197,7 +197,7 @@ class UserDeleteAPIView(APIView):
             
 @api_view(['GET'])
 def GetPermissionsView(request):
-        permission = CustomPermissions.objects.all()
+        permission = CustomPermissions.objects.exclude(permission_name='SuperAdmin')
         serializer = PermissionSerializer(permission, many=True)
         return Response(serializer.data)
 
