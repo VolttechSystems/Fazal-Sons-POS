@@ -171,7 +171,10 @@ def CreateUserView(request, shop):
     elif request.method == 'GET':
         users = UserProfile.objects.filter(user__is_superuser=False, user__is_staff=False, shop_id=shop).select_related('user').prefetch_related('system_roles', 'outlet')
         serializer = UserProfileSerializer(users, many=True)
-        return Response(serializer.data)
+        paginator = MyLimitOffsetPagination()
+        paginated_query = paginator.paginate_queryset(serializer.data, request)
+        return paginator.get_paginated_response(paginated_query)
+        
     
     
         
