@@ -42,7 +42,6 @@ class UserProfile(models.Model):
     system_roles = models.ManyToManyField(SystemRole, related_name='users')
     outlet = models.ManyToManyField(Outlet, related_name='outlet_users')
     created_by = models.CharField(max_length=200, null=True, blank=True)
-    updated_at = models.DateTimeField()
     updated_by = models.CharField(max_length=200, null=True, blank=True)
 
 
