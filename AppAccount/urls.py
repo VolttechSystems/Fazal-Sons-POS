@@ -12,9 +12,9 @@ urlpatterns = [
     re_path(r'admin-change-password/', AdminChangePasswordView.as_view(), name='admin-change-password'),
     ## SYSTEM ROLE URLS
     re_path(r'get-all-permissions', GetPermissionsView, name='GetPermissions'),
-    re_path(r'add-system-role/', AddSystemRoleView, name='AddSystemRole'),
-    re_path(r'action-system-role/(?P<pk>.+)/', ActionSystemRoleView.as_view(), name='ActionSystemRole'),
-    re_path(r'fetch-system-role/', FetchSystemRoleView, name='FetchSystemRole'),
+    re_path(r'add-system-role/(?P<shop>.+)', AddSystemRoleView, name='AddSystemRole'),
+    re_path(r'action-system-role/(?P<shop>.+)/(?P<pk>.+)/', ActionSystemRoleView.as_view(), name='ActionSystemRole'),
+    re_path(r'fetch-system-role/(?P<shop>.+)', FetchSystemRoleView, name='FetchSystemRole'),
 ]
 
 

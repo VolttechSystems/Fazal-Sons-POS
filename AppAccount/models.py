@@ -17,8 +17,9 @@ class CustomPermissions(models.Model):
     
 
 class SystemRole(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     permissions = models.ManyToManyField('CustomPermissions', related_name='roles')
-    sys_role_name = models.CharField(max_length=200, null=True, unique=True)
+    sys_role_name = models.CharField(max_length=200, null=True)
     status = models.TextField(max_length=200, null=True) # Active, BLock
     created_at = models.DateTimeField(auto_now_add=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
@@ -27,6 +28,7 @@ class SystemRole(models.Model):
 
     class Meta:
         db_table = 'tbl_system_role'
+        unique_together = ('shop', 'sys_role_name' )
 
     def __str__(self):
         return self.sys_role_name

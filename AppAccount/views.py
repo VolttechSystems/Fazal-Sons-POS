@@ -9,6 +9,7 @@ from rest_framework.permissions import IsAuthenticated, IsAdminUser, AllowAny
 from rest_framework.decorators import api_view
 from .models import *
 from .serializer import *
+from AppProduct.views import MyLimitOffsetPagination
 
 ## Login View
 class LoginAPIView(APIView):
@@ -156,7 +157,7 @@ class LogoutView(APIView):
             return Response({"detail": "Successfully logged out."}, status=status.HTTP_200_OK)
         else:
             # Handle unauthenticated users
-            return Response({"detail": "User is not authenticated."}, status=status.HTTP_200_OK)
+            return Response({"detail": "User is not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
 
 # class CreateUserView(generics.ListCreateAPIView):
 #     model = get_user_model()
@@ -227,12 +228,15 @@ class AdminChangePasswordView(APIView):
 
     
 @api_view(['GET', 'POST'])
-def AddSystemRoleView(request):
+def AddSystemRoleView(request, shop):
    
     if request.method == 'GET':
-        system_role = SystemRole.objects.all()
+        system_role = SystemRole.objects.filter(shop_id=shop)
         serializer = SystemRoleSerializer(system_role, many=True)
-        return Response(serializer.data)
+        # return Response(serializer.data)
+        paginator = MyLimitOffsetPagination()
+        paginated_system_roles = paginator.paginate_queryset(serializer.data, request)
+        return paginator.get_paginated_response(paginated_system_roles)
 
     elif request.method == 'POST':
         serializer = PostSystemRoleSerializer(data=request.data)
@@ -242,15 +246,17 @@ def AddSystemRoleView(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)    
 
 class ActionSystemRoleView(generics.RetrieveUpdateDestroyAPIView):
-    # permission_classes = [IsAdminUser]
-    queryset = SystemRole.objects.all()
     serializer_class = PostSystemRoleSerializer
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        system_role = SystemRole.objects.filter(shop_id=get_shop).prefetch_related('permissions')
+        return system_role
   
     
 @api_view(["GET"])
-def FetchSystemRoleView(request):
+def FetchSystemRoleView(request, shop):
     if request.method == 'GET':
-        system_role = SystemRole.objects.all()
+        system_role = SystemRole.objects.filter(shop_id=shop)
         serializer = FetchSystemRoleSerializer(system_role, many=True)
         return Response(serializer.data)
 
