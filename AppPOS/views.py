@@ -13,7 +13,7 @@ from .permissions import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.db.models import Value, FloatField
 from django.db.models.functions import Cast
-from django.http import Http404
+
 
 ### ADDITIONAL FEE VIEW
 class AddAdditionalFeeView(generics.ListCreateAPIView):
@@ -22,8 +22,6 @@ class AddAdditionalFeeView(generics.ListCreateAPIView):
     
     def get_queryset(self):
         shop_id = self.kwargs.get('shop')
-        if not Shop.objects.filter(id=shop_id).exists():
-            raise Http404("Shop does not exist")
         additional_fee = AdditionalFee.objects.filter(shop_id=shop_id)    
         return additional_fee
 
@@ -33,8 +31,6 @@ class GetAdditionalFeeView(generics.RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         shop_id = self.kwargs.get('shop')
-        if not Shop.objects.filter(id=shop_id).exists():
-            raise Http404("Shop does not exist")
         additional_fee = AdditionalFee.objects.filter(shop_id=shop_id)    
         return additional_fee
 
