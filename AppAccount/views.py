@@ -17,6 +17,7 @@ class LoginAPIView(APIView):
 
     def post(self, request):
         data = request.data
+        print(data)
         serializer = LoginSerializers(data=data)
 
         if not serializer.is_valid():
@@ -83,6 +84,7 @@ class LoginAPIView(APIView):
             # Ensure Super_Super_Admin role exists
             admin_role, created = SystemRole.objects.get_or_create(
                 sys_role_name='Admin',
+                # shop_id=
                 defaults={
                     'status': 'Active',
                     'created_by': 'System',  # Default creator
@@ -104,7 +106,7 @@ class LoginAPIView(APIView):
             user_profile.system_roles.add(admin_role)
 
             # Superuser gets all outlets
-            all_outlets = Outlet.objects.values('id', 'outlet_name')
+            all_outlets = Outlet.objects.filter(shop_id=user_profile.shop.id).values('id', 'outlet_name')
             user_outlets = [{'id': outlet['id'], 'outlet_name': outlet['outlet_name']} for outlet in all_outlets]
 
             # Include Admin role with all permissions
