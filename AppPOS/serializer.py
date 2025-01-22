@@ -72,7 +72,7 @@ class PostSalesmanSerializer(serializers.ModelSerializer):
         validated_data['updated_at'] = DateTime
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
-                     validated_data['created_by'] = request.user.username
+                     validated_data['updated_by'] = request.user.username
         salesman = super().update(instance, validated_data)
         return salesman
     

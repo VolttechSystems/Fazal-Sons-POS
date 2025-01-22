@@ -1,4 +1,5 @@
 from django.db import models
+from AppAdmin.models import Shop
 
 Gender = (
     ('male', 'Male'),
@@ -21,8 +22,9 @@ ONLINE_ACCESS = (
 
 
 class CustomerChannel(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     cus_ch_code = models.CharField(max_length=200, null=True, unique=True)  # CCH-1
-    customer_channel = models.CharField(max_length=100, null=True, unique=True)
+    customer_channel = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -30,14 +32,16 @@ class CustomerChannel(models.Model):
 
     class Meta:
         db_table = 'tbl_customer_channel'
+        unique_together = ('shop', 'customer_channel')
 
     def __str__(self):
         return self.customer_channel
 
 
 class CustomerType(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     cus_type_code = models.CharField(max_length=200, null=True, unique=True)  # CTP-1
-    customer_type = models.CharField(max_length=100, null=True, unique=True)
+    customer_type = models.CharField(max_length=100, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -45,17 +49,19 @@ class CustomerType(models.Model):
 
     class Meta:
         db_table = 'tbl_customer_type'
+        unique_together = ('shop', 'customer_type')
 
     def __str__(self):
         return self.customer_type
 
 
 class Customer(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     date = models.DateTimeField(max_length=100, null=True)
     cust_code = models.CharField(max_length=200, null=True, unique=True)  # CUST-1
-    customer_channel = models.ForeignKey(CustomerChannel, to_field='customer_channel', on_delete=models.CASCADE,
+    customer_channel = models.ForeignKey(CustomerChannel, on_delete=models.CASCADE,
                                          null=True)
-    customer_type = models.ForeignKey(CustomerType, to_field='customer_type', on_delete=models.CASCADE, null=True)
+    customer_type = models.ForeignKey(CustomerType, on_delete=models.CASCADE, null=True)
     first_name = models.CharField(max_length=100, null=True)
     last_name = models.CharField(max_length=100, null=True)
     display_name = models.CharField(max_length=100, null=True, blank=True)
