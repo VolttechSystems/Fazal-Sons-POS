@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.models import AbstractUser, Group, Permission
 from AppProduct.models import Outlet
 from AppAdmin.models import Shop
-
+from django.utils.timezone import now
 
 
 class CustomPermissions(models.Model):
@@ -41,6 +41,9 @@ class UserProfile(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     system_roles = models.ManyToManyField(SystemRole, related_name='users')
     outlet = models.ManyToManyField(Outlet, related_name='outlet_users')
+    created_by = models.CharField(max_length=200, null=True, blank=True)
+    updated_at = models.DateTimeField()
+    updated_by = models.CharField(max_length=200, null=True, blank=True)
 
 
     class Meta:

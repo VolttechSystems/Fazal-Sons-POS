@@ -159,14 +159,9 @@ class LogoutView(APIView):
             # Handle unauthenticated users
             return Response({"detail": "User is not authenticated."}, status=status.HTTP_401_UNAUTHORIZED)
 
-# class CreateUserView(generics.ListCreateAPIView):
-#     model = get_user_model()
-#     # authentication_classes = [SessionAuthentication]
-#     # permission_classes = [IsAdminUser]
-#     queryset = User.objects.all()
-#     serializer_class = UserSerializer
+
 @api_view(['GET', 'POST'])
-def CreateUserView(request):
+def CreateUserView(request, shop):
     if request.method == 'POST':
         serializer = UserSerializer(data=request.data)
         if serializer.is_valid():
@@ -174,7 +169,7 @@ def CreateUserView(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
-        users = UserProfile.objects.filter(user__is_superuser=False, user__is_staff=False).select_related('user').prefetch_related('system_roles', 'outlet')
+        users = UserProfile.objects.filter(user__is_superuser=False, user__is_staff=False, shop_id=shop).select_related('user').prefetch_related('system_roles', 'outlet')
         serializer = UserProfileSerializer(users, many=True)
         return Response(serializer.data)
     

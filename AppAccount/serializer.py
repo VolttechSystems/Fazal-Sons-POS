@@ -9,6 +9,7 @@ DateTime = datetime.datetime.now()
 
 class UserSerializer(serializers.ModelSerializer):
     password = serializers.CharField(write_only=True)
+    shop = serializers.CharField(write_only=True)
     phone_number = serializers.CharField(required=False, allow_blank=True)
     system_roles = serializers.PrimaryKeyRelatedField(
         queryset=SystemRole.objects.all(), 
@@ -22,25 +23,25 @@ class UserSerializer(serializers.ModelSerializer):
     )
     class Meta:
         model = UserModel
-        fields = ['id','username', 'first_name', 'last_name', 'email', 'is_staff', 'is_superuser', 'is_active', 'password', 'phone_number', 'system_roles', 'outlet']
+        fields = ['id','username', 'first_name', 'last_name', 'email', 'is_active', 'password', 'phone_number', 'system_roles', 'outlet', 'shop']
 
 
     def create(self, validated_data):
         system_roles_data = validated_data.pop('system_roles', [])
         outlet_data = validated_data.pop('outlet', [])
         phone_number = validated_data.pop('phone_number', None)
+        shop = validated_data.pop('shop', None)
+        print(shop)
         user = UserModel.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
             first_name=validated_data['first_name'],
             last_name=validated_data['last_name'],
             email=validated_data['email'],
-            is_staff=validated_data['is_staff'],
             is_active=validated_data['is_active'],
-            is_superuser=validated_data['is_superuser'],
         )
         
-        user_profile = UserProfile.objects.create(user=user,  phone_number=phone_number)
+        user_profile = UserProfile.objects.create(user=user,  phone_number=phone_number, shop_id=shop)
         # Assign system roles to the UserProfile
         if system_roles_data:
             user_profile.system_roles.set(system_roles_data)  # Set the many-to-many relationships
@@ -106,14 +107,14 @@ class AdminChangePasswordSerializer(serializers.Serializer):
 class UserProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username')
     email = serializers.EmailField(source='user.email')
-    is_staff = serializers.BooleanField(source='user.is_staff')
     is_active = serializers.BooleanField(source='user.is_active')
+    shop = serializers.CharField(source='shop.id', read_only=True)
     system_roles = serializers.SerializerMethodField()
     outlet = serializers.SerializerMethodField()
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'phone_number', 'is_staff', 'is_active', 'system_roles', 'outlet']
+        fields = ['id', 'username', 'email', 'phone_number', 'is_active', 'system_roles', 'outlet' ,'shop']
 
     def get_system_roles(self, obj):
         return obj.system_roles.values('id', 'sys_role_name')
