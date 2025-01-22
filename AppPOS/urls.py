@@ -3,12 +3,12 @@ from .views import*
 
 urlpatterns = [
         ### ADDITIONAL FEE URL
-        re_path(r'add_additional_fee', AddAdditionalFeeView.as_view(), name='AddAdditionalFee'),
-        re_path(r'action_additional_fee/(?P<pk>.+)/', GetAdditionalFeeView.as_view(), name='GetAdditionalFee'),
+        re_path(r'add_additional_fee/(?P<shop>.+)', AddAdditionalFeeView.as_view(), name='AddAdditionalFee'),
+        re_path(r'action_additional_fee/(?P<shop>.+)/(?P<pk>.+)', GetAdditionalFeeView.as_view(), name='GetAdditionalFee'),
         ### SALESMAN URL
-        re_path(r'add_salesman', AddSalesmanView, name='AddSalesman'),
-        re_path(r'action_salesman/(?P<pk>.+)/', GetSalesmanView.as_view(), name='GetSalesman'),
-        re_path(r'outlet-wise-salesman/(?P<outlet_id>.+)/', GetOutletWiseSalesmanView, name='GetOutletWiseSalesmanView'),
+        re_path(r'add_salesman/(?P<shop>.+)', AddSalesmanView, name='AddSalesman'),
+        re_path(r'action_salesman/(?P<shop>.+)/(?P<pk>.+)', GetSalesmanView.as_view(), name='GetSalesman'),
+        re_path(r'outlet-wise-salesman/(?P<shop>.+)/(?P<outlet_id>.+)', GetOutletWiseSalesmanView, name='GetOutletWiseSalesmanView'),
         ### CUSTOMER URL IN POS
         re_path(r'add-customer-in-pos', AddCustomerInPOSView.as_view(), name='AddCustomer'),
         ### PAYMENT METHOD URL

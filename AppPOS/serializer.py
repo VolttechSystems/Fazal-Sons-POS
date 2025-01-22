@@ -10,27 +10,88 @@ from django.utils.timezone import now
 
 
 DateTime = datetime.datetime.now()
-
-### TRANSACTION SERIALIZER
+### ADDITIONAL FEE SERIALIZER
 class AdditionalFeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AdditionalFee
-        fields = ['id','fee_code','fee_name']
+        fields = ['id','fee_code','fee_name','shop']
 
     def create(self, validated_data):
         validated_data['fee_code'] = AutoGenerateCodeForModel(AdditionalFee, 'fee_code', 'FEE-')
         validated_data['updated_at'] = None
         validated_data['created_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['created_by'] = request.user.username
         fee = super().create(validated_data)
         return fee
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['updated_by'] = request.user.username
         fee = super().update(instance, validated_data)
         return fee
+    
+### SALESMAN SERIALIZER
+class PostSalesmanSerializer(serializers.ModelSerializer):
+
+    outlet = serializers.PrimaryKeyRelatedField(
+        many=True, queryset=Outlet.objects.all()
+    )
+    class Meta:
+        model = Salesman
+        fields = ['id', 'salesman_code','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission', 'outlet', 'shop']
+        
+    def create(self, validated_data):
+        get_checkBox_value = self.context['request'].data['CheckBoxValue']
+
+        validated_data['salesman_code'] = AutoGenerateCodeForModel(Salesman, 'salesman_code', 'SL-')
+        if get_checkBox_value == 'true':
+            get_salesman_commision = salesman_commission
+            validated_data['wholesale_commission'] = str(get_salesman_commision['wholesale_commission'])
+            validated_data['retail_commission'] = str(get_salesman_commision['retail_commission'])
+            validated_data['token_commission'] = str(get_salesman_commision['token_commission'])
+        validated_data['updated_at'] = None
+        validated_data['created_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['created_by'] = request.user.username
+        salesman = super().create(validated_data)
+        return salesman
+
+    def update(self, instance, validated_data):
+        get_checkBox_value = self.context['request'].data['CheckBoxValue']
+        
+        if get_checkBox_value == 'true':
+            get_salesman_commision = salesman_commission
+            validated_data['wholesale_commission'] = str(get_salesman_commision['wholesale_commission'])
+            validated_data['retail_commission'] = str(get_salesman_commision['retail_commission'])
+            validated_data['token_commission'] = str(get_salesman_commision['token_commission'])
+        validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['created_by'] = request.user.username
+        salesman = super().update(instance, validated_data)
+        return salesman
+    
+
+class OutletSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Outlet
+        fields = ['id', 'outlet_name', 'outlet_code']
+        
 
 
-### ADDITIONAL FEE SERIALIZER
+class AddSalesmanSerializer(serializers.ModelSerializer):
+    outlet = OutletSerializer(many=True, read_only=True)
+    class Meta:
+        model = Salesman
+        fields = ['id', 'salesman_code','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission', 'outlet', 'shop']
+
+
+### TRANSACTION SERIALIZER
 class TransactionItemSerializer(serializers.ModelSerializer):
     cust_code = serializers.CharField(required=False)
     saleman_code = serializers.CharField(required=False)
@@ -235,41 +296,6 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 
 
 
-class PostSalesmanSerializer(serializers.ModelSerializer):
-
-    outlet = serializers.PrimaryKeyRelatedField(
-        many=True, queryset=Outlet.objects.all()
-    )
-    class Meta:
-        model = Salesman
-        fields = ['id', 'salesman_code','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission', 'outlet']
-        
-    def create(self, validated_data):
-        get_checkBox_value = self.context['request'].data['CheckBoxValue']
-
-        validated_data['salesman_code'] = AutoGenerateCodeForModel(Salesman, 'salesman_code', 'SL-')
-        if get_checkBox_value == 'true':
-            get_salesman_commision = salesman_commission
-            validated_data['wholesale_commission'] = str(get_salesman_commision['wholesale_commission'])
-            validated_data['retail_commission'] = str(get_salesman_commision['retail_commission'])
-            validated_data['token_commission'] = str(get_salesman_commision['token_commission'])
-        validated_data['updated_at'] = None
-        validated_data['created_at'] = DateTime
-        salesman = super().create(validated_data)
-        return salesman
-
-    def update(self, instance, validated_data):
-        get_checkBox_value = self.context['request'].data['CheckBoxValue']
-        
-        if get_checkBox_value == 'true':
-            get_salesman_commision = salesman_commission
-            validated_data['wholesale_commission'] = str(get_salesman_commision['wholesale_commission'])
-            validated_data['retail_commission'] = str(get_salesman_commision['retail_commission'])
-            validated_data['token_commission'] = str(get_salesman_commision['token_commission'])
-        validated_data['updated_at'] = None
-        validated_data['created_at'] = DateTime
-        salesman = super().update(instance, validated_data)
-        return salesman
 
 class AddCustomerInPOSSerializer(serializers.ModelSerializer):
     class Meta:
@@ -324,38 +350,7 @@ class AddCustomerInPOSSerializer(serializers.ModelSerializer):
         customer = super().update(instance, validated_data)
         return customer
 
-class OutletSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Outlet
-        fields = ['id', 'outlet_name', 'outlet_code']
-        
 
-
-### SALESMAN SERIALIZER
-class AddSalesmanSerializer(serializers.ModelSerializer):
-    outlet = OutletSerializer(many=True, read_only=True)
-    class Meta:
-        model = Salesman
-        fields = ['id', 'salesman_code','salesman_name', 'wholesale_commission', 'retail_commission', 'token_commission', 'outlet']
-
-    # def create(self, validated_data):
-    #     get_checkBox_value = self.context['request'].data['CheckBoxValue']
-
-    #     validated_data['salesman_code'] = AutoGenerateCodeForModel(Salesman, 'salesman_code', 'SL-')
-    #     if get_checkBox_value == 'true':
-    #         get_salesman_commision = salesman_commission
-    #         validated_data['wholesale_commission'] = str(get_salesman_commision['wholesale_commission'])
-    #         validated_data['retail_commission'] = str(get_salesman_commision['retail_commission'])
-    #         validated_data['token_commission'] = str(get_salesman_commision['token_commission'])
-    #     validated_data['updated_at'] = None
-    #     validated_data['created_at'] = DateTime
-    #     salesman = super().create(validated_data)
-    #     return salesman
-
-    # def update(self, instance, validated_data):
-    #     validated_data['updated_at'] = DateTime
-    #     salesman = super().update(instance, validated_data)
-    #     return validated_data
 
 
 ### PAYMENT METHOD SERIALIZER

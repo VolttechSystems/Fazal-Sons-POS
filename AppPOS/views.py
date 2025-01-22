@@ -8,10 +8,81 @@ from datetime import date
 from django.db.models import Sum, Value
 from django.db.models.functions import Coalesce
 from AppProduct.models import *
+from AppProduct.views import LimitOffsetPagination
 from .permissions import *
 from rest_framework.permissions import IsAuthenticated, IsAdminUser
 from django.db.models import Value, FloatField
 from django.db.models.functions import Cast
+
+
+### ADDITIONAL FEE VIEW
+class AddAdditionalFeeView(generics.ListCreateAPIView):
+    serializer_class = AdditionalFeeSerializer
+    pagination_class = None
+    
+    def get_queryset(self):
+        shop_id = self.kwargs.get('shop')
+        additional_fee = AdditionalFee.objects.filter(shop_id=shop_id)    
+        return additional_fee
+
+class GetAdditionalFeeView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = AdditionalFeeSerializer
+    pagination_class = None
+    
+    def get_queryset(self):
+        shop_id = self.kwargs.get('shop')
+        additional_fee = AdditionalFee.objects.filter(shop_id=shop_id)    
+        return additional_fee
+
+
+### SALESMAN VIEW
+@api_view(['POST', 'GET'])
+def AddSalesmanView(request, shop):
+    try:
+        Shop.objects.get(id=shop)
+    except Shop.DoesNotExist:
+        return Response(status=HTTP_404_NOT_FOUND)
+    
+    if request.method == 'POST':
+        serializer = PostSalesmanSerializer(data=request.data, context={'request': request})
+        if serializer.is_valid():
+            try:
+                serializer.save()
+                return Response(serializer.data, status=HTTP_201_CREATED)
+            except Exception as e:
+                # Log or return detailed exception information
+                return Response({"error": str(e)}, status=HTTP_400_BAD_REQUEST)
+        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        salesman = Salesman.objects.filter(shop_id=shop)
+        serializer = AddSalesmanSerializer(salesman, many=True) 
+        paginator = LimitOffsetPagination()
+        paginated_salesman = paginator.paginate_queryset(serializer.data, request)
+        return paginator.get_paginated_response(paginated_salesman)
+
+
+class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = PostSalesmanSerializer
+    pagination_class = None
+    
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        salesman = Salesman.objects.filter(shop_id=get_shop)
+        return salesman
+    
+    
+@api_view(['GET'])
+def GetOutletWiseSalesmanView(request, shop, outlet_id):
+    try:
+        get_outlet = Outlet.objects.get(id=outlet_id)
+    except Outlet.DoesNotExist: 
+        return Response(status=HTTP_404_NOT_FOUND)
+    if request.method == 'GET':
+        salesmen = Salesman.objects.filter(shop_id=shop, salesmanoutlet__outlet_id=outlet_id).prefetch_related('salesmanoutlet')
+        salesman_names = salesmen.values('salesman_code','salesman_name')
+        return Response(salesman_names, status=HTTP_200_OK)
+
+
 
 @api_view(['GET'])
 def AllProductView(request, outlet_id):
@@ -47,64 +118,10 @@ class AddTransactionView(generics.CreateAPIView):
     serializer_class = TransactionItemSerializer
     # permission_classes = [IsAuthenticated, IsCashier]
     pagination_class = None
-
-
-### ADDITIONAL FEE VIEW
-class AddAdditionalFeeView(generics.ListCreateAPIView):
-    queryset = AdditionalFee.objects.all()
-    serializer_class = AdditionalFeeSerializer
-    pagination_class = None
-
-
-class GetAdditionalFeeView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = AdditionalFee.objects.all()
-    serializer_class = AdditionalFeeSerializer
-    pagination_class = None
-
-
-# ### SALESMAN VIEW
-# class AddSalesmanView(generics.ListCreateAPIView):
-#     queryset = Salesman.objects.all()
-#     serializer_class = AddSalesmanSerializer
-#     pagination_class = None
-@api_view(['POST', 'GET'])
-def AddSalesmanView(request):
-    if request.method == 'POST':
-        serializer = PostSalesmanSerializer(data=request.data, context={'request': request})
-        if serializer.is_valid():
-            try:
-                serializer.save()
-                return Response(serializer.data, status=HTTP_201_CREATED)
-            except Exception as e:
-                # Log or return detailed exception information
-                return Response({"error": str(e)}, status=HTTP_400_BAD_REQUEST)
-        return Response(serializer.errors, status=HTTP_400_BAD_REQUEST)
-    elif request.method == 'GET':
-        salesman = Salesman.objects.all()
-        serializer = AddSalesmanSerializer(salesman, many=True) 
-        return Response(serializer.data, status=HTTP_200_OK)
-
-class GetSalesmanView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = Salesman.objects.all()
-    serializer_class = PostSalesmanSerializer
-    pagination_class = None
-    
-@api_view(['GET'])
-def GetOutletWiseSalesmanView(request, outlet_id):
-    try:
-        get_outlet = Outlet.objects.get(id=outlet_id)
-    except Outlet.DoesNotExist: 
-        return Response(status=HTTP_404_NOT_FOUND)
-    if request.method == 'GET':
-        salesmen = Salesman.objects.filter(salesmanoutlet__outlet_id=outlet_id).prefetch_related('salesmanoutlet')
-        salesman_names = salesmen.values('salesman_code','salesman_name')
-        return Response(salesman_names, status=HTTP_200_OK)
     
 class AddCustomerInPOSView(generics.ListCreateAPIView):
     queryset = Customer.objects.all()
     serializer_class = AddCustomerInPOSSerializer
-    
-    
 
 ### PAYMENT VIEW
 class AddPaymentView(generics.ListCreateAPIView):
