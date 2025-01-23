@@ -7,9 +7,9 @@ from rest_framework import status
 
 
 @api_view(['PUT', 'GET'])
-def AddStockView(request, code):
+def AddStockView(request, shop, code):
     if request.method == 'GET':
-        stock = Stock.objects.filter(product_name=code)
+        stock = Stock.objects.filter(shop_id=shop, product_name=code)
         serializer = StockSerializer(stock, many=True)
         return Response(serializer.data)
     elif request.method == 'PUT':
@@ -19,7 +19,7 @@ def AddStockView(request, code):
         errors = []
         for item in request.data:
             try:
-                stock = Stock.objects.get(sku=item['sku'])
+                stock = Stock.objects.get(shop_id=shop, sku=item['sku'])
                 serializer = StockSerializer(stock, data=item, partial=True)  # partial=True allows partial updates
                 if serializer.is_valid():
                     serializer.save()

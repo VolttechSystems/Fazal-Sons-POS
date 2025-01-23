@@ -2,18 +2,12 @@ from django.shortcuts import render
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .serializer import *
-from django.http import Http404
 from rest_framework import generics
-from rest_framework.authentication import (
-    SessionAuthentication,
-    TokenAuthentication,
-    BaseAuthentication,
-)
 from rest_framework.permissions import IsAuthenticated, AllowAny, IsAdminUser
-from django.conf import settings
-from django.db.models.signals import post_save
-from django.dispatch import receiver
-from rest_framework.authtoken.models import Token
+# from django.conf import settings
+# from django.db.models.signals import post_save
+# from django.dispatch import receiver
+# from rest_framework.authtoken.models import Token
 from django.db import connections
 from rest_framework.pagination import PageNumberPagination, LimitOffsetPagination
 from rest_framework import status
@@ -21,19 +15,19 @@ from rest_framework.parsers import MultiPartParser, FormParser
 from AppCustomer.utils import DistinctFetchAll
 from django.db.models import Prefetch
 from rest_framework.exceptions import NotFound
-from django.shortcuts import get_object_or_404
 
 ### FUNCTION THAT CREATE TOKEN WHEN USER IS CREATED
-@receiver(post_save, sender=settings.AUTH_USER_MODEL)
-def create_auth_token(sender, instance=None, created=False, **kwargs):
-    if created:
-        Token.objects.create(user=instance)
+# @receiver(post_save, sender=settings.AUTH_USER_MODEL)
+# def create_auth_token(sender, instance=None, created=False, **kwargs):
+#     if created:
+#         Token.objects.create(user=instance)
 
 
-### PAGINATION CLASS
+### CUSTOM PAGINATION CLASS
 class MyLimitOffsetPagination(LimitOffsetPagination):
     limit_query_param = "limit"
     offset_query_param = "Starting"
+
 
 ### OUTLET VIEW
 class AddOutletView(generics.ListCreateAPIView):
@@ -46,6 +40,7 @@ class AddOutletView(generics.ListCreateAPIView):
         shop_id = self.kwargs.get('shop')
         return Outlet.objects.filter(shop_id=shop_id).order_by("id")
         
+        
 class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Outlet.objects.all().order_by("id")
     serializer_class = OutletSerializer
@@ -54,7 +49,6 @@ class OutletGetView(generics.RetrieveUpdateDestroyAPIView):
         shop_id = self.kwargs.get('shop')
         return Outlet.objects.filter(shop_id=shop_id).order_by("id")
         
-    
 
 @api_view(["GET"])
 def FetchOutletView(request, shop):
@@ -80,6 +74,7 @@ def SyncOutlets(request):
         print(f"Error syncing outlets: {e}")
         return Response({'error': 'Error syncing outlets'}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
 ### BRAND VIEW
 class AddBrandView(generics.ListCreateAPIView):
     permission_classes = [AllowAny]
@@ -89,7 +84,6 @@ class AddBrandView(generics.ListCreateAPIView):
         shop_id = self.kwargs.get('shop')
         brand = Brand.objects.filter(shop_id=shop_id)
         return brand
-        
         
 
 class BrandGetView(generics.RetrieveUpdateDestroyAPIView):
@@ -114,6 +108,7 @@ def SearchBrandView(request, shop, code):
         }
         return Response(param)
     return Response(status=status.HTTP_204_NO_CONTENT)
+
 
 ### ATTRIBUTES TYPE VIEW
 class AddAttributeTypeView(generics.ListCreateAPIView):
@@ -177,13 +172,15 @@ def AddVariationGroupView(request, shop):
         paginator = LimitOffsetPagination()
         paginated_variation_group = paginator.paginate_queryset(array, request)
         return paginator.get_paginated_response(paginated_variation_group)
-    
     if request.method == "POST":
         data = request.data
         for i in range(len(data)):
             serializer = VariationGroupSerializer(data=request.data[i])
             if serializer.is_valid():
                 serializer.save()
+            # else:
+            #     return Response(serializer.error, status="400")
+                
         return Response(data, status="200")
 
 
@@ -228,11 +225,9 @@ def GetVariationGroupView(request, shop, att_id):
             attribute = Attribute.objects.get(shop_id=shop, id=id)
         except:
             return Response("NO RECORD FOUND")
-
         attribute.attribute_name = data["attribute_name"]
         attribute.att_type_id = data["att_type"]
         attribute.save()
-
         variation = Variation.objects.filter(shop_id=shop, attribute_name=att_id)
         if len(variation) == len(data["variation_name"]):
             for i in range(len(variation)):
@@ -311,7 +306,6 @@ def FetchVariationGroupView(request, shop, att_typ_id):
         return Response(array)
 
 
-
 ### HEAD CATEGORY VIEW
 class AddHeadCategoryView(generics.ListCreateAPIView):
     serializer_class = HeadCategorySerializer
@@ -322,6 +316,7 @@ class AddHeadCategoryView(generics.ListCreateAPIView):
         queryset = HeadCategory.objects.filter(shop_id=get_shop).order_by("id")
         return queryset
 
+
 class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = HeadCategorySerializer
     pagination_class = LimitOffsetPagination
@@ -330,6 +325,7 @@ class HeadCategoryGetView(generics.RetrieveUpdateDestroyAPIView):
         get_shop = self.kwargs.get('shop')
         queryset = HeadCategory.objects.filter(shop_id=get_shop).order_by("id")
         return queryset
+
 
 ### PARENT CATEGORY VIEW
 class AddParentCategoryView(generics.ListCreateAPIView):

@@ -2,8 +2,6 @@ from django.urls import re_path
 from AppProduct.views import *
 
 urlpatterns = [
-
-
     ### OUTLET URL
     re_path(r'add_outlet/(?P<shop>.+)/', AddOutletView.as_view(), name='AddOutlet'),
     re_path(r'action_outlet/(?P<shop>.+)/(?P<pk>.+)/', OutletGetView.as_view(), name='GetOutlet'),
@@ -38,29 +36,22 @@ urlpatterns = [
     re_path(r'fetch_head_to_parent_category/(?P<shop>.+)/(?P<code>.+)', FetchParentCategoryView, name='FetchParentCategory'),
     re_path(r'fetch_parent_to_category/(?P<shop>.+)/(?P<code>.+)', FetchCategoryView, name='FetchCategory'),
     re_path(r'fetch_category_to_sub_category/(?P<shop>.+)/(?P<code>.+)', FetchSubCategoryView, name='FetchSubCategory'),
- 
     ### TEMPORARY PRODUCT
     re_path(r'add_temp_product/(?P<shop>.+)', AddTemporaryProductView.as_view(), name='AddTemporaryProduct'),
     re_path(r'action_temp_product/(?P<shop>.+)/(?P<pk>.+)', TemporaryProductGetView.as_view(), name='GetTemporaryProduct'),
     re_path(r'all-temp-product-delete/(?P<shop>.+)', DeleteTemporaryProductView, name='DeleteTemporaryProduct'),
-    
     ### PRODUCT
     re_path(r'add_product/(?P<shop>.+)', AddProduct.as_view(), name='AddProduct'),
     re_path(r'action_product/(?P<shop>.+)/(?P<pk>.+)', ProductGetView.as_view(), name='GetProduct'),
     re_path(r'show_product/(?P<shop>.+)/(?P<outlet>.+)', ShowAllProductView, name='ShowAllProduct'),
     re_path(r'shows_all_product_detail/(?P<shop>.+)/(?P<product_id>.+)', ShowAllProductDetailView, name='ShowAllProductDetail'),
-    re_path(r'barcode_product_data/(?P<shop>.+)/(?P<sku>.+)', BarcodeDataView, name='BarcodeData'), ## DISPLAY THE DATA ON BARCODE
-    
-    ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
+    ## DISPLAY THE DATA ON BARCODE
+    re_path(r'barcode_product_data/(?P<shop>.+)/(?P<sku>.+)', BarcodeDataView, name='BarcodeData'), 
+    ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK 
+    re_path(r'get_product/(?P<shop>.+)/(?P<outlet_id>.+)', GetAllProductView, name='GetAllProduct'),
+     ### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES
     # re_path(r'fetch_all_attribute_type/', FetchAllAttributeTypeView, name='FetchAllAttributeType'),
     # re_path(r'fetch_attribute/(?P<code>.+)/', FetchAttributeView, name='FetchAttributeType'),
     # re_path(r'fetch_variation/(?P<code>.+)/', FetchVariationView, name='FetchAttributeName'),
-    ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK 
-    re_path(r'get_product/(?P<shop>.+)/(?P<outlet_id>.+)', GetAllProductView, name='GetAllProduct'),
     
-  
-
 ]
-
-## Product Edit 
-
