@@ -104,18 +104,24 @@ class AttributeTypeSerializer(serializers.ModelSerializer):
 class HeadCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = HeadCategory
-        fields = ['id', 'hc_name', 'symbol', 'description', 'status']
+        fields = ['id', 'hc_name', 'symbol', 'description', 'status', 'shop']
 
     def create(self, validated_data):
         h_category = super().create(validated_data)
         h_category.created_at = DateTime
         h_category.updated_at = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     h_category.created_by = request.user.username
         h_category.save()
         return h_category
 
     def update(self, instance, validated_data):
         h_category = super().update(instance, validated_data)
         h_category.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     h_category.updated_by = request.user.username
         h_category.save()
         return h_category
 
@@ -124,18 +130,24 @@ class HeadCategorySerializer(serializers.ModelSerializer):
 class ParentCategorySerializer(serializers.ModelSerializer):
     class Meta:
         model = ParentCategory
-        fields = ['id', 'pc_name', 'symbol', 'description', 'status', 'hc_name']
+        fields = ['id', 'pc_name', 'symbol', 'description', 'status', 'hc_name', 'shop']
 
     def create(self, validated_data):
         p_category = super().create(validated_data)
         p_category.created_at = DateTime
         p_category.updated_at = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     p_category.created_by = request.user.username
         p_category.save()
         return p_category
 
     def update(self, instance, validated_data):
         p_category = super().update(instance, validated_data)
         p_category.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     p_category.updated_by = request.user.username
         p_category.save()
         return p_category
 
@@ -153,6 +165,9 @@ class CategorySerializer(serializers.ModelSerializer):
             validated_data['attribute_group'] = []
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['created_by']= request.user.username
         category = super().create(validated_data)
         return category
 
@@ -161,6 +176,9 @@ class CategorySerializer(serializers.ModelSerializer):
         if get_subcategory_option == 'True':
             validated_data['attribute_group'] = []
         validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['updated_by']= request.user.username
         category = super().update(instance, validated_data)
         return category
 
@@ -176,12 +194,18 @@ class SubCategorySerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['created_by']= request.user.username
         subcategory = super().create(validated_data)
         return subcategory
 
     def update(self, instance, validated_data):
         validated_data['created_at'] = DateTime
         validated_data['updated_at'] = None
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     validated_data['updated_by']= request.user.username
         sub_category = super().update(instance, validated_data)
         return sub_category
 

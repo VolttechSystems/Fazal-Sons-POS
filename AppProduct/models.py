@@ -113,7 +113,8 @@ class Variation(models.Model):
 
 
 class HeadCategory(models.Model):
-    hc_name = models.CharField(max_length=100, null=True, unique=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+    hc_name = models.CharField(max_length=100, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
@@ -124,14 +125,16 @@ class HeadCategory(models.Model):
 
     class Meta:
         db_table = 'tbl_head_category'
+        unique_together = ('shop', 'hc_name')
 
     def __str__(self):
         return self.hc_name
 
 
 class ParentCategory(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     hc_name = models.ForeignKey(HeadCategory, on_delete=models.CASCADE, null=True)
-    pc_name = models.CharField(max_length=100, null=True, unique=True)
+    pc_name = models.CharField(max_length=100, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
@@ -142,15 +145,17 @@ class ParentCategory(models.Model):
 
     class Meta:
         db_table = 'tbl_parent_category'
+        unique_together = ('shop', 'pc_name')
 
     def __str__(self):
         return self.pc_name
 
 
 class Category(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     pc_name = models.ForeignKey(ParentCategory, on_delete=models.CASCADE, null=True)
     attribute_group = models.ManyToManyField(Attribute, through='CategoryAttribute')
-    category_name = models.CharField(max_length=100, null=True, unique=True)
+    category_name = models.CharField(max_length=100, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     subcategory_option = models.TextField(max_length=500, null=True)  # True, False
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -162,6 +167,7 @@ class Category(models.Model):
 
     class Meta:
         db_table = 'tbl_category'
+        unique_together = ('shop', 'category_name')
 
     def __str__(self):
         return self.category_name
@@ -176,9 +182,10 @@ class CategoryAttribute(models.Model):
 
 
 class SubCategory(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
     attribute_group = models.ManyToManyField(Attribute, through='SubCategoryAttribute')
-    sub_category_name = models.CharField(max_length=100, null=True, unique=True)
+    sub_category_name = models.CharField(max_length=100, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
@@ -190,6 +197,7 @@ class SubCategory(models.Model):
 
     class Meta:
         db_table = 'tbl_sub_category'
+        unique_together = ('shop', 'sub_category_name')
 
     def __str__(self):
         return self.sub_category_name
