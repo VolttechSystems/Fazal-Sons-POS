@@ -244,6 +244,8 @@ class TempProductSerializer(serializers.ModelSerializer):
         get_variations = ast.literal_eval(get_variations)
         outlet = validated_data.get('outlet')
         brand = validated_data.get('brand')
+        shop_id = validated_data.get('shop')
+        print(shop_id)
         if len(get_variations) > 0:
 
             initial_variations = list(product(*get_variations))
@@ -271,6 +273,9 @@ class TempProductSerializer(serializers.ModelSerializer):
                             validated_data['color'] = get_color[color]
                             validated_data['description'] = specs
                             validated_data['created_at'] = DateTime
+                            request = self.context.get('request')
+                            if request and hasattr(request, 'user'):
+                                        validated_data['created_by']= request.user.username
                             parent = super().create(validated_data)
             else:
                 for variation in initial_variations:
@@ -281,11 +286,17 @@ class TempProductSerializer(serializers.ModelSerializer):
                     specs = "-".join(map(str, all_variation))
                     validated_data['description'] = specs
                     validated_data['created_at'] = DateTime
+                    request = self.context.get('request')
+                    if request and hasattr(request, 'user'):
+                            validated_data['created_by']= request.user.username
                     parent = super().create(validated_data)
         return parent
 
     def update(self, instance, validated_data):
         validated_data['updated_at'] = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                validated_data['updated_by']= request.user.username
         parent = super().update(instance, validated_data)
         return parent
 
@@ -303,7 +314,11 @@ class ProductSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         parent = ''
-        tem_product = TemporaryProduct.objects.all()
+        # Access the request from the context
+        request = self.context.get('request')
+        # Get the URL parameter
+        shop_id = request.parser_context['kwargs'].get('shop')
+        tem_product = TemporaryProduct.objects.filter(shop_id=shop_id)
         len_tem_product = len(tem_product)
         for x in range(len_tem_product):
             outlet = tem_product[x].outlet
@@ -341,8 +356,11 @@ class ProductSerializer(serializers.ModelSerializer):
             validated_data['retail_price'] = tem_product[x].retail_price
             validated_data['token_price'] = tem_product[x].token_price
             validated_data['created_at'] = DateTime
+            validated_data['created_by'] = tem_product[x].created_by
+            validated_data['shop_id'] = tem_product[x].shop_id
             # Add Stock
             add_stock = Stock(
+                shop_id=shop_id,
                 product_name=tem_product[x].product_name,
                 sku=auto_sku_code,
                 color=tem_product[x].color,
@@ -368,7 +386,7 @@ class ShowAllProductSerializer(serializers.ModelSerializer):
     brand = serializers.StringRelatedField()  
     class Meta:
         model = Product
-        fields = ['id', 'product_name', 'outlet', 'brand']
+        fields = ['id', 'product_name', 'outlet', 'brand', 'shop']
 
 
 ### ATTRIBUTE SERIALIZER

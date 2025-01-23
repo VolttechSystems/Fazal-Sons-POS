@@ -681,38 +681,99 @@ def FetchSubCategoriesView(request, shop, id):
     return Response(response_data, status=status.HTTP_200_OK)
 
 
+### FETCH ALL CATEGORIES ACCORDING TO THEIR SUB_CATEGORIES VIEW
+@api_view(["GET"])
+def FetchParentCategoryView(request, shop, code):
+    p_category = ParentCategory.objects.filter(shop_id=shop, hc_name_id=code)
+    serializer = ParentCategorySerializer(p_category, many=True)
+    return Response(serializer.data)
+
+
+@api_view(["GET"])
+def FetchCategoryView(request, shop, code):
+    category = Category.objects.filter(shop_id=shop, pc_name_id=code)
+    category_array = []
+    if len(category) > 0:
+        for i in range(len(category)):
+            category_dict = dict()
+            category_dict["id"] = category[i].id
+            category_dict["category_name"] = category[i].category_name
+            category_dict["symbol"] = category[i].symbol
+            category_dict["description"] = category[i].description
+            category_dict["status"] = category[i].status
+            category_dict["pc_name"] = category[i].pc_name_id
+            category_dict["shop"] = category[i].shop_id
+            category_array.append(category_dict)
+    return Response(category_array)
+
+
+@api_view(["GET"])
+def FetchSubCategoryView(request, shop, code):
+    sub_category = SubCategory.objects.filter(shop_id=shop, category_id=code)
+    sub_category_array = []
+    if len(sub_category) > 0:
+        for i in range(len(sub_category)):
+            sub_category_dict = dict()
+            sub_category_dict["id"] = sub_category[i].id
+            sub_category_dict["sub_category_name"] = sub_category[i].sub_category_name
+            sub_category_dict["symbol"] = sub_category[i].symbol
+            sub_category_dict["description"] = sub_category[i].description
+            sub_category_dict["status"] = sub_category[i].status
+            sub_category_dict["category"] = sub_category[i].category_id
+            sub_category_dict["shop"] = sub_category[i].shop_id
+            sub_category_array.append(sub_category_dict)
+    return Response(sub_category_array)
+
+
 ### TEMPORARY PRODUCT VIEW
 class AddTemporaryProductView(generics.ListCreateAPIView):
     # parser_classes = [MultiPartParser, FormParser]
-    queryset = TemporaryProduct.objects.all().order_by("id")
-    serializer_class = TempProductSerializer
-    pagination_class = None
-
-class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = TemporaryProduct.objects.all().order_by("id")
     serializer_class = TempProductSerializer
     pagination_class = None
     
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        queryset = TemporaryProduct.objects.filter(shop_id=get_shop).order_by("id")
+        return queryset
+
+class TemporaryProductGetView(generics.RetrieveUpdateDestroyAPIView):
+    serializer_class = TempProductSerializer
+    pagination_class = None
+    
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        queryset = TemporaryProduct.objects.filter(shop_id=get_shop).order_by("id")
+        return queryset
+    
 @api_view(["DELETE"])
-def DeleteTemporaryProductView(request):
+def DeleteTemporaryProductView(request, shop):
     try:
         # Delete all rows
-        TemporaryProduct.objects.all().delete()
+        TemporaryProduct.objects.filter(shop_id=shop).delete()
         return Response(status=status.HTTP_200_OK)
     except Exception as e:
         return Response({"error": str(e)}, status=status.HTTP_500_INTERNAL_SERVER_ERROR)
 
 ### PRODUCT VIEW
 class AddProduct(generics.ListCreateAPIView):
-    queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
-    pagination_class = None
+    pagination_class = LimitOffsetPagination
+    
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        queryset = Product.objects.filter(shop_id=get_shop).order_by("id")
+        return queryset
     
 
 class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     queryset = Product.objects.all().order_by("id")
     serializer_class = ProductSerializer
     pagination_class = None
+    
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        queryset = Product.objects.filter(shop_id=get_shop).order_by("id")
+        return queryset
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -725,25 +786,25 @@ class ProductGetView(generics.RetrieveUpdateDestroyAPIView):
     
     
 @api_view(['GET'])    
-def ShowAllProductView(request, outlet):
+def ShowAllProductView(request,shop, outlet):
     try:
-        get_outlet = Outlet.objects.get(id=outlet)
+        get_outlet = Outlet.objects.get(shop_id=shop, id=outlet)
     except Outlet.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
-    products = Product.objects.filter(outlet_id=outlet).distinct('product_name').select_related('outlet', 'brand')
+    products = Product.objects.filter(shop_id=shop, outlet_id=outlet).distinct('product_name').select_related('outlet', 'brand')
     serializer = ShowAllProductSerializer(products, many=True)
     return Response(serializer.data)
 
 
 @api_view(['GET']) 
-def ShowAllProductDetailView(request, product_id):
+def ShowAllProductDetailView(request, shop, product_id):
     try:
         ### Retrieve the product and its name
-        get_product_name = Product.objects.get(id=product_id).product_name
+        get_product_name = Product.objects.get(shop_id=shop, id=product_id).product_name
     except Product.DoesNotExist:
         raise NotFound(detail=f"Product with ID {product_id} does not exist.")
     ### FILTER PRODUCTS DETAIL
-    products = Product.objects.filter(product_name=get_product_name).select_related('outlet', 'brand', 'category__pc_name__hc_name', 'sub_category')
+    products = Product.objects.filter(shop_id=shop, product_name=get_product_name).select_related('outlet', 'brand', 'category__pc_name__hc_name', 'sub_category')
 
     product_header_array = []
     product_detail_array = []
@@ -785,98 +846,59 @@ def ShowAllProductDetailView(request, product_id):
 
 
 @api_view(['GET']) 
-def BarcodeDataView(request, sku):
+def BarcodeDataView(request,shop, sku):
     try:
-        get_product = Product.objects.get(sku=sku)
+        get_product = Product.objects.get(shop_id=shop, sku=sku)
     except Outlet.DoesNotExist:
         return Response(status=status.HTTP_404_NOT_FOUND)
     serializer = ProductSerializer(get_product)
     return Response(serializer.data)
    
 
-### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES VIEW
-@api_view(["GET"])
-def FetchAllAttributeTypeView(request):
-    cursor = connections["default"].cursor()
-    query = "SELECT att_type from tbl_attribute_type"
-    cursor.execute(query)
-    all_attribute_type = DistinctFetchAll(cursor)
-    return Response(all_attribute_type)
-
-
-@api_view(["GET"])
-def FetchAttributeView(request, code):
-    cursor = connections["default"].cursor()
-    query = (
-        "select attribute_name from tbl_attribute where att_type_id = '" + code + "'"
-    )
-    cursor.execute(query)
-    fetch_attribute = DistinctFetchAll(cursor)
-    return Response(fetch_attribute)
-
-
-@api_view(["GET"])
-def FetchVariationView(request, code):
-    cursor = connections["default"].cursor()
-    query_employee = (
-        "SELECT variation_name, symbol FROM tbl_variation where attribute_name_id = '"
-        + code
-        + "'"
-    )
-    cursor.execute(query_employee)
-    employee_location = DistinctFetchAll(cursor)
-    return Response(employee_location)
-
 
 ### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK VIEW
 @api_view(["GET"])
-def GetAllProductView(request, outlet_id):
+def GetAllProductView(request, shop, outlet_id):
     cursor = connections["default"].cursor()
-    query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_id = ot.id where ot.id = '"+ outlet_id +"' ORDER BY product_name"
+    query_employee = "select distinct outlet_code ||'--' ||product_name as product_name, product_name as product_code  from tbl_product pr INNER JOIN tbl_outlet ot on pr.outlet_id = ot.id where ot.id = '"+ outlet_id +"' and pr.shop_id = '"+ shop +"' ORDER BY product_name"
     cursor.execute(query_employee)
     product_name = DistinctFetchAll(cursor)
     return Response(product_name)
 
 
-### FETCH ALL PRODUCT NAME WITH OUTLET CODE AND STOCK VIEW
-@api_view(["GET"])
-def FetchParentCategoryView(request, code):
-    p_category = ParentCategory.objects.filter(hc_name_id=code)
-    serializer = ParentCategorySerializer(p_category, many=True)
-    return Response(serializer.data)
 
 
-@api_view(["GET"])
-def FetchCategoryView(request, code):
-    category = Category.objects.filter(pc_name_id=code)
-    category_array = []
-    if len(category) > 0:
-        for i in range(len(category)):
-            category_dict = dict()
-            category_dict["id"] = category[i].id
-            category_dict["category_name"] = category[i].category_name
-            category_dict["symbol"] = category[i].symbol
-            category_dict["description"] = category[i].description
-            category_dict["status"] = category[i].status
-            category_dict["pc_name"] = category[i].pc_name_id
-            category_array.append(category_dict)
-    return Response(category_array)
+
+### FETCH ALL VARIATION ACCORDING TO ATTRIBUTE AND ITS TYPES VIEW
+# @api_view(["GET"])
+# def FetchAllAttributeTypeView(request):
+#     cursor = connections["default"].cursor()
+#     query = "SELECT att_type from tbl_attribute_type"
+#     cursor.execute(query)
+#     all_attribute_type = DistinctFetchAll(cursor)
+#     return Response(all_attribute_type)
 
 
-@api_view(["GET"])
-def FetchSubCategoryView(request, code):
-    sub_category = SubCategory.objects.filter(category_id=code)
-    sub_category_array = []
-    if len(sub_category) > 0:
-        for i in range(len(sub_category)):
-            sub_category_dict = dict()
-            sub_category_dict["id"] = sub_category[i].id
-            sub_category_dict["sub_category_name"] = sub_category[i].sub_category_name
-            sub_category_dict["symbol"] = sub_category[i].symbol
-            sub_category_dict["description"] = sub_category[i].description
-            sub_category_dict["status"] = sub_category[i].status
-            sub_category_dict["category"] = sub_category[i].category_id
-            sub_category_array.append(sub_category_dict)
-    return Response(sub_category_array)
+# @api_view(["GET"])
+# def FetchAttributeView(request, code):
+#     cursor = connections["default"].cursor()
+#     query = (
+#         "select attribute_name from tbl_attribute where att_type_id = '" + code + "'"
+#     )
+#     cursor.execute(query)
+#     fetch_attribute = DistinctFetchAll(cursor)
+#     return Response(fetch_attribute)
 
+
+# @api_view(["GET"])
+# def FetchVariationView(request, code):
+#     cursor = connections["default"].cursor()
+#     query_employee = (
+#         "SELECT variation_name, symbol FROM tbl_variation where attribute_name_id = '"
+#         + code
+#         + "'"
+#     )
+#     cursor.execute(query_employee)
+#     employee_location = DistinctFetchAll(cursor)
+#     return Response(employee_location)
 

@@ -189,7 +189,6 @@ class SubCategory(models.Model):
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
-    # attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True, blank=True)
     updated_at = models.DateTimeField(null=True)
@@ -212,8 +211,9 @@ class SubCategoryAttribute(models.Model):
 
 
 class TemporaryProduct(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     product_name = models.CharField(max_length=100, null=True)
-    sku = models.CharField(max_length=100, null=True, blank=True)
+    sku = models.CharField(max_length=100, null=True, blank=True, unique=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
     sub_category = models.ForeignKey(SubCategory, on_delete=models.CASCADE, null=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, null=True)
@@ -243,6 +243,7 @@ class TemporaryProduct(models.Model):
 
 
 class Product(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     product_name = models.CharField(max_length=100, null=True)  
     sku = models.CharField(max_length=100, null=True, unique=True)
     outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
@@ -272,15 +273,3 @@ class Product(models.Model):
 
     def __str__(self):
         return self.sku
-
-
-# class ImageModel(models.Model):
-#     title = models.CharField(max_length=255)
-#     image = models.ImageField(upload_to='images/')
-#     uploaded_at = models.DateTimeField(auto_now_add=True)
-#
-#     class Meta:
-#         db_table = 'image_model'
-#
-#     def __str__(self):
-#         return self.title
