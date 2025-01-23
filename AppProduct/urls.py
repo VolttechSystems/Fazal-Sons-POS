@@ -14,16 +14,13 @@ urlpatterns = [
     re_path(r'action_brand/(?P<shop>.+)/(?P<pk>.+)/', BrandGetView.as_view(), name='GetBrand'),
     re_path(r'search_brand/(?P<shop>.+)/(?P<code>.+)/', SearchBrandView, name='SearchBrand'),
     ### ATTRIBUTES TYPE URL
-    re_path(r'add_attribute_type', AddAttributeTypeView.as_view(), name='AddAttributeType'),
-    re_path(r'action_attribute_type/(?P<pk>.+)/', AttributeTypeGetView.as_view(), name='GetAttributeType'),
-    ### ATTRIBUTES URL
-    # re_path(r'add_attribute', AddAttributeView.as_view(), name='AddAttribute'),
-    # re_path(r'action_attributes/(?P<pk>.+)/', AttributeGetView.as_view(), name='GetAttribute'),
-    ### VARIATIONS URL
-    # re_path(r'add_variation', AddVariationView.as_view(), name='AddVariation'),
-    # re_path(r'add_variation', AddVariationView, name='AddVariation'),
-    # re_path(r'action_variation/(?P<pk>.+)/', VariationGetView.as_view(), name='GetVariation'),
-    ### HEAD CATEGORY URL
+    re_path(r'add_attribute_type/(?P<shop>.+)', AddAttributeTypeView.as_view(), name='AddAttributeType'),
+    re_path(r'action_attribute_type/(?P<shop>.+)/(?P<pk>.+)', AttributeTypeGetView.as_view(), name='GetAttributeType'),
+    # VARIATION GROUP
+    re_path(r'variation_group/(?P<shop>.+)', AddVariationGroupView, name='VariationView'),
+    re_path(r'action_variations_group/(?P<shop>.+)/(?P<att_id>.+)', GetVariationGroupView, name='GetVariation'),
+    re_path(r'fetch_variations_group/(?P<shop>.+)/(?P<att_typ_id>.+)', FetchVariationGroupView, name='FetchAttributeGroup'),
+
     re_path(r'add_head_category', AddHeadCategoryView.as_view(), name='AddHeadCategory'),
     re_path(r'action_head_category/(?P<pk>.+)/', HeadCategoryGetView.as_view(), name='HeadCategoryGet'),
     ### PARENT CATEGORY URL
@@ -56,10 +53,7 @@ urlpatterns = [
     re_path(r'fetch_head_to_parent_category/(?P<code>.+)/', FetchParentCategoryView, name='FetchParentCategory'),
     re_path(r'fetch_parent_to_category/(?P<code>.+)/', FetchCategoryView, name='FetchCategory'),
     re_path(r'fetch_category_to_sub_category/(?P<code>.+)/', FetchSubCategoryView, name='FetchSubCategory'),
-    # VARIATION GROUP
-    re_path(r'variation_group/', AddVariationGroupView, name='VariationView'),
-    re_path(r'action_variations_group/(?P<att_id>.+)', GetVariationGroupView, name='GetVariation'),
-    re_path(r'fetch_variations_group/(?P<att_typ_id>.+)', FetchVariationGroupView, name='FetchAttributeGroup'),
+ 
     ### NEW CATEGORY URL
     re_path(r'add_categories', AddCategoriesView, name='AddCategories'),
     re_path(r'action_categories/(?P<id>.+)', GetCategoriesView, name='GetCategories'),

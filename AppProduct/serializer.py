@@ -79,18 +79,24 @@ class BrandSerializer(serializers.ModelSerializer):
 class AttributeTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = AttributeType
-        fields = ['id', 'att_type', 'status']
+        fields = ['id', 'att_type', 'status', 'shop']
 
     def create(self, validated_data):
         attr_type = super().create(validated_data)
         attr_type.updated_at = None
         attr_type.created_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     attr_type.created_by = request.user.username
         attr_type.save()
         return attr_type
 
     def update(self, instance, validated_data):
         attr_type = super().update(instance, validated_data)
         attr_type.updated_at = DateTime
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+                     attr_type.updated_by = request.user.username
         attr_type.save()
         return attr_type
 
@@ -345,6 +351,7 @@ class ShowAllProductSerializer(serializers.ModelSerializer):
 class VariationGroupSerializer(serializers.Serializer):
     att_type = serializers.CharField(required=False)
     attribute_name = serializers.CharField(required=False)
+    shop = serializers.CharField(required=False)
     variation = serializers.ListField(child=serializers.CharField())
 
     def create(self, validated_data):
@@ -352,35 +359,38 @@ class VariationGroupSerializer(serializers.Serializer):
         get_attribute_name = validated_data.get('attribute_name')
         get_variations = validated_data.get('variation')
         get_att_type = validated_data.get('att_type')
+        get_shop = validated_data.get('shop')
         try:
-            att_type = AttributeType.objects.get(id=get_att_type)
+            att_type = AttributeType.objects.get(shop_id=get_shop,id=get_att_type)
             get_attribute_type_id = att_type.id
         except:
             return Response("Incorrect Attribute Type ID")
         try:
-            get_all_attribute = Attribute.objects.get(attribute_name=get_attribute_name)
+            get_all_attribute = Attribute.objects.get(shop_id=get_shop, attribute_name=get_attribute_name)
             if get_attribute_name in get_all_attribute.attribute_name:
-                get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
+                get_attribute_id = Attribute.objects.get(shop_id=get_shop, attribute_name=get_attribute_name).id
         except:
             attribute = Attribute(
                 attribute_name=get_attribute_name,
                 att_type_id=get_attribute_type_id,
+                shop_id=get_shop,
                 status="active",
                 created_at=DateTime,
             )
             attribute.save()
-        get_attribute_id = Attribute.objects.get(attribute_name=get_attribute_name).id
+        get_attribute_id = Attribute.objects.get(shop_id=get_shop, attribute_name=get_attribute_name).id
 
         if len(get_variations) > 0:
             for variations in range(len(get_variations)):
                 try:
-                    variation = Variation.objects.filter(attribute_name_id=get_attribute_id)
+                    variation = Variation.objects.filter(shop_id=get_shop, attribute_name_id=get_attribute_id)
                     if get_variations[variations] in variation[variations].variation_name:
                         pass
                 except:
                     variation = Variation(
                         variation_name=get_variations[variations],
                         attribute_name_id=get_attribute_id,
+                        shop_id=get_shop,
                         status="active",
                         created_at=DateTime,
                     )

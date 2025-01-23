@@ -117,57 +117,199 @@ def SearchBrandView(request, shop, code):
 
 ### ATTRIBUTES TYPE VIEW
 class AddAttributeTypeView(generics.ListCreateAPIView):
-    queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
-    pagination_class = None
+    pagination_class = LimitOffsetPagination
+    
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        queryset = AttributeType.objects.filter(shop_id=get_shop).order_by("id")
+        return queryset
+        
 
 class AttributeTypeGetView(generics.RetrieveUpdateDestroyAPIView):
-    queryset = AttributeType.objects.all().order_by("id")
     serializer_class = AttributeTypeSerializer
     pagination_class = None
+    
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        queryset = AttributeType.objects.filter(shop_id=get_shop).order_by("id")
+        return queryset
+        
+        
+#### VARIATION GROUP VIEW
+@api_view(["GET", "POST"])
+def AddVariationGroupView(request, shop):
+    if request.method == "GET":
+        array = []
+        attribute_type = AttributeType.objects.filter(shop_id=shop)
+        for i in range(len(attribute_type)):
+            att_type = attribute_type[i].att_type
+            att_type_id = attribute_type[i].id
 
-# ### ATTRIBUTES VIEW
-# class AddAttributeView(generics.ListCreateAPIView):
-#     queryset = Attribute.objects.all()
-#     serializer_class = AttributeSerializer
-#     pagination_class = None
-#
-#
-# class AttributeGetView(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Attribute.objects.all()
-#     serializer_class = AttributeSerializer
-#     pagination_class = None
+            attribute = Attribute.objects.filter(shop_id=shop,att_type_id=att_type_id)
+            if len(attribute) > 0:
+                for i in range(len(attribute)):
+                    att_name = attribute[i].attribute_name
+                    att_id = attribute[i].id
+                    attribute_name_id = attribute[i].id
+
+                    variation = Variation.objects.filter(
+                        shop_id=shop,
+                        attribute_name=attribute_name_id
+                    )
+                    if len(variation) > 0:
+                        variation_name = []
+                        for i in range(len(variation)):
+                            variation_name.append(variation[i].variation_name)
+                        Dict = dict()
+                        Dict["att_id"] = att_id
+                        Dict["att_type"] = att_type
+                        Dict["attribute_name"] = att_name
+                        Dict["variation"] = variation_name
+                        array.append(Dict)
+                    elif len(variation) == 0:
+                        Dict = dict()
+                        Dict["att_id"] = att_id
+                        Dict["att_type"] = att_type
+                        Dict["attribute_name"] = att_name
+                        Dict["variation"] = None
+                        array.append(Dict)
+        paginator = LimitOffsetPagination()
+        paginated_variation_group = paginator.paginate_queryset(array, request)
+        return paginator.get_paginated_response(paginated_variation_group)
+    
+    if request.method == "POST":
+        data = request.data
+        for i in range(len(data)):
+            serializer = VariationGroupSerializer(data=request.data[i])
+            if serializer.is_valid():
+                serializer.save()
+        return Response(data, status="200")
 
 
-## VARIATION VIEW
-# class AddVariationView(generics.ListCreateAPIView):
-#     queryset = Variation.objects.all()
-#     serializer_class = VariationSerializer
-#     pagination_class = None
+@api_view(["GET", "PUT", "DELETE"])
+def GetVariationGroupView(request, shop, att_id):
+    if request.method == "GET":
+        array = []
+        try:
+            attribute = Attribute.objects.get(shop_id=shop, id=att_id)
+            attribute_type = AttributeType.objects.get(shop_id=shop, id=attribute.att_type_id)
+        except:
+            return Response("NO RECORD FOUND")
+        att_type = attribute_type.att_type
+        att_type_id = attribute_type.id
+        att_name = attribute.attribute_name
+        attribute_name_id = attribute.id
+
+        variation = Variation.objects.filter(shop_id=shop, attribute_name=attribute_name_id)
+        if len(variation) > 0:
+            variation_name = []
+            for i in range(len(variation)):
+                variation_name.append(variation[i].variation_name)
+            Dict = dict()
+            Dict["att_id"] = att_id
+            Dict["att_type"] = att_type
+            Dict["attribute_name"] = att_name
+            Dict["variation_name"] = variation_name
+            array.append(Dict)
+        elif len(variation) == 0:
+            Dict = dict()
+            Dict["att_id"] = att_id
+            Dict["att_type"] = att_type
+            Dict["attribute_name"] = att_name
+            Dict["variation_name"] = None
+            array.append(Dict)
+        return Response(array)
+    
+    elif request.method == "PUT":
+        data = request.data
+        id = data["att_id"]
+        try:
+            attribute = Attribute.objects.get(shop_id=shop, id=id)
+        except:
+            return Response("NO RECORD FOUND")
+
+        attribute.attribute_name = data["attribute_name"]
+        attribute.att_type_id = data["att_type"]
+        attribute.save()
+
+        variation = Variation.objects.filter(shop_id=shop, attribute_name=att_id)
+        if len(variation) == len(data["variation_name"]):
+            for i in range(len(variation)):
+                variation[i].variation_name = data["variation_name"][i]
+                variation[i].save()
+        elif len(variation) != len(data["variation_name"]):
+            if len(variation) > 0:
+                for i in range(len(variation)):
+                    variation[i].delete()
+                for y in range(len(data["variation_name"])):
+                    variation = Variation()
+                    variation.variation_name = data["variation_name"][y]
+                    variation.attribute_name_id = data["att_id"]
+                    variation.status = "active"
+                    variation.created_at = datetime.datetime.now()
+                    variation.save()
+            else:
+                for y in range(len(data["variation_name"])):
+                    variation = Variation()
+                    variation.variation_name = data["variation_name"][y]
+                    variation.attribute_name_id = data["att_id"]
+                    variation.status = "active"
+                    variation.created_at = datetime.datetime.now()
+                    variation.save()
+        return Response(data)
+    elif request.method == "DELETE":
+        attribute = Attribute.objects.get(shop_id=shop, id=att_id)
+        variation = Variation.objects.filter(shop_id=shop, attribute_name_id=att_id)
+        for i in range(len(variation)):
+            variation[i].delete()
+        attribute.delete()
+        attribute_type = Attribute.objects.filter(shop_id=shop, att_type_id=attribute.att_type_id)
+        if len(attribute_type) == 0:
+            attribute_type = AttributeType.objects.get(shop_id=shop, id=attribute.att_type_id)
+            attribute_type.delete()
+        return Response(status=status.HTTP_200_OK)
 
 
-# @api_view(['GET', 'POST'])
-# def AddVariationView(request):
-#     if request.method == 'GET':
-#         cursor = connections['default'].cursor()
-#         query_variation = "SELECT vr.id ,variation_name, vr.symbol, vr.description, attribute_name, vr.status FROM tbl_variation vr INNER JOIN tbl_attribute at on vr.attribute_name_id = at.id"
-#         cursor.execute(query_variation)
-#         variation = DistinctFetchAll(cursor)
-#         serializer = VariationSerializer(variation, many=True)
-#         return Response(serializer.data)
-#
-#     elif request.method == 'POST':
-#         serializer = VariationSerializer(data=request.data)
-#         if serializer.is_valid():
-#             serializer.save()
-#             return Response(serializer.data, status='status.HTTP_201_CREATED')
-#         return Response(serializer.errors, status='status.HTTP_400_BAD_REQUEST')
-#
-#
-# class VariationGetView(generics.RetrieveUpdateDestroyAPIView):
-#     queryset = Variation.objects.all()
-#     serializer_class = VariationSerializer
-#     pagination_class = None
+@api_view(["GET"])
+def FetchVariationGroupView(request, att_typ_id):
+    if request.method == "GET":
+        att_id = att_typ_id
+        array = []
+        try:
+            attribute_type = AttributeType.objects.get(id=att_id)
+            attribute = Attribute.objects.filter(att_type=attribute_type.id)
+        except:
+            return Response(status=status.HTTP_404_NOT_FOUND)
+        for i in range(len(attribute)):
+            att_type = attribute_type.att_type
+            att_type_id = attribute_type.id
+            att_name = attribute[i].attribute_name
+            attribute_id = attribute[i].id
+            attribute_name_id = attribute[i].id
+
+            variation = Variation.objects.filter(attribute_name=attribute_name_id)
+            if len(variation) > 0:
+                variation_name = []
+                for i in range(len(variation)):
+                    variation_name.append(variation[i].variation_name)
+                Dict = dict()
+                Dict["att_id"] = att_id
+                Dict["att_type"] = att_type
+                Dict["attribute_name"] = att_name
+                Dict["attribute_id"] = attribute_id
+                Dict["variation"] = variation_name
+                array.append(Dict)
+            elif len(variation) == 0:
+                Dict = dict()
+                Dict["att_id"] = att_id
+                Dict["att_type"] = att_type
+                Dict["attribute_name"] = att_name
+                Dict["attribute_id"] = attribute_id
+                Dict["variation"] = None
+                array.append(Dict)
+        return Response(array)
+
 
 
 ### HEAD CATEGORY VIEW
@@ -418,176 +560,6 @@ def FetchSubCategoryView(request, code):
             sub_category_array.append(sub_category_dict)
     return Response(sub_category_array)
 
-
-@api_view(["GET", "POST"])
-def AddVariationGroupView(request):
-    if request.method == "GET":
-        array = []
-        attribute_type = AttributeType.objects.all()
-        for i in range(len(attribute_type)):
-            att_type = attribute_type[i].att_type
-            att_type_id = attribute_type[i].id
-
-            attribute = Attribute.objects.filter(att_type_id=att_type_id)
-            if len(attribute) > 0:
-                for i in range(len(attribute)):
-                    att_name = attribute[i].attribute_name
-                    att_id = attribute[i].id
-                    attribute_name_id = attribute[i].id
-
-                    variation = Variation.objects.filter(
-                        attribute_name=attribute_name_id
-                    )
-                    if len(variation) > 0:
-                        variation_name = []
-                        for i in range(len(variation)):
-                            variation_name.append(variation[i].variation_name)
-                        Dict = dict()
-                        Dict["att_id"] = att_id
-                        Dict["att_type"] = att_type
-                        Dict["attribute_name"] = att_name
-                        Dict["variation"] = variation_name
-                        array.append(Dict)
-                    elif len(variation) == 0:
-                        Dict = dict()
-                        Dict["att_id"] = att_id
-                        Dict["att_type"] = att_type
-                        Dict["attribute_name"] = att_name
-                        Dict["variation"] = None
-                        array.append(Dict)
-        return Response(array)
-    
-    if request.method == "POST":
-        data = request.data
-        for i in range(len(data)):
-            serializer = VariationGroupSerializer(data=request.data[i])
-            if serializer.is_valid():
-                serializer.save()
-        return Response(data, status="200")
-
-
-@api_view(["GET", "PUT", "DELETE"])
-def GetVariationGroupView(request, att_id):
-    if request.method == "GET":
-        array = []
-        try:
-            attribute = Attribute.objects.get(id=att_id)
-            attribute_type = AttributeType.objects.get(id=attribute.att_type_id)
-        except:
-            return Response("NO RECORD FOUND")
-        att_type = attribute_type.att_type
-        att_type_id = attribute_type.id
-        att_name = attribute.attribute_name
-        attribute_name_id = attribute.id
-
-        variation = Variation.objects.filter(attribute_name=attribute_name_id)
-        if len(variation) > 0:
-            variation_name = []
-            for i in range(len(variation)):
-                variation_name.append(variation[i].variation_name)
-            Dict = dict()
-            Dict["att_id"] = att_id
-            Dict["att_type"] = att_type
-            Dict["attribute_name"] = att_name
-            Dict["variation_name"] = variation_name
-            array.append(Dict)
-        elif len(variation) == 0:
-            Dict = dict()
-            Dict["att_id"] = att_id
-            Dict["att_type"] = att_type
-            Dict["attribute_name"] = att_name
-            Dict["variation_name"] = None
-            array.append(Dict)
-        return Response(array)
-    
-    elif request.method == "PUT":
-        data = request.data
-        id = data["att_id"]
-        try:
-            attribute = Attribute.objects.get(id=id)
-        except:
-            return Response("NO RECORD FOUND")
-
-        attribute.attribute_name = data["attribute_name"]
-        attribute.att_type_id = data["att_type"]
-        attribute.save()
-
-        variation = Variation.objects.filter(attribute_name=att_id)
-        if len(variation) == len(data["variation_name"]):
-            for i in range(len(variation)):
-                variation[i].variation_name = data["variation_name"][i]
-                variation[i].save()
-        elif len(variation) != len(data["variation_name"]):
-            if len(variation) > 0:
-                for i in range(len(variation)):
-                    variation[i].delete()
-                for y in range(len(data["variation_name"])):
-                    variation = Variation()
-                    variation.variation_name = data["variation_name"][y]
-                    variation.attribute_name_id = data["att_id"]
-                    variation.status = "active"
-                    variation.created_at = datetime.datetime.now()
-                    variation.save()
-            else:
-                for y in range(len(data["variation_name"])):
-                    variation = Variation()
-                    variation.variation_name = data["variation_name"][y]
-                    variation.attribute_name_id = data["att_id"]
-                    variation.status = "active"
-                    variation.created_at = datetime.datetime.now()
-                    variation.save()
-        return Response(data)
-    elif request.method == "DELETE":
-        attribute = Attribute.objects.get(id=att_id)
-        variation = Variation.objects.filter(attribute_name_id=att_id)
-        for i in range(len(variation)):
-            variation[i].delete()
-        attribute.delete()
-        attribute_type = Attribute.objects.filter(att_type_id=attribute.att_type_id)
-        if len(attribute_type) == 0:
-            attribute_type = AttributeType.objects.get(id=attribute.att_type_id)
-            attribute_type.delete()
-        return Response(status=status.HTTP_200_OK)
-
-
-@api_view(["GET"])
-def FetchVariationGroupView(request, att_typ_id):
-    if request.method == "GET":
-        att_id = att_typ_id
-        array = []
-        try:
-            attribute_type = AttributeType.objects.get(id=att_id)
-            attribute = Attribute.objects.filter(att_type=attribute_type.id)
-        except:
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        for i in range(len(attribute)):
-            att_type = attribute_type.att_type
-            att_type_id = attribute_type.id
-            att_name = attribute[i].attribute_name
-            attribute_id = attribute[i].id
-            attribute_name_id = attribute[i].id
-
-            variation = Variation.objects.filter(attribute_name=attribute_name_id)
-            if len(variation) > 0:
-                variation_name = []
-                for i in range(len(variation)):
-                    variation_name.append(variation[i].variation_name)
-                Dict = dict()
-                Dict["att_id"] = att_id
-                Dict["att_type"] = att_type
-                Dict["attribute_name"] = att_name
-                Dict["attribute_id"] = attribute_id
-                Dict["variation"] = variation_name
-                array.append(Dict)
-            elif len(variation) == 0:
-                Dict = dict()
-                Dict["att_id"] = att_id
-                Dict["att_type"] = att_type
-                Dict["attribute_name"] = att_name
-                Dict["attribute_id"] = attribute_id
-                Dict["variation"] = None
-                array.append(Dict)
-        return Response(array)
 
 
 @api_view(["GET", "POST"])

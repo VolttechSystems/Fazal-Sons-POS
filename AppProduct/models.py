@@ -58,7 +58,8 @@ class Brand(models.Model):
 
 
 class AttributeType(models.Model):
-    att_type = models.CharField(max_length=100, null=True, unique=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+    att_type = models.CharField(max_length=100, null=True)
     status = models.CharField(max_length=20, choices=STATUS, default='Active')  # Active,Inactive, Pending
     created_at = models.DateTimeField(null=True)
     created_by = models.CharField(max_length=200, null=True)
@@ -67,13 +68,15 @@ class AttributeType(models.Model):
 
     class Meta:
         db_table = 'tbl_attribute_type'
+        unique_together = ('shop', 'att_type')
 
     def __str__(self):
         return self.att_type
 
 
 class Attribute(models.Model):
-    attribute_name = models.CharField(max_length=100, null=True, unique=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+    attribute_name = models.CharField(max_length=100, null=True)
     att_type = models.ForeignKey(AttributeType, on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
     description = models.TextField(max_length=500, null=True, blank=True)
@@ -91,6 +94,7 @@ class Attribute(models.Model):
 
 
 class Variation(models.Model):
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     variation_name = models.CharField(max_length=100, null=True)
     attribute_name = models.ForeignKey(Attribute, on_delete=models.CASCADE, null=True)
     symbol = models.CharField(max_length=100, null=True, blank=True)
