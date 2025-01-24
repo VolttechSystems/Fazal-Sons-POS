@@ -89,12 +89,12 @@ def GetOutletWiseSalesmanView(request, shop, outlet_id):
 
 
 @api_view(['GET'])
-def AllProductView(request, outlet_id):
+def AllProductView(request, shop, outlet_id):
     try:
-        get_outlet = Outlet.objects.get(id=outlet_id)
+        get_outlet = Outlet.objects.get(shop_id=shop, id=outlet_id)
     except Outlet.DoesNotExist:
         return Response(status=HTTP_404_NOT_FOUND)
-    product = Product.objects.filter(outlet_id=outlet_id)
+    product = Product.objects.filter(shop_id=shop, outlet_id=outlet_id)
     array = []
     if product.exists():
         for i in range(len(product)):
@@ -108,9 +108,9 @@ def AllProductView(request, outlet_id):
 
 
 @api_view(['GET'])
-def ProductDetailView(request, code):
+def ProductDetailView(request, shop, code):
     try:
-        product = Product.objects.get(sku=code)
+        product = Product.objects.get(shop_id=shop, sku=code)
     except Product.DoesNotExist:
          return Response(status=HTTP_404_NOT_FOUND)
     serializer = ProductSerializer(product)
@@ -118,14 +118,24 @@ def ProductDetailView(request, code):
    
    
 class AddTransactionView(generics.CreateAPIView):
-    queryset = TransactionItem.objects.all()
     serializer_class = TransactionItemSerializer
     # permission_classes = [IsAuthenticated, IsCashier]
     pagination_class = None
     
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')
+        get_outlet = self.kwargs.get('outlet')
+        transaction = TransactionItem.objects.filter(shop_id=get_shop, outlet_code_id=get_outlet)
+        return transaction
+    
 class AddCustomerInPOSView(generics.ListCreateAPIView):
-    queryset = Customer.objects.all()
     serializer_class = AddCustomerInPOSSerializer
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')    
+        get_outlet = self.kwargs.get('outlet')    
+        queryset = Customer.objects.filter(shop_id=get_shop, outlet_id=get_outlet)
+        return queryset
+    
 
 ### PAYMENT VIEW
 class AddPaymentView(generics.ListCreateAPIView):

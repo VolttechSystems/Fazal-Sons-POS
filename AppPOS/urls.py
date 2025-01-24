@@ -10,15 +10,15 @@ urlpatterns = [
         re_path(r'action_salesman/(?P<shop>.+)/(?P<pk>.+)', GetSalesmanView.as_view(), name='GetSalesman'),
         re_path(r'outlet-wise-salesman/(?P<shop>.+)/(?P<outlet_id>.+)', GetOutletWiseSalesmanView, name='GetOutletWiseSalesmanView'),
         ### CUSTOMER URL IN POS
-        re_path(r'add-customer-in-pos', AddCustomerInPOSView.as_view(), name='AddCustomer'),
+        re_path(r'add-customer-in-pos/(?P<shop>.+)/(?P<outlet>.+)', AddCustomerInPOSView.as_view(), name='AddCustomer'),
         ### PAYMENT METHOD URL
         re_path(r'add_payment/(?P<shop>.+)/', AddPaymentView.as_view(), name='AddPayment'),
         re_path(r'action_payment/(?P<shop>.+)/(?P<pk>.+)/', GetPaymentView.as_view(), name='GetPayment'),
         ### TRANSACTION URL
         # re_path(r'all_product/(?P<outlet>.+)/', AllProductView, name='AllProduct'),
-        re_path(r'all_product/(?P<outlet_id>.+)/', AllProductView, name='AllProduct'),
-        re_path(r'products_detail/(?P<code>.+)/', ProductDetailView, name='ProductDetail'),
-        re_path(r'add_transaction', AddTransactionView.as_view(), name='AddTransaction'),
+        re_path(r'all_product/(?P<shop>.+)/(?P<outlet_id>.+)', AllProductView, name='AllProduct'),
+        re_path(r'products_detail/(?P<shop>.+)/(?P<code>.+)', ProductDetailView, name='ProductDetail'),
+        re_path(r'add_transaction/(?P<shop>.+)/(?P<outlet>.+)', AddTransactionView.as_view(), name='AddTransaction'),
         ### TRANSACTION RETURN URL
         re_path(r'get_all_invoices/(?P<outlet>.+)', GetAllInvoicesView, name='GetInvoices'),
         re_path(r'get_invoice_products/(?P<code>.+)/', GetInvoiceProductsView, name='GetInvoiceProduct'),

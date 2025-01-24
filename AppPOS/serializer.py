@@ -97,6 +97,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
     saleman_code = serializers.CharField(required=False)
     overall_discount = serializers.CharField(required=False)
     outlet_code = serializers.CharField(required=False)
+    shop = serializers.CharField(required=False)
     fee_code = serializers.ListField(child=serializers.CharField(), required=False)
     fee_amount = serializers.ListField(child=serializers.CharField(), required=False)
     pm_method = serializers.ListField(child=serializers.CharField(), required=False)
@@ -109,7 +110,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = TransactionItem
-        fields = ['cust_code', 'saleman_code', 'overall_discount', 'outlet_code','advanced_payment', 'sku', 'quantity', 'rate', 'item_discount', 'fee_code', 'fee_amount', 'pm_method', 'pm_amount']
+        fields = ['cust_code', 'saleman_code', 'overall_discount', 'outlet_code','advanced_payment', 'sku', 'quantity', 'rate', 'item_discount', 'fee_code', 'fee_amount', 'pm_method', 'pm_amount', 'outlet_code', 'shop']
         
     def validate(self, validated_data):
         get_sku = validated_data.get('sku')
@@ -120,6 +121,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_overall_discount = validated_data.get('overall_discount')
         get_item_discount = validated_data.get('item_discount')
         get_advanced_payment = validated_data.get('advanced_payment')
+        
         
         len_sku = len(get_sku)
         if len_sku == 0:
@@ -176,6 +178,13 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_advanced_payment = validated_data.get('advanced_payment')
         get_pm_method = validated_data.get('pm_method')
         get_pm_amount = validated_data.get('pm_amount')
+        get_outlet = validated_data.get('outlet_code')
+        print(get_outlet)
+        get_shop = validated_data.get('shop')
+        print(get_shop)
+        request = self.context.get('request')
+        if request and hasattr(request, 'user'):
+            get_username = request.user.username
     
         len_sku = len(get_sku)
         ## CHECK ADDITIONAL FEE CODE
@@ -196,7 +205,9 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                 cust_code_id=get_customer,
                 salesman_code_id=get_saleman_code,
                 created_at = now(),
-                outlet_code_id=get_outlet_code
+                created_by = get_username,
+                outlet_code_id=get_outlet_code,
+                shop_id=get_shop
             )
             transaction.save()
             
@@ -223,7 +234,10 @@ class TransactionItemSerializer(serializers.ModelSerializer):
                     discounted_value=item_discount,
                     item_total=item_total,
                     created_at=DateTime,
+                    created_by = get_username,
                     status="Sold",
+                    outlet_code_id=get_outlet_code,
+                    shop_id=get_shop
                 )
                 transaction_item.save()
                 ### UPDATE STOCK
@@ -300,7 +314,7 @@ class TransactionItemSerializer(serializers.ModelSerializer):
 class AddCustomerInPOSSerializer(serializers.ModelSerializer):
     class Meta:
         model = Customer
-        fields = ['id', 'cust_code', 'display_name', 'mobile_no', 'address']
+        fields = ['id', 'cust_code', 'display_name', 'mobile_no', 'address', 'outlet', 'shop']
         
     def create(self, validated_data):
         validated_data['cust_code'] = AutoGenerateCodeForModel(Customer, 'cust_code', 'CUST-')
@@ -309,7 +323,6 @@ class AddCustomerInPOSSerializer(serializers.ModelSerializer):
         ### ADD CUSTOMER CHANNEL IF NOT EXISTS CUSTOMER CHANNEL
         try:
             customer_channel = CustomerChannel.objects.get(customer_channel__icontains='POS')
-            print(customer_channel.customer_channel)
         except CustomerChannel.DoesNotExist:
             customer_channel = CustomerChannel.objects.create(
                 cus_ch_code=AutoGenerateCodeForModel(CustomerChannel, 'cus_ch_code', 'CCH-'),
@@ -326,8 +339,8 @@ class AddCustomerInPOSSerializer(serializers.ModelSerializer):
                 created_at=DateTime,
                 created_by='System')
         
-        validated_data['customer_channel_id'] = customer_channel.customer_channel
-        validated_data['customer_type_id'] = customer_type.customer_type
+        validated_data['customer_channel_id'] = customer_channel.id
+        validated_data['customer_type_id'] = customer_type.id
         ## split display name
         display_name = validated_data.get('display_name')
         split_name = display_name.split(' ')
@@ -415,7 +428,7 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
 class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
-        fields = ['id','product_name', 'sku','cost_price', 'selling_price', 'discount_price', 'description']
+        fields = ['id','product_name', 'sku','cost_price', 'selling_price', 'discount_price', 'description', 'outlet']
         
 class TransactionSerializer(serializers.ModelSerializer):
     class Meta:

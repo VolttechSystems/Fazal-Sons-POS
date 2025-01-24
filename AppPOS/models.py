@@ -3,6 +3,7 @@ from AppCustomer.models import *
 from AppProduct.models import *
 
 
+
 # Create your models here.
 
 class Salesman(models.Model):
@@ -70,8 +71,8 @@ class PaymentMethod(models.Model):
 
 class Transaction(models.Model):
     invoice_code = models.CharField(max_length=100, null=True, unique=True)  # auto generated
-    outlet_code = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True,
-                                    blank=True)
+    outlet_code = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     cust_code = models.ForeignKey(Customer, to_field='cust_code', on_delete=models.CASCADE, null=True,
                                   blank=True)
     payment = models.ManyToManyField(PaymentMethod, through='TransactionPayment')
@@ -104,6 +105,8 @@ class Transaction(models.Model):
 
 
 class TransactionItem(models.Model):
+    outlet_code = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     invoice_code = models.ForeignKey(Transaction, to_field='invoice_code', on_delete=models.CASCADE, null=True,
                                      blank=True)
     sku = models.CharField(null=True, blank=True)

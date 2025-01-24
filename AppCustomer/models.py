@@ -1,5 +1,6 @@
 from django.db import models
 from AppAdmin.models import Shop
+from AppProduct.models import Outlet
 
 Gender = (
     ('male', 'Male'),
@@ -57,6 +58,7 @@ class CustomerType(models.Model):
 
 class Customer(models.Model):
     shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
+    outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
     date = models.DateTimeField(max_length=100, null=True)
     cust_code = models.CharField(max_length=200, null=True, unique=True)  # CUST-1
     customer_channel = models.ForeignKey(CustomerChannel, on_delete=models.CASCADE,
