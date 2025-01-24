@@ -178,9 +178,6 @@ def AddVariationGroupView(request, shop):
             serializer = VariationGroupSerializer(data=request.data[i])
             if serializer.is_valid():
                 serializer.save()
-            # else:
-            #     return Response(serializer.error, status="400")
-                
         return Response(data, status="200")
 
 

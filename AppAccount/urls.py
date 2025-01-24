@@ -10,6 +10,7 @@ urlpatterns = [
     re_path(r'register_user/(?P<shop>.+)', CreateUserView, name='create_user'),
     re_path(r'delete_user/(?P<user_id>.+)', UserDeleteAPIView.as_view(), name='delete_user'),
     re_path(r'admin-change-password/', AdminChangePasswordView.as_view(), name='admin-change-password'),
+     re_path(r"check-username/", check_username, name="check_username"),
     ## SYSTEM ROLE URLS
     re_path(r'get-all-permissions', GetPermissionsView, name='GetPermissions'),
     re_path(r'add-system-role/(?P<shop>.+)', AddSystemRoleView, name='AddSystemRole'),

@@ -10,6 +10,9 @@ from rest_framework.decorators import api_view
 from .models import *
 from .serializer import *
 from AppProduct.views import MyLimitOffsetPagination
+from django.http import JsonResponse
+import random
+import string
 
 ## Login View
 class LoginAPIView(APIView):
@@ -225,6 +228,22 @@ class AdminChangePasswordView(APIView):
             return Response({"message": f"Password for user {user} has been changed successfully."}, status=status.HTTP_200_OK)
 
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['GET'])
+def check_username(request):
+    username = request.query_params.get('username', '')
+    if not username:
+        return Response({"error": "Username is required"}, status=400)
+    is_taken = User.objects.filter(username=username).exists()
+    # Generate suggestions if taken
+    suggestions = []
+    if is_taken:
+        for _ in range(3):  # Generate 5 suggestions
+            random_suffix = ''.join(random.choices(string.digits, k=3))
+            suggestions.append(f"{username}{random_suffix}")
+
+    return Response({"is_taken": is_taken, "suggestions": suggestions})
 
     
 @api_view(['GET', 'POST'])
