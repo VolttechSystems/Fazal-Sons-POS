@@ -20,16 +20,16 @@ urlpatterns = [
         re_path(r'products_detail/(?P<shop>.+)/(?P<code>.+)', ProductDetailView, name='ProductDetail'),
         re_path(r'add_transaction/(?P<shop>.+)/(?P<outlet>.+)', AddTransactionView.as_view(), name='AddTransaction'),
         ### TRANSACTION RETURN URL
-        re_path(r'get_all_invoices/(?P<outlet>.+)', GetAllInvoicesView, name='GetInvoices'),
-        re_path(r'get_invoice_products/(?P<code>.+)/', GetInvoiceProductsView, name='GetInvoiceProduct'),
-        re_path(r'get_product_detail/(?P<code>.+)/(?P<sku>.+)/', GetProductDetailView, name='GetProductDetail'),
-         re_path(r'transactions_return', TransactionReturnView.as_view(), name='TransactionReturn'),
+        re_path(r'get_all_invoices/(?P<shop>.+)/(?P<outlet>.+)', GetAllInvoicesView, name='GetInvoices'),
+        re_path(r'get_invoice_products/(?P<shop>.+)/(?P<code>.+)', GetInvoiceProductsView, name='GetInvoiceProduct'),
+        re_path(r'get_product_detail/(?P<shop>.+)/(?P<code>.+)/(?P<sku>.+)', GetProductDetailView, name='GetProductDetail'),
+         re_path(r'transactions_return/(?P<shop>.+)/(?P<outlet>.+)', TransactionReturnView.as_view(), name='TransactionReturn'),
         ### DUE RECEIVABLE URL
-        re_path(r'get_due_invoices/(?P<outlet>.+)', GetDueInvoicesView, name='GetDueInvoices'),
+        re_path(r'get_due_invoices/(?P<shop>.+)/(?P<outlet>.+)', GetDueInvoicesView, name='GetDueInvoices'),
         re_path(r'get_amount_of_due_invoices/(?P<invoice_code>.+)', GetDueInvoiceAmountView, name='GetDueInvoiceAmount'),
         re_path(r'receive_due_invoice/(?P<invoice_code>.+)', ReceiveDueInvoiceView, name='ReceiveDueInvoice'),
          ### TODAY SALE REPORT
-        re_path(r'today_sale_report/(?P<outlet_id>.+)', TodaySaleReportView, name='TodaySaleReport'),   
+        re_path(r'today_sale_report/(?P<shop>.+)/(?P<outlet_id>.+)', TodaySaleReportView, name='TodaySaleReport'),
          
 ]
 

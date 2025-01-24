@@ -411,11 +411,15 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
                 validated_data['total_amount'] = int(get_quantity[i]) * int(get_rate[i])
                 validated_data['updated_at'] = None
                 validated_data['created_at'] = DateTime
+                if request and hasattr(request, 'user'):
+                     validated_data['created_by'] = request.user.username
                 sales_return = super().create(validated_data)
                 ### UPDATE TRANSACTION
                 update_transaction_status = TransactionItem.objects.get(sku=get_sku[i], invoice_code_id= invoice_code)
                 update_transaction_status.status = 'return'
                 update_transaction_status.updated_at = DateTime
+                if request and hasattr(request, 'user'):
+                     validated_data['updated_by'] = request.user.username
                 update_transaction_status.save()
                 ### UPDATE STOCK
                 stock = Stock.objects.get(sku=get_sku[i])

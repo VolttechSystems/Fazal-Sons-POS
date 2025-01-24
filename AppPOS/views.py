@@ -157,19 +157,25 @@ class GetPaymentView(generics.RetrieveUpdateDestroyAPIView):
 
 ### TRANSACTION RETURN VIEW
 class TransactionReturnView(generics.CreateAPIView):
-    queryset = TransactionReturn.objects.all()
     serializer_class = TransactionReturnSerializer
     pagination_class = None
+    
+    def get_queryset(self):
+        get_shop = self.kwargs.get('shop')    
+        get_outlet = self.kwargs.get('outlet')    
+        queryset = TransactionReturn.objects.filter(shop_id=get_shop, outlet_id=get_outlet)
+        return queryset
+    
 
 
 @api_view(['GET'])
-def GetAllInvoicesView(request, outlet):
+def GetAllInvoicesView(request,shop, outlet):
     # Invoices = Transaction.objects.filter(outlet_code_id=outlet, quantity__gt=0).values('invoice_code').order_by('invoice_code')
     Invoices = (
     Transaction.objects.annotate(
         quantity_as_float=Cast('quantity', FloatField())
     )
-    .filter(outlet_code_id=outlet, quantity_as_float__gt=0)
+    .filter(shop_id=shop, outlet_code_id=outlet, quantity_as_float__gt=0)
     .values('invoice_code')
     .order_by('invoice_code')
 )
@@ -190,9 +196,9 @@ def GetAllInvoicesView(request, outlet):
 
 
 @api_view(['GET'])    
-def GetInvoiceProductsView(request, code):
+def GetInvoiceProductsView(request,shop, code):
     cursor = connections['default'].cursor()
-    query = "select pr.sku, product_name, description || ' ' || color as items from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"'"
+    query = "select pr.sku, product_name, description || ' ' || color as items from tbl_transaction_item tri INNER JOIN tbl_product pr on tri.sku = pr.sku where invoice_code_id = '"+ code +"' and tri.shop_id = '"+ shop +"'"
     cursor.execute(query)
     invoice_products = DistinctFetchAll(cursor)
     if len(invoice_products) > 0:
@@ -201,9 +207,9 @@ def GetInvoiceProductsView(request, code):
 
 
 @api_view(['GET'])
-def GetProductDetailView(request, code, sku):
+def GetProductDetailView(request, shop, code, sku):
     cursor = connections['default'].cursor()
-    query = "select sku, quantity, rate, gross_total,per_discount, discounted_value, item_total from tbl_transaction_item where sku = '"+ sku +"' and invoice_code_id = '"+ code +"'"
+    query = "select sku, quantity, rate, gross_total,per_discount, discounted_value, item_total from tbl_transaction_item where sku = '"+ sku +"' and invoice_code_id = '"+ code +"' and shop_id = '"+ shop +"'"
     cursor.execute(query)
     invoice_products = DistinctFetchAll(cursor)
     array = []
@@ -225,8 +231,8 @@ def GetProductDetailView(request, code, sku):
 
 ### DUE RECEIVABLE VIEWS
 @api_view(['GET'])
-def GetDueInvoicesView(request, outlet):
-    transactions = Transaction.objects.filter(outlet_code_id=outlet, due_amount__gt=0).values('invoice_code').order_by('invoice_code')
+def GetDueInvoicesView(request,shop, outlet):
+    transactions = Transaction.objects.filter(shop_id=shop, outlet_code_id=outlet, due_amount__gt=0).values('invoice_code').order_by('invoice_code')
     due_payment_array = []
     for transaction in transactions:
             try:
@@ -279,13 +285,13 @@ def ReceiveDueInvoiceView(request, invoice_code):
     return Response("Due Amount Update")
 
 @api_view(['GET'])
-def TodaySaleReportView(request, outlet_id):
+def TodaySaleReportView(request, shop, outlet_id):
     try:
-        get_outlet = Outlet.objects.get(id=outlet_id)
+        get_outlet = Outlet.objects.get(shop_id=shop,id=outlet_id)
     except Outlet.DoesNotExist:
         return Response(status=HTTP_404_NOT_FOUND)
     today = date.today()
-    today_report = Transaction.objects.filter(outlet_code_id=outlet_id, created_at__date=today).select_related('cust_code__customer_type', 'salesman_code')
+    today_report = Transaction.objects.filter(shop_id=shop, outlet_code_id=outlet_id, created_at__date=today).select_related('cust_code__customer_type', 'salesman_code')
     today_sale_report = []
     for report in today_report:
         invoice_code = report.invoice_code

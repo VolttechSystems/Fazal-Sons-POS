@@ -154,6 +154,8 @@ class TransactionPayment(models.Model):
     
     
 class TransactionReturn(models.Model):
+    outlet = models.ForeignKey(Outlet, on_delete=models.CASCADE, null=True)
+    shop = models.ForeignKey(Shop, on_delete=models.CASCADE, null=True)
     invoice_code = models.ForeignKey(Transaction, to_field='invoice_code', on_delete=models.CASCADE, null=True,
                                      blank=True)
     sku = models.CharField(null=True, blank=True)
