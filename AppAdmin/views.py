@@ -36,6 +36,7 @@ def ShopAdminUserView(request):
         return Response(serializer.data)
     
 @api_view(['GET','PATCH'])    
+@permission_classes([IsAdminUser])
 def UpdateShopAdminUserView(request, id):
     user = User.objects.get(id=id)
     if request.method == 'PATCH':

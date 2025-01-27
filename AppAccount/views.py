@@ -181,7 +181,7 @@ def CreateUserView(request, shop):
         paginated_query = paginator.paginate_queryset(serializer.data, request)
         return paginator.get_paginated_response(paginated_query)
     
-@api_view(['PATCH'])
+@api_view(['GET','PATCH'])
 def UpdateUserView(request, shop, user_id):
     user = User.objects.get(id=user_id)
     user_profile = user.userprofile
@@ -193,10 +193,10 @@ def UpdateUserView(request, shop, user_id):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        
-        
-    
-    
+    elif request.method == 'GET':
+        users = UserProfile.objects.get(user__id=user_id, user__is_superuser=False, user__is_staff=False, shop_id=shop)
+        serializer = UserProfileSerializer(users)
+        return Response(serializer.data)
         
 ### FOR DELETE USERS
 class UserDeleteAPIView(APIView):
