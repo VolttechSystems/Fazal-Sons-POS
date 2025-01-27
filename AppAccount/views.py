@@ -183,7 +183,11 @@ def CreateUserView(request, shop):
     
 @api_view(['GET','PATCH'])
 def UpdateUserView(request, shop, user_id):
-    user = User.objects.get(id=user_id)
+    try:
+        user = User.objects.get(id=user_id)
+    except User.DoesNotExist:
+         return Response("User Not Found", status=status.HTTP_400_BAD_REQUEST)
+        
     user_profile = user.userprofile
     if not user_profile.shop_id == int(shop):
         return Response('No User Found in Shop')
@@ -194,7 +198,10 @@ def UpdateUserView(request, shop, user_id):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
-        users = UserProfile.objects.get(user__id=user_id, user__is_superuser=False, user__is_staff=False, shop_id=shop)
+        try:
+            users = UserProfile.objects.get(user__id=user_id, user__is_superuser=False, user__is_staff=False, shop_id=shop)
+        except UserProfile.DoesNotExist:
+            return Response("User Profile Not Found",  status=status.HTTP_400_BAD_REQUEST)
         serializer = UserProfileSerializer(users)
         return Response(serializer.data)
         

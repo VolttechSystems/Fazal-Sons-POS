@@ -38,7 +38,10 @@ def ShopAdminUserView(request):
 @api_view(['GET','PATCH'])    
 @permission_classes([IsAdminUser])
 def UpdateShopAdminUserView(request, id):
-    user = User.objects.get(id=id)
+    try:
+        user = User.objects.get(id=id)
+    except User.DoesNotExist:
+        return Response('User Not Found', status=status.HTTP_400_BAD_REQUEST)
     if request.method == 'PATCH':
         serializer = ShopAdminSerializer(user, data=request.data ,partial=True)
         if serializer.is_valid():
@@ -46,7 +49,10 @@ def UpdateShopAdminUserView(request, id):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
-        users = UserProfile.objects.get(user__id=id, user__is_superuser=False, user__is_staff=True)
+        try:
+            users = UserProfile.objects.get(user__id=id, user__is_superuser=False, user__is_staff=True)
+        except UserProfile.DoesNotExist:
+            return Response('User Profile Not Found', status=status.HTTP_400_BAD_REQUEST)
         serializer = UserProfileSerializer(users)
         return Response(serializer.data)
     
