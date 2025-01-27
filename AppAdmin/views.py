@@ -45,7 +45,7 @@ def UpdateShopAdminUserView(request, id):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     elif request.method == 'GET':
-        users = UserProfile.objects.get(id=id, user__is_superuser=False, user__is_staff=True)
+        users = UserProfile.objects.get(user__id=id, user__is_superuser=False, user__is_staff=True)
         serializer = UserProfileSerializer(users)
         return Response(serializer.data)
     
