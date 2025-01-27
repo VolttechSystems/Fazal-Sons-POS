@@ -160,7 +160,7 @@ class TransactionReturnView(generics.CreateAPIView):
     serializer_class = TransactionReturnSerializer
     pagination_class = None
     
-    def get_queryset(self):
+    def get_queryset(self, request):
         get_shop = self.kwargs.get('shop')    
         get_outlet = self.kwargs.get('outlet')    
         queryset = TransactionReturn.objects.filter(shop_id=get_shop, outlet_id=get_outlet)

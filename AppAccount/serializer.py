@@ -31,7 +31,6 @@ class UserSerializer(serializers.ModelSerializer):
         outlet_data = validated_data.pop('outlet', [])
         phone_number = validated_data.pop('phone_number', None)
         shop = validated_data.pop('shop', None)
-        print(shop)
         user = UserModel.objects.create_user(
             username=validated_data['username'],
             password=validated_data['password'],
@@ -49,6 +48,19 @@ class UserSerializer(serializers.ModelSerializer):
             user_profile.outlet.set(outlet_data)  # Set outlets to the users
 
         return user
+    def update(self, instance, validated_data):
+        
+        Username = validated_data.pop('Username', None)
+        password - validate_data.pop('password',None)
+        
+        system_roles_data = validated_data.pop('system_roles', [])
+        outlet_data = validated_data.pop('outlet', [])
+        phone_number = validated_data.pop('phone_number', None)
+        isActive = validated_data.pop('is_active', None)
+        
+        
+        return validated_data
+        
 
 class LoginSerializers(serializers.Serializer):
     username = serializers.CharField()

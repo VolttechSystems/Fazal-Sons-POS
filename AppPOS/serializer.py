@@ -402,6 +402,7 @@ class TransactionReturnSerializer(serializers.ModelSerializer):
         get_rate = validated_data.get('rate')
         get_quantity = validated_data.get('quantity')
         invoice_code = validated_data.get('invoice_code')
+        request = self.context.get('request')
 
         if len(get_sku) > 0:
             for i in range(len(get_sku)):
