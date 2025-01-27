@@ -7,6 +7,7 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.decorators import permission_classes
+from django.contrib.auth.models import User
 
 
 class AddShopView(generics.ListCreateAPIView):
@@ -33,3 +34,18 @@ def ShopAdminUserView(request):
         users = UserProfile.objects.filter(user__is_superuser=False, user__is_staff=True).select_related('user')
         serializer = UserProfileSerializer(users, many=True)
         return Response(serializer.data)
+    
+@api_view(['GET','PATCH'])    
+def UpdateShopAdminUserView(request, id):
+    user = User.objects.get(id=id)
+    if request.method == 'PATCH':
+        serializer = ShopAdminSerializer(user, data=request.data ,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    elif request.method == 'GET':
+        users = UserProfile.objects.get(id=id, user__is_superuser=False, user__is_staff=True)
+        serializer = UserProfileSerializer(users)
+        return Response(serializer.data)
+    

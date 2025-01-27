@@ -45,16 +45,31 @@ class ShopAdminSerializer(serializers.ModelSerializer):
         user_profile = UserProfile.objects.create(user=user,  phone_number=phone_number, shop=get_shop)
 
         return user
+
+    def update(self, instance, validated_data):
+        password = validated_data.pop('password', None)
+        if password:
+            instance.set_password(password)
+        instance.username = validated_data.get('username', instance.username)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.save()
+        
+        user_profile = instance.userprofile
+        user_profile.shop_id = validated_data.get('shop', user_profile.shop)
+        user_profile.phone_number = validated_data.get('phone_number', user_profile.phone_number)
+        user_profile.save()
+        
+        return instance
     
 class UserProfileSerializer(serializers.ModelSerializer):
+    user_id = serializers.CharField(source='user.id')
     username = serializers.CharField(source='user.username')
     email = serializers.EmailField(source='user.email')
     is_staff = serializers.BooleanField(source='user.is_staff')
     is_active = serializers.BooleanField(source='user.is_active')
     shop = serializers.CharField(source='shop.name', read_only=True)
+    shop_id = serializers.CharField(source='shop.id', read_only=True)
    
-
-
     class Meta:
         model = UserProfile 
-        fields = ['id', 'username', 'email', 'phone_number', 'is_staff',  'is_active','shop']
+        fields = ['user_id', 'username', 'email', 'phone_number', 'is_staff',  'is_active','shop', 'shop_id']
