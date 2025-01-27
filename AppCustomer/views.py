@@ -51,7 +51,8 @@ class AddCustomer(ListCreateAPIView):
     
     def get_queryset(self):
         shop_id = self.kwargs.get('shop')
-        queryset = Customer.objects.filter(shop_id=shop_id)
+        outlet_id = self.kwargs.get('outlet')
+        queryset = Customer.objects.filter(shop_id=shop_id, outlet_id=outlet_id)
         return queryset
     
 
@@ -61,5 +62,6 @@ class GetCustomer(RetrieveUpdateDestroyAPIView):
     
     def get_queryset(self):
         shop_id = self.kwargs.get('shop')
-        queryset = Customer.objects.filter(shop_id=shop_id)
+        outlet_id = self.kwargs.get('outlet')
+        queryset = Customer.objects.filter(shop_id=shop_id, outlet_id=outlet_id)
         return queryset

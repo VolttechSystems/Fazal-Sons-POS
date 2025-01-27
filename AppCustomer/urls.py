@@ -12,6 +12,6 @@ urlpatterns = [
     re_path(r'action_customer_type/(?P<shop>.+)/(?P<pk>.+)', GetCustomerType.as_view(), name='GetCustomerType'),
 
     ### CUSTOMER URL
-    re_path(r'add_customer/(?P<shop>.+)', AddCustomer.as_view(), name='AddCustomer'),
-    re_path(r'action_customer/(?P<shop>.+)/(?P<pk>.+)', GetCustomer.as_view(), name='GetCustomer'),
+    re_path(r'add_customer/(?P<shop>.+)/(?P<outlet>.+)', AddCustomer.as_view(), name='AddCustomer'),
+    re_path(r'action_customer/(?P<shop>.+)/(?P<outlet>.+)/(?P<pk>.+)', GetCustomer.as_view(), name='GetCustomer'),
 ]
