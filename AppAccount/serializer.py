@@ -129,6 +129,7 @@ class AdminChangePasswordSerializer(serializers.Serializer):
     
 
 class UserProfileSerializer(serializers.ModelSerializer):
+    user_id = serializers.CharField(source='user.id')
     username = serializers.CharField(source='user.username')
     email = serializers.EmailField(source='user.email')
     is_active = serializers.BooleanField(source='user.is_active')
@@ -138,7 +139,7 @@ class UserProfileSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['id', 'username', 'email', 'phone_number', 'is_active', 'system_roles', 'outlet' ,'shop']
+        fields = ['user_id', 'username', 'email', 'phone_number', 'is_active', 'system_roles', 'outlet' ,'shop']
 
     def get_system_roles(self, obj):
         return obj.system_roles.values('id', 'sys_role_name')
