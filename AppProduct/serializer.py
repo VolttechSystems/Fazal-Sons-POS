@@ -27,6 +27,15 @@ class OutletSerializer(serializers.ModelSerializer):
     class Meta:
         model = Outlet
         fields = ['id', 'outlet_code', 'outlet_name', 'address', 'outlet_mobile', 'manager_name', 'contact_number', 'shop']
+        
+    def validate(self, validate_data):
+       shop =  validate_data.get('shop')
+       allowed_outlets = shop.no_of_outlets
+       outlet = Outlet.objects.filter(shop_id=shop.id)
+       if int(len(outlet)) >= int(allowed_outlets):
+           raise serializers.ValidationError("You Cannot add More Outlets. Your Allowed Limit is Full")
+       return validate_data
+           
 
     def create(self, validated_data):
         outlet = super().create(validated_data)

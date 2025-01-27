@@ -179,9 +179,8 @@ class TransactionItemSerializer(serializers.ModelSerializer):
         get_pm_method = validated_data.get('pm_method')
         get_pm_amount = validated_data.get('pm_amount')
         get_outlet = validated_data.get('outlet_code')
-        print(get_outlet)
         get_shop = validated_data.get('shop')
-        print(get_shop)
+
         request = self.context.get('request')
         if request and hasattr(request, 'user'):
             get_username = request.user.username
