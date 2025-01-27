@@ -13,6 +13,7 @@ from AppProduct.views import MyLimitOffsetPagination
 from django.http import JsonResponse
 import random
 import string
+from django.contrib.auth.models import User
 
 ## Login View
 class LoginAPIView(APIView):
@@ -179,6 +180,20 @@ def CreateUserView(request, shop):
         paginator = MyLimitOffsetPagination()
         paginated_query = paginator.paginate_queryset(serializer.data, request)
         return paginator.get_paginated_response(paginated_query)
+    
+@api_view(['PATCH'])
+def UpdateUserView(request, shop, user_id):
+    user = User.objects.get(id=user_id)
+    user_profile = user.userprofile
+    if not user_profile.shop_id == int(shop):
+        return Response('No User Found in Shop')
+    if request.method == 'PATCH':
+        serializer = UserSerializer(user, data=request.data,partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        
         
     
     

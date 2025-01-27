@@ -48,18 +48,30 @@ class UserSerializer(serializers.ModelSerializer):
             user_profile.outlet.set(outlet_data)  # Set outlets to the users
 
         return user
+    
     def update(self, instance, validated_data):
         
-        Username = validated_data.pop('Username', None)
-        password - validate_data.pop('password',None)
+      
+        password = validated_data.pop('password',None)
+        if password:
+            instance.set_password(password)
+        instance.username = validated_data.get('username', instance.username)
+        instance.is_active = validated_data.get('is_active', instance.is_active)
+        instance.save()
+        
+        user_profile = instance.userprofile
+        user_profile.phone_number =  validated_data.get('phone_number', user_profile.phone_number)
+        user_profile.save()
         
         system_roles_data = validated_data.pop('system_roles', [])
+        if system_roles_data is not None:
+            user_profile.system_roles.set(system_roles_data)
+            
         outlet_data = validated_data.pop('outlet', [])
-        phone_number = validated_data.pop('phone_number', None)
-        isActive = validated_data.pop('is_active', None)
-        
-        
-        return validated_data
+        if outlet_data is not None:
+            user_profile.outlet.set(outlet_data)
+            
+        return instance
         
 
 class LoginSerializers(serializers.Serializer):
