@@ -175,7 +175,7 @@ def AddVariationGroupView(request, shop):
     if request.method == "POST":
         data = request.data
         for i in range(len(data)):
-            serializer = VariationGroupSerializer(data=request.data[i])
+            serializer = VariationGroupSerializer(data=request.data[i], context={'request': request})
             if serializer.is_valid():
                 serializer.save()
         return Response(data, status="200")
