@@ -405,6 +405,7 @@ class VariationGroupSerializer(serializers.Serializer):
     shop = serializers.CharField(required=False)
     variation = serializers.ListField(child=serializers.CharField())
     
+    
 
     def create(self, validated_data):
 
@@ -413,8 +414,6 @@ class VariationGroupSerializer(serializers.Serializer):
         get_att_type = validated_data.get('att_type')
         get_shop = validated_data.get('shop')
         request = self.context.get('request')
-        if request and hasattr(request, 'user'):
-                username = request.user.username
         try:
             att_type = AttributeType.objects.get(shop_id=get_shop,id=get_att_type)
             get_attribute_type_id = att_type.id
@@ -431,7 +430,8 @@ class VariationGroupSerializer(serializers.Serializer):
                 shop_id=get_shop,
                 status="active",
                 created_at=DateTime,
-                created_by=username
+                created_by=request.user.username
+        
             )
             attribute.save()
         get_attribute_id = Attribute.objects.get(shop_id=get_shop, attribute_name=get_attribute_name).id
@@ -449,7 +449,8 @@ class VariationGroupSerializer(serializers.Serializer):
                         shop_id=get_shop,
                         status="active",
                         created_at=DateTime,
-                         created_by=username
+                         created_by=request.user.username
+        
                     )
                     variation.save()
         return validated_data
