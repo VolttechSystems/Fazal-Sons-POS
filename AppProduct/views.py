@@ -384,7 +384,7 @@ def AddCategoriesView(request, shop):
         return paginator.get_paginated_response(paginated_category)
 
     elif request.method == "POST":
-        serializer = CategorySerializer(data=request.data)
+        serializer = CategorySerializer(data=request.data, context={'request': request})
         if serializer.is_valid():
             serializer.save()
             category_array = []
