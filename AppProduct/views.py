@@ -476,7 +476,7 @@ def GetCategoriesView(request, shop, id):
         return Response(variation_dict)
 
     elif request.method == "PUT":
-        serializer = CategorySerializer(category, data=request.data)
+        serializer = CategorySerializer(category, data=request.data,  context={'request': request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.initial_data)
